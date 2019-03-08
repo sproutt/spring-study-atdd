@@ -38,7 +38,8 @@ public class UserService {
     }
 
     public User login(LoginDTO loginDTO) throws UnAuthenticationException {
-        return new User(loginDTO.getUserId(), loginDTO.)
-        return null;
+        return userRepository.findByUserId(loginDTO.getUserId())
+                .filter(user -> user.matchPassword(loginDTO.getPassword()))
+                .orElseThrow(UnAuthenticationException::new);
     }
 }
