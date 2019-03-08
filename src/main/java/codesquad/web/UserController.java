@@ -1,7 +1,7 @@
 package codesquad.web;
 
 import codesquad.domain.User;
-import codesquad.dto.UserDTO;
+import codesquad.dto.LoginDTO;
 import codesquad.security.LoginUser;
 import codesquad.service.UserService;
 import org.slf4j.Logger;
@@ -34,8 +34,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(UserDTO userDTO, HttpSession httpSession){
-        User user = userService.login(userDTO)
+    public String login(LoginDTO loginDTO, HttpSession httpSession){
     }
     @GetMapping("")
     public String list(Model model) {

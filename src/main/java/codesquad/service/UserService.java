@@ -4,7 +4,7 @@ import codesquad.UnAuthenticationException;
 import codesquad.UnAuthorizedException;
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
-import codesquad.dto.UserDTO;
+import codesquad.dto.LoginDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,8 +37,8 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User login(UserDTO userDTO) throws UnAuthenticationException {
-        return new User(userDTO.getUserId(), userDTO.get)
+    public User login(LoginDTO loginDTO) throws UnAuthenticationException {
+        return new User(loginDTO.getUserId(), loginDTO.)
         return null;
     }
 }
