@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.UnAuthenticationException;
 import codesquad.domain.UserRepository;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -17,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LoginAccpetanceTest {
 	private static final Logger log = LoggerFactory.getLogger(UserAcceptanceTest.class);
-
 
 	@Autowired
 	private TestRestTemplate template;
@@ -50,7 +50,8 @@ public class LoginAccpetanceTest {
 		assertThat(userRepository.findByUserId(userId).isPresent()).isTrue();
 		assertThat(response.getHeaders().getLocation().getPath()).isEqualTo("/");
 	}
-	@Test
+
+	@Test(expected = UnAuthenticationException.class)
 	public void login_fail() throws Exception{
 		HttpHeaders header = new HttpHeaders();
 		header.setAccept(Arrays.asList(MediaType.TEXT_HTML));
@@ -64,10 +65,6 @@ public class LoginAccpetanceTest {
 
 		HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(params , header);
 		ResponseEntity<String> response = template.postForEntity("/users/login", request, String.class);
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-		assertThat(userRepository.findByUserId(userId).isPresent()).isFalse();
-		assertThat(response.getHeaders().getLocation().getPath()).isEqualTo("/users/login");
-
 	}
 
 }
