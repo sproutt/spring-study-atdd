@@ -1,6 +1,7 @@
 package codesquad.web;
 
 import codesquad.domain.User;
+import codesquad.dto.UserDTO;
 import codesquad.security.LoginUser;
 import codesquad.service.UserService;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -31,6 +33,10 @@ public class UserController {
         return "redirect:/users";
     }
 
+    @PostMapping("/login")
+    public String login(UserDTO userDTO, HttpSession httpSession){
+        User user = userService.login(userDTO)
+    }
     @GetMapping("")
     public String list(Model model) {
         List<User> users = userService.findAll();
