@@ -27,7 +27,7 @@ public class LoginAccpetanceTest {
 
 	@Test
 	public void loginForm() throws Exception{
-		ResponseEntity<String> response = template.getForEntity("/login/form", String.class);
+		ResponseEntity<String> response = template.getForEntity("/users/login", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		log.debug("body : {}", response.getBody());
 	}
@@ -45,7 +45,7 @@ public class LoginAccpetanceTest {
 		params.add("password", password);
 
 		HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(params , header);
-		ResponseEntity<String> response = template.postForEntity("/login", request, String.class);
+		ResponseEntity<String> response = template.postForEntity("/users/login", request, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(userRepository.findByUserId(userId).isPresent()).isTrue();
 		assertThat(response.getHeaders().getLocation().getPath()).isEqualTo("/");
@@ -63,10 +63,10 @@ public class LoginAccpetanceTest {
 		params.add("password", password);
 
 		HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(params , header);
-		ResponseEntity<String> response = template.postForEntity("/login", request, String.class);
+		ResponseEntity<String> response = template.postForEntity("/users/login", request, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(userRepository.findByUserId(userId).isPresent()).isFalse();
-		assertThat(response.getHeaders().getLocation().getPath()).isEqualTo("/login/form");
+		assertThat(response.getHeaders().getLocation().getPath()).isEqualTo("/users/login");
 
 	}
 
