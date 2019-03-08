@@ -15,6 +15,7 @@ import java.nio.charset.Charset;
 import java.util.Base64;
 
 public class BasicAuthInterceptor extends HandlerInterceptorAdapter {
+
     private static final Logger log = LoggerFactory.getLogger(BasicAuthInterceptor.class);
 
     @Autowired
@@ -36,7 +37,7 @@ public class BasicAuthInterceptor extends HandlerInterceptorAdapter {
         log.debug("password : {}", userInfo[1]);
 
         try {
-            User user = userService.login(new LoginUserDTO().userInfoToDTO(userInfo));
+            User user = userService.login(new LoginUserDTO().toDTO(userInfo));
             log.debug("Login Success : {}", user);
             request.getSession().setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
             return true;

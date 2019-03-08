@@ -66,6 +66,4 @@ public class UserController {
             return "/user/login_failed";
         }
     }
-
-
 }

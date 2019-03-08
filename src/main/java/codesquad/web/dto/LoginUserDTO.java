@@ -1,14 +1,13 @@
 package codesquad.web.dto;
 
-
 import codesquad.domain.User;
 
 public class LoginUserDTO {
+
     private String userId;
     private String password;
 
-    public LoginUserDTO() {
-    }
+    public LoginUserDTO() { }
 
     public String getUserId() {
         return userId;
@@ -26,7 +25,7 @@ public class LoginUserDTO {
         this.password = password;
     }
 
-    public LoginUserDTO userInfoToDTO(String[] userInfo) {
+    public LoginUserDTO toDTO(String[] userInfo) {
         this.userId = userInfo[0];
         this.password = userInfo[1];
         return this;
