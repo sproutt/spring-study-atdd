@@ -54,10 +54,10 @@ public class LoginAccpetanceTest {
 		ResponseEntity<String> response = template.postForEntity("/users/login", request, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(userRepository.findByUserId(userId).isPresent()).isTrue();
-		assertThat(response.getHeaders().getLocation().getPath()).isEqualTo("/");
+		assertThat(response.getHeaders().getLocation().getPath()).isEqualTo("/users");
 	}
 
-	@Test(expected = UnAuthenticationException.class)
+	@Test
 	public void login_fail() throws Exception{
 		HttpHeaders header = new HttpHeaders();
 		header.setAccept(Arrays.asList(MediaType.TEXT_HTML));
@@ -71,5 +71,7 @@ public class LoginAccpetanceTest {
 
 		HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(params , header);
 		ResponseEntity<String> response = template.postForEntity("/users/login", request, String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(userRepository.findByUserId(userId).isPresent()).isFalse();
 	}
 }
