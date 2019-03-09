@@ -3,11 +3,14 @@ package codesquad.web;
 import codesquad.UnAuthenticationException;
 import codesquad.domain.UserRepository;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import support.test.AcceptanceTest;
@@ -16,6 +19,9 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LoginAccpetanceTest {
 	private static final Logger log = LoggerFactory.getLogger(UserAcceptanceTest.class);
 
@@ -66,5 +72,4 @@ public class LoginAccpetanceTest {
 		HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(params , header);
 		ResponseEntity<String> response = template.postForEntity("/users/login", request, String.class);
 	}
-
 }

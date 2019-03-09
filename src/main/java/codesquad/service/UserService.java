@@ -38,10 +38,6 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User login(User target) throws UnAuthenticationException {
-        return login(target.getUserId(), target.getPassword());
-    }
-
     public User login(String userId, String password) throws UnAuthenticationException{
         User authorizedUser = userRepository.findByUserId(userId).orElseThrow(UnAuthenticationException::new);
         if(!authorizedUser.matchPassword(password)){

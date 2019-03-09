@@ -60,9 +60,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(HttpSession httpSession, User target) throws UnAuthenticationException {
-        httpSession.setAttribute(HttpSessionUtils.USER_SESSION_KEY, userService.login(target));
+    public String login(HttpSession httpSession, String userId , String password) throws UnAuthenticationException {
+        httpSession.setAttribute(HttpSessionUtils.USER_SESSION_KEY, userService.login(userId, password));
         return "redirect:/";
     }
-
 }
