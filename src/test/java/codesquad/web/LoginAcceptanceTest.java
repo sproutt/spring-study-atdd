@@ -25,7 +25,7 @@ public class LoginAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void loginForm() throws Exception {
-        ResponseEntity<String> response = template().getForEntity("/login", String.class);
+        ResponseEntity<String> response = template().getForEntity("/users/login", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
