@@ -10,11 +10,16 @@ import java.util.Arrays;
 
 public class HtmlFormDataBuilder {
     private HttpHeaders headers;
+
     private MultiValueMap<String, Object> params;
 
-    private HtmlFormDataBuilder(HttpHeaders headers) {
+    public HtmlFormDataBuilder(HttpHeaders headers) {
         this.headers = headers;
         this.params = new LinkedMultiValueMap<>();
+    }
+
+    public HttpHeaders getHeaders() {
+        return headers;
     }
 
     public HtmlFormDataBuilder addParameter(String key, Object value) {
