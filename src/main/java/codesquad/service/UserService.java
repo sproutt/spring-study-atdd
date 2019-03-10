@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 @Service("userService")
 public class UserService {
@@ -37,11 +38,11 @@ public class UserService {
     }
 
     public User login(String userId, String password) throws UnAuthenticationException {
-        User original = userRepository.findByUserId(userId).orElseThrow(UnAuthenticationException::new);
-        if(!original.matchPassword(password)){
-            throw new UnAuthenticationException();
+        User loginUser = userRepository.findByUserId(userId).orElseThrow(UnAuthenticationException::new);
+        if(!loginUser.matchPassword(password)){
+            return null;
         }
-        return original;
+        return loginUser;
     }
 
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/users")
@@ -57,13 +58,12 @@ public class UserController {
 
     @PostMapping("/login")
     public String login(String userId, String password, HttpSession httpSession) throws UnAuthenticationException {
-        try {
-            User loginUser = userService.login(userId, password);
-            httpSession.setAttribute(HttpSessionUtils.USER_SESSION_KEY, loginUser);
-            return "redirect:/users";
-        } catch (UnAuthenticationException e) {
+        Optional<User> loginUser = Optional.ofNullable(userService.login(userId, password));
+        if (loginUser.equals(Optional.empty())) {
             return "/user/login_failed";
         }
+        httpSession.setAttribute(HttpSessionUtils.USER_SESSION_KEY, loginUser);
+        return "redirect:/users";
     }
 
 }

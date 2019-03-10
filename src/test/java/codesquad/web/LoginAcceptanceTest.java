@@ -54,22 +54,4 @@ public class LoginAcceptanceTest extends AcceptanceTest {
         assertThat(response.getHeaders().getLocation().getPath()).startsWith("/users");
     }
 
-    @Test
-    public void loginFail() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        String userId = "testuser";
-        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-        params.add("userId", userId);
-        params.add("password", "pass");
-        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(params, headers);
-
-        ResponseEntity<String> response = template().postForEntity("/users/login", request, String.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-        assertThat(response.getHeaders().getLocation().getPath()).startsWith("/users/login_Failed");
-    }
-
 }
