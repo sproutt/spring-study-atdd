@@ -45,8 +45,7 @@ public class UserController {
     @PostMapping("/login")
     public String login(String userId, String password, HttpSession httpSession) {
         try {
-            User user = userService.login(userId, password);
-            httpSession.setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
+            httpSession.setAttribute(HttpSessionUtils.USER_SESSION_KEY, userService.login(userId, password));
         } catch (UnAuthenticationException e) {
             e.printStackTrace();
             return "/user/login_failed";
