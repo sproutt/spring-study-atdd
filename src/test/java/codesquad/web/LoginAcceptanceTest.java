@@ -14,10 +14,10 @@ public class LoginAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void login_success() throws Exception {
-		HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
-		htmlFormDataBuilder.addParameter("userId", "javajigi");
-		htmlFormDataBuilder.addParameter("password", "test");
-		HttpEntity<MultiValueMap<String, Object>> request = htmlFormDataBuilder.build();
+		HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
+				.addParameter("userId", "javajigi")
+				.addParameter("password", "test")
+				.build();
 
 		ResponseEntity<String> response = template().postForEntity("/users/login", request, String.class);
 
@@ -27,10 +27,10 @@ public class LoginAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void login_fail() {
-		HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
-		htmlFormDataBuilder.addParameter("userId", "test");
-		htmlFormDataBuilder.addParameter("password", "test");
-		HttpEntity<MultiValueMap<String, Object>> request = htmlFormDataBuilder.build();
+		HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
+				.addParameter("userId", "test")
+				.addParameter("password", "test")
+				.build();
 
 		ResponseEntity<String> response = template().postForEntity("/users/login", request, String.class);
 
