@@ -3,8 +3,6 @@ package codesquad.web;
 
 import codesquad.domain.UserRepository;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.util.MultiValueMap;
@@ -14,8 +12,6 @@ import support.test.AcceptanceTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LoginAcceptanceTest extends AcceptanceTest {
-
-	private static final Logger log = LoggerFactory.getLogger(UserAcceptanceTest.class);
 
 	@Autowired
 	private UserRepository userRepository;
