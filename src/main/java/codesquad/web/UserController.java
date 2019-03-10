@@ -41,7 +41,7 @@ public class UserController {
 			httpSession.setAttribute(HttpSessionUtils.USER_SESSION_KEY, userService.login(loginDTO));
 			return "redirect:/users";
 		} catch (UnAuthenticationException e) {
-			return "redirect:/users/form";
+			return "/user/login_failed";
 		}
 
 	}
