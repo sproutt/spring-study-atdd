@@ -21,10 +21,6 @@ public class UserController {
     @Resource(name = "userService")
     private UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
     @GetMapping("/form")
     public String form() {
         return "/user/form";
