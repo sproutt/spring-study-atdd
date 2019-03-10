@@ -3,7 +3,7 @@ package codesquad.service;
 import codesquad.UnAuthenticationException;
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
-import codesquad.dto.LoginDTO;
+import codesquad.web.dto.LoginDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

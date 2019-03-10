@@ -1,7 +1,7 @@
 package codesquad.security;
 
 import codesquad.domain.User;
-import codesquad.dto.LoginDTO;
+import codesquad.web.dto.LoginDTO;
 import codesquad.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

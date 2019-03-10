@@ -1,4 +1,4 @@
-package codesquad.dto;
+package codesquad.web.dto;
 
 import codesquad.domain.User;
 import lombok.AllArgsConstructor;
