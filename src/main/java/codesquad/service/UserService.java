@@ -38,11 +38,7 @@ public class UserService {
     }
 
     public User login(String userId, String password) throws UnAuthenticationException {
-        User loginUser = userRepository.findByUserId(userId).orElseThrow(UnAuthenticationException::new);
-        if(!loginUser.matchPassword(password)){
-            throw new UnAuthenticationException();
-        }
-        return loginUser;
+        return userRepository.findByUserId(userId).filter(user->user.matchPassword(password);
     }
 
 }
