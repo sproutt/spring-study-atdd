@@ -63,7 +63,7 @@ public class LoginAcceptanceTest extends AcceptanceTest {
         }
 
         HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
-                .addParameter("userId", "testuser")
+                .addParameter("userId", "testuser123")
                 .addParameter("password", "wrongPassword")
                 .build();
 
