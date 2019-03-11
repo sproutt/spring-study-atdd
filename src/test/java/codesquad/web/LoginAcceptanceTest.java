@@ -25,6 +25,19 @@ public class LoginAcceptanceTest extends AcceptanceTest {
 
         ResponseEntity<String> response = template().postForEntity("/users/login", request, String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+        assertThat(response.getHeaders().getLocation().getPath()).isEqualTo("/users");
+    }
+
+    @Test
+    public void login_실패() {
+        HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
+                                                                               .addParameter("userId", "sanjigi2")
+                                                                               .addParameter("password", "password")
+                                                                               .build();
+
+        ResponseEntity<String> response = template().postForEntity("/users/login", request, String.class);
+
+        assertThat(response.getBody()).contains("아이디 또는 비밀번호가 틀립니다. 다시 로그인 해주세요.");
     }
 }

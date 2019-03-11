@@ -3,7 +3,7 @@ package codesquad.security;
 import codesquad.UnAuthenticationException;
 import codesquad.domain.User;
 import codesquad.service.UserService;
-import codesquad.web.dto.LoginUserDTO;
+import codesquad.web.dto.UserLoginDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class BasicAuthInterceptor extends HandlerInterceptorAdapter {
         log.debug("password : {}", userInfo[1]);
 
         try {
-            User user = userService.login(new LoginUserDTO().toDTO(userInfo));
+            User user = userService.login(new UserLoginDTO(userInfo));
             log.debug("Login Success : {}", user);
             request.getSession().setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
             return true;

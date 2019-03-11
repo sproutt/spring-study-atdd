@@ -4,12 +4,11 @@ import codesquad.UnAuthenticationException;
 import codesquad.UnAuthorizedException;
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
-import codesquad.web.dto.LoginUserDTO;
+import codesquad.web.dto.UserLoginDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service("userService")
@@ -39,9 +38,9 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User login(LoginUserDTO loginUserDTO) throws UnAuthenticationException {
-        return userRepository.findByUserId(loginUserDTO.getUserId())
-                             .filter(user -> user.matchPassword(loginUserDTO.getPassword()))
+    public User login(UserLoginDTO userLoginDTO) throws UnAuthenticationException {
+        return userRepository.findByUserId(userLoginDTO.getUserId())
+                             .filter(user -> user.matchPassword(userLoginDTO.getPassword()))
                              .orElseThrow(UnAuthenticationException::new);
     }
 }

@@ -5,10 +5,9 @@ import codesquad.domain.User;
 import codesquad.security.HttpSessionUtils;
 import codesquad.security.LoginUser;
 import codesquad.service.UserService;
-import codesquad.web.dto.LoginUserDTO;
+import codesquad.web.dto.UserLoginDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -57,10 +56,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    @ResponseStatus(HttpStatus.OK)
-    public String login(LoginUserDTO loginUserDTO, HttpSession httpSession) {
+    public String login(UserLoginDTO userLoginDTO, HttpSession httpSession) {
         try {
-            httpSession.setAttribute(HttpSessionUtils.USER_SESSION_KEY, userService.login(loginUserDTO));
+            httpSession.setAttribute(HttpSessionUtils.USER_SESSION_KEY, userService.login(userLoginDTO));
             return "redirect:/users";
         } catch (UnAuthenticationException e) {
             return "/user/login_failed";

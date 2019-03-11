@@ -3,7 +3,7 @@ package codesquad.service;
 import codesquad.UnAuthenticationException;
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
-import codesquad.web.dto.LoginUserDTO;
+import codesquad.web.dto.UserLoginDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -31,7 +31,7 @@ public class UserServiceTest {
         when(userRepository.findByUserId(user.getUserId())).thenReturn(Optional.of(user));
 
         //then
-        User loginUser = userService.login(new LoginUserDTO().toDTO(user));
+        User loginUser = userService.login(new UserLoginDTO(user));
         assertThat(loginUser).isEqualTo(user);
     }
 
@@ -42,7 +42,7 @@ public class UserServiceTest {
         when(userRepository.findByUserId(failUser.getUserId())).thenReturn(Optional.empty());
 
         //then
-        userService.login(new LoginUserDTO().toDTO(failUser));
+        userService.login(new UserLoginDTO(failUser));
     }
 
     @Test(expected = UnAuthenticationException.class)
@@ -53,6 +53,6 @@ public class UserServiceTest {
 
         //then
         User failUser = new User("sanjigi", "password222", "name", "javajigi@slipp.net");
-        userService.login(new LoginUserDTO().toDTO(failUser));
+        userService.login(new UserLoginDTO(failUser));
     }
 }
