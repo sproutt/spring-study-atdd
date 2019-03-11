@@ -3,6 +3,7 @@ package codesquad.service;
 import codesquad.UnAuthenticationException;
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
+import codesquad.web.dto.UserLoginDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -11,12 +12,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceTest {
+
     @Mock
     private UserRepository userRepository;
 
@@ -25,25 +26,33 @@ public class UserServiceTest {
 
     @Test
     public void login_success() throws Exception {
+        //when
         User user = new User("sanjigi", "password", "name", "javajigi@slipp.net");
         when(userRepository.findByUserId(user.getUserId())).thenReturn(Optional.of(user));
 
-        User loginUser = userService.login(user.getUserId(), user.getPassword());
-        assertThat(loginUser, is(user));
+        //then
+        User loginUser = userService.login(new UserLoginDTO(user));
+        assertThat(loginUser).isEqualTo(user);
     }
 
     @Test(expected = UnAuthenticationException.class)
     public void login_failed_when_user_not_found() throws Exception {
-        when(userRepository.findByUserId("sanjigi")).thenReturn(Optional.empty());
+        //when
+        User failUser = new User("sanjigi222", "password", "name", "javajigi@slipp.net");
+        when(userRepository.findByUserId(failUser.getUserId())).thenReturn(Optional.empty());
 
-        userService.login("sanjigi", "password");
+        //then
+        userService.login(new UserLoginDTO(failUser));
     }
 
     @Test(expected = UnAuthenticationException.class)
     public void login_failed_when_mismatch_password() throws Exception {
-        User user = new User("sanjigi", "password", "name", "javajigi@slipp.net");
-        when(userRepository.findByUserId(user.getUserId())).thenReturn(Optional.of(user));
+        //when
+        User loginUser = new User("sanjigi", "password", "name", "javajigi@slipp.net");
+        when(userRepository.findByUserId(loginUser.getUserId())).thenReturn(Optional.of(loginUser));
 
-        userService.login(user.getUserId(), user.getPassword() + "2");
+        //then
+        User failUser = new User("sanjigi", "password222", "name", "javajigi@slipp.net");
+        userService.login(new UserLoginDTO(failUser));
     }
 }
