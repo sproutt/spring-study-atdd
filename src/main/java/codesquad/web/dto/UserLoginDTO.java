@@ -10,11 +10,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginDTO {
+public class UserLoginDTO {
 	private String userId;
 	private String password;
 
-	public LoginDTO(User user) {
+	public UserLoginDTO(User user) {
 		this.userId = user.getUserId();
 		this.password = user.getPassword();
 	}
