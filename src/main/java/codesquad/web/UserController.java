@@ -60,6 +60,7 @@ public class UserController {
     public String login(String userId, String password, HttpSession httpSession) throws UnAuthenticationException {
         Optional<User> loginUser = Optional.ofNullable(userService.login(userId, password));
         if (loginUser.equals(Optional.empty())) {
+            System.out.println("나는 실행이 되지요");
             return "/user/login_failed";
         }
         httpSession.setAttribute(HttpSessionUtils.USER_SESSION_KEY, loginUser);
