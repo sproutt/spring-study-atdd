@@ -2,6 +2,7 @@ package codesquad.security;
 
 import codesquad.UnAuthenticationException;
 import codesquad.domain.User;
+import codesquad.dto.LoginUserDTO;
 import codesquad.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ public class BasicAuthInterceptor extends HandlerInterceptorAdapter {
         log.debug("password : {}", values[1]);
 
         try {
-            User user = userService.login(values[0], values[1]);
+            User user = userService.login(new LoginUserDTO(values[0], values[1]));
             log.debug("Login Success : {}", user);
             request.getSession().setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
             return true;

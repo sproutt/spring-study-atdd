@@ -1,6 +1,7 @@
 package codesquad.security;
 
 import codesquad.domain.User;
+import codesquad.dto.LoginUserDTO;
 import codesquad.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +30,7 @@ public class BasicAuthInterceptorTest {
         String password = "password";
         MockHttpServletRequest request = basicAuthHttpRequest(userId, password);
         User loginUser = new User(userId, "password", "name", "javajigi@slipp.net");
-        when(userService.login(userId, password)).thenReturn(loginUser);
+        when(userService.login(new LoginUserDTO(userId, password))).thenReturn(loginUser);
 
         basicAuthInterceptor.preHandle(request, null, null);
         assertThat(request.getSession().getAttribute(HttpSessionUtils.USER_SESSION_KEY), is(loginUser));
