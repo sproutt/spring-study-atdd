@@ -23,6 +23,7 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 	private HtmlFormDataBuilder formDataBuilder;
 	private ResponseEntity<String> response;
 	private Question question;
+
 	@Before
 	public void setUp() {
 		formDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
@@ -48,18 +49,22 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 
 
 	@Test
-	public void delete(){
+	public void delete() {
 		formDataBuilder.delete();
 		StringBuilder postURL = new StringBuilder();
 		postURL.append("/questions/").append(defaultQuestion().getId());
-
 		response = basicAuthTemplate().postForEntity(postURL.toString(), formDataBuilder.build(), String.class);
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+		assertThat(response.getHeaders().getLocation().getPath()).startsWith("/questions");
 	}
 
 	@Test
 	public void delete_no_authenticated() {
-
+		formDataBuilder.delete();
+		StringBuilder postURL = new StringBuilder();
+		postURL.append("/quesions/").append(question.getId());
+		response = template().postForEntity(postURL.toString(),formDataBuilder.build(), String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 	@Test
