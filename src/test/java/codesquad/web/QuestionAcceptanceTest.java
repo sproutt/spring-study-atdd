@@ -1,27 +1,18 @@
 package codesquad.web;
 
 import codesquad.domain.Question;
-import codesquad.domain.QuestionRepository;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import support.HtmlFormDataBuilder;
 import support.test.AcceptanceTest;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class QuestionAcceptanceTest extends AcceptanceTest {
-
-	private static final Logger log = LoggerFactory.getLogger(QuestionAcceptanceTest.class);
-
-	@Autowired
-	private QuestionRepository questionRepository;
 
 	@Test
 	public void form() {
@@ -60,13 +51,13 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 		ResponseEntity<String> response = template().getForEntity("/", String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(response.getBody()).contains("국내에서 Ruby");
 	}
 
 	@Test
 	public void show() {
 		Question question = defaultQuestion();
-		ResponseEntity<String> response = template().getForEntity(String.format("/questions/%d", question.getId()), String.class);
+		ResponseEntity<String> response = template()
+				.getForEntity(String.format("/questions/%d", question.getId()), String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody().contains(question.getContents())).isTrue();
@@ -75,7 +66,8 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 	@Test
 	public void updateForm() {
 		Question question = defaultQuestion();
-		ResponseEntity<String> response = template().getForEntity(String.format("/questions/%d/form", question.getId()), String.class);
+		ResponseEntity<String> response = template()
+				.getForEntity(String.format("/questions/%d/form", question.getId()), String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
@@ -88,7 +80,8 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 				.addParameter("contents", "내용테스트")
 				.build();
 
-		ResponseEntity<String> response = basicAuthTemplate().postForEntity(String.format("/questions/%d", question.getId()), request, String.class);
+		ResponseEntity<String> response = template()
+				.exchange(String.format("/questions/%d", question.getId()), HttpMethod.PUT, request, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
@@ -101,7 +94,8 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 				.addParameter("contents", "내용테스트")
 				.build();
 
-		ResponseEntity<String> response = basicAuthTemplate().postForEntity(String.format("/questions/%d", question.getId()), request, String.class);
+		ResponseEntity<String> response = basicAuthTemplate()
+				.exchange(String.format("/questions/%d", question.getId()), HttpMethod.PUT, request, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(response.getHeaders().getLocation().getPath()).startsWith("/");
