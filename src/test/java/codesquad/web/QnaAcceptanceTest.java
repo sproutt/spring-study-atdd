@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
 import org.junit.Before;
@@ -21,9 +22,11 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 
 	private HtmlFormDataBuilder formDataBuilder;
 	private ResponseEntity<String> response;
+	private Question question;
 	@Before
 	public void setUp() {
 		formDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
+		question = questionRepository.findAll().get(0);
 	}
 
 	@Test
@@ -46,7 +49,12 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void delete(){
-		formDataBuilder.
+		formDataBuilder.delete();
+		StringBuilder postURL = new StringBuilder();
+		postURL.append("/questions/").append(defaultQuestion().getId());
+
+		response = basicAuthTemplate().postForEntity(postURL.toString(), formDataBuilder.build(), String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 	@Test
