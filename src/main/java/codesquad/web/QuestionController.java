@@ -2,6 +2,7 @@ package codesquad.web;
 
 import codesquad.domain.Question;
 import codesquad.domain.User;
+import codesquad.security.HttpSessionUtils;
 import codesquad.security.LoginUser;
 import codesquad.service.QnaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class QuestionController {
 	private QnaService qnaService;
 
 	@GetMapping("/form")
-	public String form() {
+	public String form(@LoginUser User loginUser) {
 		return "/qna/form";
 	}
 
@@ -34,7 +35,7 @@ public class QuestionController {
 	}
 
 	@GetMapping("{id}/form")
-	public String updateForm() {
+	public String updateForm(@LoginUser User loginUser) {
 		return "/qna/updateForm";
 	}
 

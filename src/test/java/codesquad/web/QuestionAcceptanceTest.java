@@ -1,7 +1,9 @@
 package codesquad.web;
 
 import codesquad.domain.Question;
+import codesquad.domain.QuestionRepository;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -14,9 +16,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class QuestionAcceptanceTest extends AcceptanceTest {
 
+	@Autowired
+	private QuestionRepository questionRepository;
+
+	@Test
+	public void form_no_login() {
+		ResponseEntity<String> response = template().getForEntity("/questions/form", String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+	}
+
 	@Test
 	public void form() {
-		ResponseEntity<String> response = template().getForEntity("/questions/form", String.class);
+		ResponseEntity<String> response = basicAuthTemplate().getForEntity("/questions/form", String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
@@ -64,9 +76,18 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 	}
 
 	@Test
-	public void updateForm() {
+	public void updateForm_no_login() {
 		Question question = defaultQuestion();
 		ResponseEntity<String> response = template()
+				.getForEntity(String.format("/questions/%d/form", question.getId()), String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+	}
+
+	@Test
+	public void updateForm_login() {
+		Question question = defaultQuestion();
+		ResponseEntity<String> response = basicAuthTemplate()
 				.getForEntity(String.format("/questions/%d/form", question.getId()), String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -96,6 +117,31 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
 		ResponseEntity<String> response = basicAuthTemplate()
 				.exchange(String.format("/questions/%d", question.getId()), HttpMethod.PUT, request, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+		assertThat(response.getHeaders().getLocation().getPath()).startsWith("/");
+	}
+
+	@Test
+	public void delete_no_login() {
+		Question question = defaultQuestion();
+
+		HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm().build();
+
+		ResponseEntity<String> response = template()
+				.exchange(String.format("/questions/%d", question.getId()), HttpMethod.DELETE, request, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+	}
+
+	@Test
+	public void delete_login() {
+		Question question = questionRepository.save(new Question("delete-title", "delete-contents"));
+
+		HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm().build();
+
+		ResponseEntity<String> response = basicAuthTemplate()
+				.exchange(String.format("/questions/%d", question.getId()), HttpMethod.DELETE, request, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(response.getHeaders().getLocation().getPath()).startsWith("/");
