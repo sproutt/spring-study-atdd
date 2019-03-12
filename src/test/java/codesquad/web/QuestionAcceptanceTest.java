@@ -47,4 +47,11 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(response.getHeaders().getLocation().getPath()).startsWith("/");
 	}
+
+	@Test
+	public void list() throws Exception {
+		ResponseEntity<String> response = template().getForEntity("/", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody()).contains("국내에서 Ruby");
+	}
 }
