@@ -5,6 +5,8 @@ import codesquad.UnAuthorizedException;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -25,16 +27,27 @@ public class QnaServiceTest {
 	@InjectMocks
 	private QnaService qnaService;
 
-	@Test
-	public void update_success() {
-		//given
-		User user = new User("esp2ar0", "test", "changhwan", "esp2ar0@gmail.com");
-		Question question = new Question("title1", "contents1");
-		Question updatedQuestion = new Question("title2", "contents2");
-		Long id = 1l;
+	private User user, user2;
+	private Question question, updatedQuestion;
+	private Long id;
+
+	@BeforeClass
+	public void setUpBeforeClass() {
+		User user = new User(1l, "esp2ar0", "test", "changhwan", "esp2ar0@gmail.com");
+		User user2 = new User(2l, "burrito", "test", "chicken", "burrito@gmail.com");
+	}
+
+	@Before
+	public void setUp() {
+		question = new Question("title1", "contents1");
+		updatedQuestion = new Question("title2", "contents2");
+		id = 1l;
 		question.setId(id);
 		question.writeBy(user);
+	}
 
+	@Test
+	public void update_success() {
 		//when
 		when(questionRepository.findById(id)).thenReturn(Optional.of(question));
 		when(questionRepository.save(question)).thenReturn(question);
@@ -45,15 +58,6 @@ public class QnaServiceTest {
 
 	@Test(expected = UnAuthorizedException.class)
 	public void update_failed_when_mismatch_writer() {
-		//given
-		User user = new User(1l, "esp2ar0", "test", "changhwan", "esp2ar0@gmail.com");
-		User user2 = new User(2l, "burrito", "test", "chicken", "burrito@gmail.com");
-		Question question = new Question("title1", "contents1");
-		Question updatedQuestion = new Question("title2", "contents2");
-		Long id = 1l;
-		question.setId(id);
-		question.writeBy(user);
-
 		//when
 		when(questionRepository.findById(id)).thenReturn(Optional.of(question));
 		qnaService.update(user2, id, updatedQuestion);
@@ -63,13 +67,6 @@ public class QnaServiceTest {
 
 	@Test
 	public void delete_success() throws CannotDeleteException {
-		//given
-		User user = new User("esp2ar0", "test", "changhwan", "esp2ar0@gmail.com");
-		Question question = new Question("delete-title", "delete-title");
-		Long id = 1l;
-		question.setId(id);
-		question.writeBy(user);
-
 		//when
 		when(questionRepository.findById(id)).thenReturn(Optional.of(question));
 		qnaService.deleteQuestion(user, id);
@@ -80,14 +77,6 @@ public class QnaServiceTest {
 
 	@Test(expected = CannotDeleteException.class)
 	public void delete_failed() throws CannotDeleteException {
-		//given
-		User user = new User(1l, "esp2ar0", "test", "changhwan", "esp2ar0@gmail.com");
-		User user2 = new User(2l, "burrito", "test", "chicken", "burrito@gmail.com");
-		Question question = new Question("delete-title", "delete-title");
-		Long id = 1l;
-		question.setId(id);
-		question.writeBy(user);
-
 		//when
 		when(questionRepository.findById(id)).thenReturn(Optional.of(question));
 		qnaService.deleteQuestion(user2, id);

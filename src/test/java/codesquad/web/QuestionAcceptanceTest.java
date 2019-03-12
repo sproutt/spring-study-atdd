@@ -1,9 +1,7 @@
 package codesquad.web;
 
 import codesquad.domain.Question;
-import codesquad.domain.QuestionRepository;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -16,8 +14,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class QuestionAcceptanceTest extends AcceptanceTest {
 
-	@Autowired
-	private QuestionRepository questionRepository;
+	private HttpEntity<MultiValueMap<String, Object>> request() {
+		return HtmlFormDataBuilder.urlEncodedForm().build();
+	}
+
+	private HttpEntity<MultiValueMap<String, Object>> request(String title, String contents) {
+		return HtmlFormDataBuilder.urlEncodedForm()
+				.addParameter("title", title)
+				.addParameter("contents", contents)
+				.build();
+	}
 
 	@Test
 	public void form_no_login() {
@@ -35,10 +41,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void post_no_login() {
-		HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
-				.addParameter("title", "제목테스트")
-				.addParameter("contents", "내용테스트")
-				.build();
+		HttpEntity<MultiValueMap<String, Object>> request = request("제목테스트", "내용테스트");
 
 		ResponseEntity<String> response = template().postForEntity("/questions", request, String.class);
 
@@ -47,10 +50,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void post_login() {
-		HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
-				.addParameter("title", "제목테스트")
-				.addParameter("contents", "내용테스트")
-				.build();
+		HttpEntity<MultiValueMap<String, Object>> request = request("제목테스트", "내용테스트");
 
 		ResponseEntity<String> response = basicAuthTemplate().postForEntity("/questions", request, String.class);
 
@@ -96,10 +96,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 	@Test
 	public void update_no_login() {
 		Question question = defaultQuestion();
-		HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
-				.addParameter("title", "제목테스트")
-				.addParameter("contents", "내용테스트")
-				.build();
+		HttpEntity<MultiValueMap<String, Object>> request = request("제목테스트", "내용테스트");
 
 		ResponseEntity<String> response = template()
 				.exchange(String.format("/questions/%d", question.getId()), HttpMethod.PUT, request, String.class);
@@ -110,10 +107,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 	@Test
 	public void update_login() {
 		Question question = defaultQuestion();
-		HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
-				.addParameter("title", "제목테스트")
-				.addParameter("contents", "내용테스트")
-				.build();
+		HttpEntity<MultiValueMap<String, Object>> request = request("제목테스트", "내용테스트");
 
 		ResponseEntity<String> response = basicAuthTemplate()
 				.exchange(String.format("/questions/%d", question.getId()), HttpMethod.PUT, request, String.class);
@@ -126,10 +120,8 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 	public void delete_no_login() {
 		Question question = defaultQuestion();
 
-		HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm().build();
-
 		ResponseEntity<String> response = template()
-				.exchange(String.format("/questions/%d", question.getId()), HttpMethod.DELETE, request, String.class);
+				.exchange(String.format("/questions/%d", question.getId()), HttpMethod.DELETE, request(), String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
@@ -138,10 +130,8 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 	public void delete_login() {
 		Question question = defaultQuestion();
 
-		HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm().build();
-
 		ResponseEntity<String> response = basicAuthTemplate()
-				.exchange(String.format("/questions/%d", question.getId()), HttpMethod.DELETE, request, String.class);
+				.exchange(String.format("/questions/%d", question.getId()), HttpMethod.DELETE, request(), String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(response.getHeaders().getLocation().getPath()).startsWith("/");
