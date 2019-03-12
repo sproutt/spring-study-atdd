@@ -24,7 +24,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 	}
 
 	@Test
-	public void post() {
+	public void post_no_login() {
 		HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
 				.addParameter("title", "제목테스트")
 				.addParameter("contents", "내용테스트")
@@ -32,8 +32,19 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
 		ResponseEntity<String> response = template().postForEntity("/questions", request, String.class);
 
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+	}
+
+	@Test
+	public void post_login() {
+		HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
+				.addParameter("title", "제목테스트")
+				.addParameter("contents", "내용테스트")
+				.build();
+
+		ResponseEntity<String> response = basicAuthTemplate().postForEntity("/questions", request, String.class);
+
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(response.getHeaders().getLocation().getPath()).startsWith("/");
-		assertThat(response.getBody().contains("제목테스트")).isTrue();
 	}
 }
