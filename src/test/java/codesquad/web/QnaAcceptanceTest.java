@@ -23,7 +23,14 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void create() {
+
 	}
+
+	@Test
+	public void create_no_login() {
+
+	}
+
 
 	@Test
 	public void delete() {
@@ -31,7 +38,17 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 	}
 
 	@Test
+	public void delete_no_authenticated() {
+
+	}
+
+	@Test
 	public void update() {
+
+	}
+
+	@Test
+	public void update_no_authenticated() {
 
 	}
 
@@ -45,10 +62,10 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 
 	}
 
-	private void addSampleQuestionData(){
+	private void addSampleQuestionData() {
 		formDataBuilder
-				.addParameter("title","title")
-				.addParameter("contents","contents");
+				.addParameter("title", "title")
+				.addParameter("contents", "contents");
 	}
 
 }
