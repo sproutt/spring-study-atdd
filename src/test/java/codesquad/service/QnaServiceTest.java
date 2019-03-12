@@ -1,0 +1,60 @@
+package codesquad.service;
+
+import codesquad.UnAuthorizedException;
+import codesquad.domain.Question;
+import codesquad.domain.QuestionRepository;
+import codesquad.domain.User;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class QnaServiceTest {
+
+	@Mock
+	private QuestionRepository questionRepository;
+
+	@InjectMocks
+	private QnaService qnaService;
+
+	@Test
+	public void update_success() {
+		//given
+		User user = new User("esp2ar0", "test", "changhwan", "esp2ar0@gmail.com");
+		Question question = new Question("title1", "contents1");
+		Question updatedQuestion = new Question("title2", "contents2");
+		Long id = 1l;
+		question.setId(id);
+
+		//when
+		when(questionRepository.findById(id)).thenReturn(Optional.of(question));
+
+		//then
+		assertThat(qnaService.update(user, id, updatedQuestion).getTitle()).isEqualTo(updatedQuestion.getTitle());
+	}
+
+	@Test(expected = UnAuthorizedException.class)
+	public void update_failed_when_mismatch_writer() {
+		//given
+		User user = new User("esp2ar0", "test", "changhwan", "esp2ar0@gmail.com");
+		User user2 = new User("burrito", "test", "chicken", "burrito@gmail.com");
+		Question question = new Question("title1", "contents1");
+		Question updatedQuestion = new Question("title2", "contents2");
+		Long id = 1l;
+		question.setId(id);
+		question.writeBy(user);
+
+		//when
+		when(questionRepository.findById(id)).thenReturn(Optional.of(question));
+
+		//then
+		qnaService.update(user2, id, updatedQuestion);
+	}
+}
