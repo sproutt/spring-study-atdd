@@ -45,8 +45,8 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 
 
 	@Test
-	public void delete() {
-
+	public void delete(){
+		formDataBuilder.
 	}
 
 	@Test
