@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +50,17 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 	}
 
 	@Test
-	public void list() throws Exception {
+	public void list() {
 		ResponseEntity<String> response = template().getForEntity("/", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody()).contains("국내에서 Ruby");
+	}
+
+	@Test
+	public void show() {
+		Question question = defaultQuestion();
+		ResponseEntity<String> response = template().getForEntity(String.format("/questions/%d", question.getId()), String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody().contains(question.getContents())).isTrue();
 	}
 }
