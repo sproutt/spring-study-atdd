@@ -2,6 +2,7 @@ package codesquad.web;
 
 import codesquad.UnAuthenticationException;
 import codesquad.domain.User;
+import codesquad.dto.LoginUserDTO;
 import codesquad.security.HttpSessionUtils;
 import codesquad.security.LoginUser;
 import codesquad.service.UserService;
@@ -53,11 +54,16 @@ public class UserController {
     @PostMapping("/login")
     public String login(String userId, String password, HttpSession httpSession) throws UnAuthenticationException {
         try {
-            httpSession.setAttribute(HttpSessionUtils.USER_SESSION_KEY, userService.login(userId, password));
+            httpSession.setAttribute(HttpSessionUtils.USER_SESSION_KEY, userService.login(new LoginUserDTO(userId, password)));
         } catch (UnAuthenticationException e) {
             return "/user/login_failed";
         }
 
         return "redirect:/users";
+    }
+
+    @GetMapping("/login_form")
+    public String loginForm() {
+        return "/user/login";
     }
 }

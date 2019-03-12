@@ -1,6 +1,7 @@
 package codesquad.domain;
 
 import codesquad.UnAuthorizedException;
+import codesquad.dto.LoginUserDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import support.domain.AbstractEntity;
 
@@ -107,6 +108,10 @@ public class User extends AbstractEntity {
 
         return name.equals(target.name) &&
                 email.equals(target.email);
+    }
+
+    public LoginUserDTO toLoginUserDTO() {
+        return new LoginUserDTO(this.userId, this.password);
     }
 
     @JsonIgnore

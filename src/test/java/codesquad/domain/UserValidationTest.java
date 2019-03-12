@@ -15,7 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserValidationTest {
     private static final Logger log = LoggerFactory.getLogger(UserValidationTest.class);
-
     private static Validator validator;
 
     @BeforeClass

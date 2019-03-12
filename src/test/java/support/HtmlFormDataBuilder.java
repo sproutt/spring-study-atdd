@@ -1,5 +1,4 @@
-package codesquad;
-
+package support;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

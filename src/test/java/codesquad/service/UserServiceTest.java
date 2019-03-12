@@ -3,6 +3,7 @@ package codesquad.service;
 import codesquad.UnAuthenticationException;
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
+import codesquad.dto.LoginUserDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -28,7 +29,7 @@ public class UserServiceTest {
         User user = new User("sanjigi", "password", "name", "javajigi@slipp.net");
         when(userRepository.findByUserId(user.getUserId())).thenReturn(Optional.of(user));
 
-        User loginUser = userService.login(user.getUserId(), user.getPassword());
+        User loginUser = userService.login(user.toLoginUserDTO());
         assertThat(loginUser, is(user));
     }
 
@@ -36,7 +37,7 @@ public class UserServiceTest {
     public void login_failed_when_user_not_found() throws Exception {
         when(userRepository.findByUserId("sanjigi")).thenReturn(Optional.empty());
 
-        userService.login("sanjigi", "password");
+        userService.login(new LoginUserDTO("sanjigi", "password"));
     }
 
     @Test(expected = UnAuthenticationException.class)
@@ -44,6 +45,6 @@ public class UserServiceTest {
         User user = new User("sanjigi", "password", "name", "javajigi@slipp.net");
         when(userRepository.findByUserId(user.getUserId())).thenReturn(Optional.of(user));
 
-        userService.login(user.getUserId(), user.getPassword() + "2");
+        userService.login(user.setPassword("wrongPassword").toLoginUserDTO());
     }
 }
