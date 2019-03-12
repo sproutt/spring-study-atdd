@@ -1,13 +1,18 @@
 package codesquad.web;
 
 import codesquad.domain.QuestionRepository;
+import codesquad.domain.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import support.HtmlFormDataBuilder;
 import support.test.AcceptanceTest;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class QnaAcceptanceTest extends AcceptanceTest {
 
@@ -15,15 +20,20 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 	private QuestionRepository questionRepository;
 
 	private HtmlFormDataBuilder formDataBuilder;
-
+	private ResponseEntity<String> response;
 	@Before
 	public void setUp() {
-		HttpEntity<MultiValueMap<String, Object>> request;
+		formDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
 	}
 
 	@Test
 	public void create() {
-
+		User loginUser = defaultUser();
+		addSampleQuestionData();
+		response = basicAuthTemplate(loginUser)
+				.postForEntity("/questions", formDataBuilder.build(), String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+		assertThat(response.getHeaders().getLocation().getPath()).startsWith("/questions");
 	}
 
 	@Test
