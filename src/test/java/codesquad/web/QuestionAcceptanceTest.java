@@ -71,4 +71,39 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody().contains(question.getContents())).isTrue();
 	}
+
+	@Test
+	public void updateForm() {
+		Question question = defaultQuestion();
+		ResponseEntity<String> response = template().getForEntity(String.format("/questions/%d/form", question.getId()), String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+	}
+
+	@Test
+	public void update_no_login() {
+		Question question = defaultQuestion();
+		HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
+				.addParameter("title", "제목테스트")
+				.addParameter("contents", "내용테스트")
+				.build();
+
+		ResponseEntity<String> response = basicAuthTemplate().postForEntity(String.format("/questions/%d", question.getId()), request, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+	}
+
+	@Test
+	public void update_login() {
+		Question question = defaultQuestion();
+		HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
+				.addParameter("title", "제목테스트")
+				.addParameter("contents", "내용테스트")
+				.build();
+
+		ResponseEntity<String> response = basicAuthTemplate().postForEntity(String.format("/questions/%d", question.getId()), request, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+		assertThat(response.getHeaders().getLocation().getPath()).startsWith("/");
+	}
 }
