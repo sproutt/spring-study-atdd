@@ -33,6 +33,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 		ResponseEntity<String> response = template().postForEntity("/questions", request, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		//assertThat(response.getHeaders().getLocation().getPath()).startsWith("/~~~~~~");
+		assertThat(response.getHeaders().getLocation().getPath()).startsWith("/");
+		assertThat(response.getBody().contains("제목테스트")).isTrue();
 	}
 }
