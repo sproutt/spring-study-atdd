@@ -136,7 +136,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void delete_login() {
-		Question question = questionRepository.save(new Question("delete-title", "delete-contents"));
+		Question question = defaultQuestion();
 
 		HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm().build();
 

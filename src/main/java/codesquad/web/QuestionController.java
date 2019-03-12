@@ -52,7 +52,7 @@ public class QuestionController {
 		try {
 			qnaService.deleteQuestion(loginUser, id);
 		} catch (CannotDeleteException e) {
-			e.printStackTrace();
+			return "/qna/error";
 		}
 		return "redirect:/";
 	}

@@ -37,6 +37,7 @@ public class QnaServiceTest {
 
 		//when
 		when(questionRepository.findById(id)).thenReturn(Optional.of(question));
+		when(questionRepository.save(question)).thenReturn(question);
 
 		//then
 		assertThat(qnaService.update(user, id, updatedQuestion).getTitle()).isEqualTo(updatedQuestion.getTitle());
