@@ -38,7 +38,9 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void create_no_login() {
-
+		addSampleQuestionData();
+		response = template().postForEntity("/questions", formDataBuilder.build(), String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 
