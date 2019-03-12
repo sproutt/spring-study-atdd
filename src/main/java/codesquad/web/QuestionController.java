@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.CannotDeleteException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.security.HttpSessionUtils;
@@ -30,7 +31,8 @@ public class QuestionController {
 
 	@GetMapping("{id}")
 	public String show(@PathVariable Long id, Model model) {
-		model.addAttribute("question", qnaService.findById(id));
+		model.addAttribute("question", qnaService.findById(id)
+				.orElseThrow(() -> new RuntimeException("question not found")));
 		return "/qna/show";
 	}
 
@@ -47,7 +49,11 @@ public class QuestionController {
 
 	@DeleteMapping("{id}")
 	public String delete(@LoginUser User loginUser, @PathVariable Long id) {
-		qnaService.deleteQuestion(loginUser, id);
+		try {
+			qnaService.deleteQuestion(loginUser, id);
+		} catch (CannotDeleteException e) {
+			e.printStackTrace();
+		}
 		return "redirect:/";
 	}
 }

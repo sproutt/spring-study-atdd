@@ -32,13 +32,14 @@ public class QnaService {
         return questionRepository.save(question);
     }
 
-    public Question findById(long id) {
-        return questionRepository.findById(id).orElseThrow(() -> new RuntimeException("question not found"));
+    public Optional<Question> findById(long id) {
+        return questionRepository.findById(id);
     }
 
     @Transactional
     public Question update(User loginUser, long id, Question updatedQuestion) {
-        Question question = this.findById(id);
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("question not found"));
 
         if(!question.isOwner(loginUser)) {
             throw new UnAuthorizedException("mismatch writer");

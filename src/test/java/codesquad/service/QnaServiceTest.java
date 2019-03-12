@@ -1,5 +1,6 @@
 package codesquad.service;
 
+import codesquad.CannotDeleteException;
 import codesquad.UnAuthorizedException;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
@@ -54,8 +55,42 @@ public class QnaServiceTest {
 
 		//when
 		when(questionRepository.findById(id)).thenReturn(Optional.of(question));
+		qnaService.update(user2, id, updatedQuestion);
+
+		//then throw UnAuthorizedException
+	}
+
+	@Test
+	public void delete_success() throws CannotDeleteException {
+		//given
+		User user = new User("esp2ar0", "test", "changhwan", "esp2ar0@gmail.com");
+		Question question = new Question("delete-title", "delete-title");
+		Long id = 1l;
+		question.setId(id);
+		question.writeBy(user);
+
+		//when
+		when(questionRepository.findById(id)).thenReturn(Optional.of(question));
+		qnaService.deleteQuestion(user, id);
 
 		//then
-		qnaService.update(user2, id, updatedQuestion);
+		assertThat(qnaService.findById(id).get().isDeleted()).isTrue();
+	}
+
+	@Test(expected = CannotDeleteException.class)
+	public void delete_failed() throws CannotDeleteException {
+		//given
+		User user = new User(1l, "esp2ar0", "test", "changhwan", "esp2ar0@gmail.com");
+		User user2 = new User(2l, "burrito", "test", "chicken", "burrito@gmail.com");
+		Question question = new Question("delete-title", "delete-title");
+		Long id = 1l;
+		question.setId(id);
+		question.writeBy(user);
+
+		//when
+		when(questionRepository.findById(id)).thenReturn(Optional.of(question));
+		qnaService.deleteQuestion(user2, id);
+
+		//then throw CannotDeleteException
 	}
 }
