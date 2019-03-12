@@ -32,6 +32,7 @@ public class QnaServiceTest {
 		Question updatedQuestion = new Question("title2", "contents2");
 		Long id = 1l;
 		question.setId(id);
+		question.writeBy(user);
 
 		//when
 		when(questionRepository.findById(id)).thenReturn(Optional.of(question));
@@ -43,8 +44,8 @@ public class QnaServiceTest {
 	@Test(expected = UnAuthorizedException.class)
 	public void update_failed_when_mismatch_writer() {
 		//given
-		User user = new User("esp2ar0", "test", "changhwan", "esp2ar0@gmail.com");
-		User user2 = new User("burrito", "test", "chicken", "burrito@gmail.com");
+		User user = new User(1l, "esp2ar0", "test", "changhwan", "esp2ar0@gmail.com");
+		User user2 = new User(2l, "burrito", "test", "chicken", "burrito@gmail.com");
 		Question question = new Question("title1", "contents1");
 		Question updatedQuestion = new Question("title2", "contents2");
 		Long id = 1l;
