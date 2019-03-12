@@ -3,6 +3,8 @@ package codesquad.web;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -11,16 +13,20 @@ import org.springframework.util.MultiValueMap;
 import support.HtmlFormDataBuilder;
 import support.test.AcceptanceTest;
 
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class QuestionAcceptanceTest extends AcceptanceTest {
 
+	private static final Logger log = LoggerFactory.getLogger(QuestionAcceptanceTest.class);
+
 	@Autowired
-	QuestionRepository questionRepository;
+	private QuestionRepository questionRepository;
 
 	@Test
 	public void form() {
 		ResponseEntity<String> response = template().getForEntity("/questions/form", String.class);
+
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
@@ -52,6 +58,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 	@Test
 	public void list() {
 		ResponseEntity<String> response = template().getForEntity("/", String.class);
+
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody()).contains("국내에서 Ruby");
 	}
@@ -60,6 +67,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 	public void show() {
 		Question question = defaultQuestion();
 		ResponseEntity<String> response = template().getForEntity(String.format("/questions/%d", question.getId()), String.class);
+
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody().contains(question.getContents())).isTrue();
 	}
