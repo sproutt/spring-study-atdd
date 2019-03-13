@@ -80,7 +80,6 @@ public class UserAcceptanceTest extends AcceptanceTest {
 				.addParameter("name", "자바지기2")
 				.addParameter("email", "javajigi@slipp.net")
 				.build();
-
 		return template.postForEntity(String.format("/users/%d", defaultUser().getId()), request, String.class);
 	}
 
