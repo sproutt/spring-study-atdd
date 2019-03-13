@@ -6,10 +6,10 @@ import codesquad.domain.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import support.HtmlFormDataBuilder;
 import support.test.AcceptanceTest;
 
@@ -63,18 +63,27 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 		formDataBuilder.delete();
 		StringBuilder postURL = new StringBuilder();
 		postURL.append("/quesions/").append(question.getId());
-		response = template().postForEntity(postURL.toString(),formDataBuilder.build(), String.class);
+		response = template().postForEntity(postURL.toString(), formDataBuilder.build(), String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
-	@Test
-	public void update() {
+	private ResponseEntity<String> update(TestRestTemplate template) throws Exception {
+		formDataBuilder.addParameter("title", "test2");
+		formDataBuilder.addParameter("contents", "contents2");
+		return template.exchange(defaultQuestion().generateUrl(), HttpMethod.PUT, formDataBuilder.build(), String.class);
+	}
 
+	@Test
+	public void update() throws Exception{
+		response = update(basicAuthTemplate());
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+		assertThat(response.getHeaders().getLocation().getPath()).isEqualTo(defaultQuestion().generateUrl());
 	}
 
 	@Test
 	public void update_no_authenticated() {
-
+		response = template().exchange(defaultQuestion().generateUrl(),HttpMethod.DELETE, formDataBuilder.build(), String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 	@Test
