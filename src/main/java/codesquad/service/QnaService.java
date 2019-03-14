@@ -44,7 +44,7 @@ public class QnaService {
 
 	@Transactional
 	public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
-		Question question = questionRepository.findById(questionId).orElseThrow(NoSuchElementException::new);
+		Question question = questionRepository.findById(questionId).orElseThrow(() -> new CannotDeleteException("No Such question"));
 		question.delete(loginUser);
 	}
 
