@@ -1,0 +1,61 @@
+package codesquad.web;
+
+import codesquad.UnAuthorizedException;
+import codesquad.security.HttpSessionUtils;
+import codesquad.service.QuestionService;
+import codesquad.web.dto.QuestionDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
+
+@Controller
+@RequestMapping("/questions")
+public class QuestionController {
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+
+    @Resource(name = "questionService")
+    private QuestionService questionService;
+
+    @GetMapping("/form")
+    public String form(HttpSession httpSession) {
+        if (HttpSessionUtils.isLoginUser(httpSession)) {
+            return "/qna/form";
+        }
+        throw new UnAuthorizedException("");
+    }
+
+    @GetMapping("")
+    public String list(Model model) {
+        model.addAttribute("questions", questionService.findAll());
+        return "/home";
+    }
+
+    @PostMapping("")
+    public String create(HttpSession httpSession, QuestionDto questionDto) {
+        questionService.create(httpSession, questionDto);
+        return "redirect:/questions";
+    }
+
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id, Model model) {
+        model.addAttribute("questions", questionService.findById(id));
+        return "/qna/show";
+    }
+
+    @PutMapping("/{id}")
+    public String update(HttpSession httpSession, QuestionDto questionDto, @PathVariable Long id) {
+        questionService.update(httpSession, questionDto, id);
+        return "redirect:/questions/" + id;
+    }
+
+    @DeleteMapping("/{id}")
+    public String delete(HttpSession httpSession, @PathVariable Long id) {
+        questionService.delete(httpSession, id);
+        return "redirect:/questions";
+    }
+}

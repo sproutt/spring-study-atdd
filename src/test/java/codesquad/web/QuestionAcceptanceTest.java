@@ -15,8 +15,8 @@ import support.test.HtmlFormDataBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class QuestionCRUDAcceptanceTest extends AcceptanceTest {
-    private static final Logger log = LoggerFactory.getLogger(QuestionCRUDAcceptanceTest.class);
+public class QuestionAcceptanceTest extends AcceptanceTest {
+    private static final Logger log = LoggerFactory.getLogger(QuestionAcceptanceTest.class);
 
     @Autowired
     QuestionRepository questionRepository;
