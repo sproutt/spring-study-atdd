@@ -104,5 +104,4 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 		return "Question [id=" + getId() + ", title=" + title + ", contents=" + contents + ", writer=" + writer + "]";
 	}
 
-
 }
