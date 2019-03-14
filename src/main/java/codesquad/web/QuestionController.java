@@ -1,7 +1,9 @@
 package codesquad.web;
 
 import codesquad.UnAuthorizedException;
+import codesquad.domain.User;
 import codesquad.security.HttpSessionUtils;
+import codesquad.security.LoginUser;
 import codesquad.service.QuestionService;
 import codesquad.web.dto.QuestionDto;
 import org.slf4j.Logger;
@@ -36,8 +38,8 @@ public class QuestionController {
     }
 
     @PostMapping("")
-    public String create(HttpSession httpSession, QuestionDto questionDto) {
-        questionService.create(httpSession, questionDto);
+    public String create(@LoginUser User loginUser, QuestionDto questionDto) {
+        questionService.create(loginUser, questionDto);
         return "redirect:/questions";
     }
 
@@ -48,14 +50,14 @@ public class QuestionController {
     }
 
     @PutMapping("/{id}")
-    public String update(HttpSession httpSession, QuestionDto questionDto, @PathVariable Long id) {
-        questionService.update(httpSession, questionDto, id);
+    public String update(@LoginUser User loginUser, QuestionDto questionDto, @PathVariable Long id) {
+        questionService.update(loginUser, questionDto, id);
         return "redirect:/questions/" + id;
     }
 
     @DeleteMapping("/{id}")
-    public String delete(HttpSession httpSession, @PathVariable Long id) {
-        questionService.delete(httpSession, id);
+    public String delete(@LoginUser User loginUser, @PathVariable Long id) {
+        questionService.delete(loginUser, id);
         return "redirect:/questions";
     }
 }
