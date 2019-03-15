@@ -1,6 +1,7 @@
 package codesquad.domain;
 
 import codesquad.exception.UnAuthorizedException;
+import codesquad.web.dto.QuestionDto;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,7 +16,7 @@ public class QuestionTest {
         origin.writeBy(JAVAJIGI);
         Question target = new Question("변경된 제목", "변경된 내");
 
-        origin.update(JAVAJIGI, target);
+        origin.update(JAVAJIGI, new QuestionDto(target));
 
         assertThat(origin.getTitle()).isEqualTo(target.getTitle());
         assertThat(origin.getContents()).isEqualTo(target.getContents());
@@ -27,6 +28,6 @@ public class QuestionTest {
         origin.writeBy(JAVAJIGI);
         Question target = new Question("변경된 제목", "변경된 내");
 
-        origin.update(SANJIGI, target);
+        origin.update(SANJIGI, new QuestionDto(target));
     }
 }
