@@ -4,9 +4,7 @@ import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
 import codesquad.exception.QuestionNotFoundException;
-import codesquad.security.LoginUser;
 import codesquad.web.dto.QuestionDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

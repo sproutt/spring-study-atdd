@@ -79,8 +79,8 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return deleted;
     }
 
-    public Question delete(User loginUser){
-        if (!this.getWriter().equals(loginUser)){
+    public Question delete(User loginUser) {
+        if (!this.getWriter().equals(loginUser)) {
             throw new UnAuthorizedException();
         }
         this.deleted = true;
@@ -97,8 +97,8 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return "Question [id=" + getId() + ", title=" + title + ", contents=" + contents + ", writer=" + writer + "]";
     }
 
-    public Question update(User loginUser , QuestionDto target) {
-        if (!this.getWriter().equals(loginUser)){
+    public Question update(User loginUser, QuestionDto target) {
+        if (!this.getWriter().equals(loginUser)) {
             throw new UnAuthorizedException();
         }
         this.title = target.getTitle();
