@@ -1,7 +1,7 @@
 package codesquad.service;
 
-import codesquad.UnAuthenticationException;
-import codesquad.UnAuthorizedException;
+import codesquad.exception.UnAuthenticationException;
+import codesquad.exception.UnAuthorizedException;
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
 import org.springframework.stereotype.Service;

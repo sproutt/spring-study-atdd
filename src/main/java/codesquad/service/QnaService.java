@@ -1,6 +1,6 @@
 package codesquad.service;
 
-import codesquad.CannotDeleteException;
+import codesquad.exception.CannotDeleteException;
 import codesquad.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

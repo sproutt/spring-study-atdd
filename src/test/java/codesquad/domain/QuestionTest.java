@@ -1,7 +1,6 @@
 package codesquad.domain;
 
-import codesquad.UnAuthorizedException;
-import org.assertj.core.api.Java6AbstractBDDSoftAssertions;
+import codesquad.exception.UnAuthorizedException;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

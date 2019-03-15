@@ -1,6 +1,6 @@
 package codesquad.web;
 
-import codesquad.UnAuthenticationException;
+import codesquad.exception.UnAuthenticationException;
 import codesquad.domain.User;
 import codesquad.security.HttpSessionUtils;
 import codesquad.security.LoginUser;
