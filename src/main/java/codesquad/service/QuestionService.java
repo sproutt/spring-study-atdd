@@ -35,6 +35,6 @@ public class QuestionService {
     }
 
     public void delete(User loginUser, Long id) {
-        findById(id).delete(loginUser);
+        questionRepository.save(findById(id).delete(loginUser));
     }
 }

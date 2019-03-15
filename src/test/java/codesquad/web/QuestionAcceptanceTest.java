@@ -113,7 +113,6 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
                 .postForEntity(String.format("/questions/%d", originalId), request, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-        assertThat(questionRepository.findById(originalId).isPresent()).isTrue();
         assertThat(questionRepository.findById(originalId).get().isDeleted()).isTrue();
         assertThat(response.getHeaders().getLocation().getPath()).isEqualTo("/questions");
 

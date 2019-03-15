@@ -79,11 +79,12 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return deleted;
     }
 
-    public void delete(User loginUser){
-        if (this.getWriter() != loginUser){
+    public Question delete(User loginUser){
+        if (!this.getWriter().equals(loginUser)){
             throw new UnAuthorizedException();
         }
         this.deleted = true;
+        return this;
     }
 
     @Override
@@ -97,7 +98,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     }
 
     public Question update(User loginUser , QuestionDto target) {
-        if (this.getWriter() != loginUser){
+        if (!this.getWriter().equals(loginUser)){
             throw new UnAuthorizedException();
         }
         this.title = target.getTitle();
