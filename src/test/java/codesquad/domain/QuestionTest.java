@@ -1,7 +1,6 @@
 package codesquad.domain;
 
 import codesquad.exception.UnAuthorizedException;
-import codesquad.web.dto.QuestionDto;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

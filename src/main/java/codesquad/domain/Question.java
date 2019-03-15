@@ -1,7 +1,6 @@
 package codesquad.domain;
 
 import codesquad.exception.UnAuthorizedException;
-import codesquad.web.dto.QuestionDto;
 import org.hibernate.annotations.Where;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;

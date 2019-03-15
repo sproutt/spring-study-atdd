@@ -1,4 +1,4 @@
-package codesquad.web.dto;
+package codesquad.domain;
 
 import codesquad.domain.Question;
 
