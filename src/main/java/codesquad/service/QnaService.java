@@ -38,7 +38,8 @@ public class QnaService {
 
 	@Transactional
 	public Question update(User loginUser, long id, Question updatedQuestion) {
-		Question question = new Question();
+		Question question = questionRepository.findById(id).orElseThrow(NoSuchElementException::new);
+
 		return question.update(loginUser, updatedQuestion);
 	}
 
