@@ -30,13 +30,6 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     private Question testQuestion;
 
     @Test
-    public void createForm() throws Exception {
-        ResponseEntity<String> response = template().getForEntity("/qusetion/form", String.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        log.debug("body : {}", response.getBody());
-    }
-
-    @Test
     public void create() throws Exception {
         String questionTitle = "test";
         User loginUser = defaultUser();
@@ -51,6 +44,20 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(questionRepository.findByTitle(questionTitle).isPresent()).isTrue();
         testQuestion = questionRepository.findByTitle(questionTitle).orElseThrow(()-> new NullEntityException());
+    }
+
+    @Test
+    public void createForm_no_login() throws Exception {
+        ResponseEntity<String> response = template().getForEntity("/questions/form", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        log.debug("body : {}", response.getBody());
+    }
+
+    @Test
+    public void createForm_login() throws Exception {
+        ResponseEntity<String> response = basicAuthTemplate(defaultUser()).getForEntity("/questions/form", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        log.debug("body : {}", response.getBody());
     }
 
     @Test
