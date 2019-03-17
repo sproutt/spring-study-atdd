@@ -1,6 +1,7 @@
 package codesquad.service;
 
 import codesquad.CannotDeleteException;
+import codesquad.NullEntityException;
 import codesquad.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +32,8 @@ public class QnaService {
         return questionRepository.save(question);
     }
 
-    public Optional<Question> findById(long id) {
-        return questionRepository.findById(id);
+    public Question findById(long id) {
+        return questionRepository.findById(id).orElseThrow(()->new NullEntityException());
     }
 
     @Transactional

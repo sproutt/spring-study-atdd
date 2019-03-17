@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.NullEntityException;
 import codesquad.UnAuthenticationException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
@@ -31,14 +32,21 @@ public class QuestionController {
     }
 
     @PostMapping("")
-    public String create(Question question,HttpSession httpSession) {
-        User loginUser = HttpSessionUtils.getUserFromSession(httpSession);
+    public String create(Question question,@LoginUser User loginUser) {
         qnaService.create(loginUser,question);
         return "redirect:/";
     }
 
+    @GetMapping("/{id}")
+    public String show(@PathVariable long id,Model model) {
+        model.addAttribute("question",qnaService.findById(id));
+        return "/qna/form";
+    }
+
     @GetMapping("/{id}/form")
     public String updateForm(@LoginUser User loginUser, @PathVariable long id, Model model) {
+        Question question = qnaService.findById(id);
+
         model.addAttribute("user", userService.findById(loginUser, id));
         return "/user/updateForm";
     }
