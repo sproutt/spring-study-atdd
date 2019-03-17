@@ -1,10 +1,9 @@
 package codesquad.web;
 
+import codesquad.NullEntityException;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
-import codesquad.domain.UserRepository;
-import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -50,7 +49,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(questionRepository.findByTitle(questionTitle).isPresent()).isTrue();
-        testQuestion = questionRepository.findByTitle(questionTitle).orElseThrow(new NullEntityException());
+        testQuestion = questionRepository.findByTitle(questionTitle).orElseThrow(()-> new NullEntityException());
     }
 
     @Test
