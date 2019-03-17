@@ -37,7 +37,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void a_create() throws Exception {
+    public void create() throws Exception {
         String questionTitle = "test";
         HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
                 .addParameter("title", questionTitle)
@@ -62,7 +62,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void show() throws Exception{
-        ResponseEntity<String> response = template().getForEntity(String.format("/question/%d", testQuestion.getId(), String.class);
+        ResponseEntity<String> response = template().getForEntity(String.format("/question/%d", testQuestion.getId()), String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).contains(testQuestion.getContents());
     }
@@ -79,7 +79,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     public void updateForm_login() throws Exception {
         User loginUser = defaultUser();
         ResponseEntity<String> response = basicAuthTemplate(loginUser)
-                .getForEntity(String.format(String.format("/question/%d/form", testQuestion.getId()), String.class);
+                .getForEntity(String.format("/question/%d/form", testQuestion.getId()), String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).contains(defaultUser().getEmail());
     }
