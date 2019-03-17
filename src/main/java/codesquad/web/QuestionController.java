@@ -5,7 +5,7 @@ import codesquad.exception.UnAuthorizedException;
 import codesquad.security.HttpSessionUtils;
 import codesquad.security.LoginUser;
 import codesquad.service.QuestionService;
-import codesquad.domain.QuestionDto;
+import codesquad.domain.QuestionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -18,7 +18,6 @@ import javax.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/questions")
 public class QuestionController {
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @Resource(name = "questionService")
     private QuestionService questionService;
@@ -38,7 +37,7 @@ public class QuestionController {
     }
 
     @PostMapping("")
-    public String create(@LoginUser User loginUser, QuestionDto questionDto) {
+    public String create(@LoginUser User loginUser, QuestionDTO questionDto) {
         questionService.create(loginUser, questionDto);
         return "redirect:/questions";
     }
@@ -50,7 +49,7 @@ public class QuestionController {
     }
 
     @PutMapping("/{id}")
-    public String update(@LoginUser User loginUser, QuestionDto questionDto, @PathVariable Long id) {
+    public String update(@LoginUser User loginUser, QuestionDTO questionDto, @PathVariable Long id) {
         questionService.update(loginUser, questionDto, id);
         return "redirect:/questions/" + id;
     }

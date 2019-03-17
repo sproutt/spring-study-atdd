@@ -4,7 +4,7 @@ import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
 import codesquad.exception.QuestionNotFoundException;
-import codesquad.domain.QuestionDto;
+import codesquad.domain.QuestionDTO;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,7 +20,7 @@ public class QuestionService {
         return questionRepository.findAll();
     }
 
-    public void create(User loginUser, QuestionDto questionDto) {
+    public void create(User loginUser, QuestionDTO questionDto) {
         questionRepository.save(new Question(questionDto.getTitle(), questionDto.getContent()));
     }
 
@@ -28,7 +28,7 @@ public class QuestionService {
         return questionRepository.findById(id).orElseThrow(QuestionNotFoundException::new);
     }
 
-    public void update(User loginUser, QuestionDto questionDto, Long id) {
+    public void update(User loginUser, QuestionDTO questionDto, Long id) {
         questionRepository.save(findById(id).update(loginUser, questionDto));
     }
 

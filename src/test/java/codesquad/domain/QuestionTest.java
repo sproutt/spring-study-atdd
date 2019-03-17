@@ -15,7 +15,7 @@ public class QuestionTest {
         origin.writeBy(JAVAJIGI);
         Question target = new Question("변경된 제목", "변경된 내");
 
-        origin.update(JAVAJIGI, new QuestionDto(target));
+        origin.update(JAVAJIGI, new QuestionDTO(target));
 
         assertThat(origin.getTitle()).isEqualTo(target.getTitle());
         assertThat(origin.getContents()).isEqualTo(target.getContents());
@@ -27,6 +27,24 @@ public class QuestionTest {
         origin.writeBy(JAVAJIGI);
         Question target = new Question("변경된 제목", "변경된 내");
 
-        origin.update(SANJIGI, new QuestionDto(target));
+        origin.update(SANJIGI, new QuestionDTO(target));
+    }
+
+    @Test
+    public void delete_question() throws Exception {
+        Question origin = new Question("테스트용 제목", "테스트용 내용");
+        origin.writeBy(JAVAJIGI);
+
+        origin.delete(JAVAJIGI);
+
+        assertThat(origin.isDeleted()).isEqualTo(true);
+    }
+
+    @Test(expected = UnAuthorizedException.class)
+    public void delete_not_owner() throws Exception {
+        Question origin = new Question("테스트용 제목", "테스트용 내용");
+        origin.writeBy(JAVAJIGI);
+
+        origin.delete(SANJIGI);
     }
 }

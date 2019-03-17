@@ -2,22 +2,22 @@ package codesquad.domain;
 
 import codesquad.domain.Question;
 
-public class QuestionDto {
+public class QuestionDTO {
 
     private String title;
     private String content;
 
-    public QuestionDto(String title , String content){
+    public QuestionDTO(String title , String content){
        this.title = title;
        this.content= content;
     }
 
-    public QuestionDto(Question question){
+    public QuestionDTO(Question question){
         this.title = question.getTitle();
         this.content = question.getContents();
     }
 
-    public QuestionDto(){}
+    public QuestionDTO(){}
 
     public void setTitle(String title){
         this.title = title;

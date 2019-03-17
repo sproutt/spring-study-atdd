@@ -115,7 +115,6 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(questionRepository.findById(originalId).get().isDeleted()).isTrue();
         assertThat(response.getHeaders().getLocation().getPath()).isEqualTo("/questions");
-
     }
 
     @Test

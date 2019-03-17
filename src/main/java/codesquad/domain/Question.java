@@ -96,7 +96,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return "Question [id=" + getId() + ", title=" + title + ", contents=" + contents + ", writer=" + writer + "]";
     }
 
-    public Question update(User loginUser, QuestionDto target) {
+    public Question update(User loginUser, QuestionDTO target) {
         if (!this.getWriter().equals(loginUser)) {
             throw new UnAuthorizedException();
         }
