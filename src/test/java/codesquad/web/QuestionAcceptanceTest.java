@@ -31,7 +31,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void createForm() throws Exception {
-        ResponseEntity<String> response = template().getForEntity("/qusetion/form", String.class);
+        ResponseEntity<String> response = template().getForEntity("/qusetions/form", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         log.debug("body : {}", response.getBody());
     }
@@ -45,7 +45,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
                 .addParameter("writer", defaultUser())
                 .build();
 
-        ResponseEntity<String> response = template().postForEntity("/question", request, String.class);
+        ResponseEntity<String> response = template().postForEntity("/questions", request, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(questionRepository.findByTitle(questionTitle).isPresent()).isTrue();
@@ -62,14 +62,14 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void show() throws Exception{
-        ResponseEntity<String> response = template().getForEntity(String.format("/question/%d", testQuestion.getId()), String.class);
+        ResponseEntity<String> response = template().getForEntity(String.format("/questions/%d", testQuestion.getId()), String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).contains(testQuestion.getContents());
     }
 
     @Test
     public void updateForm_no_login() throws Exception {
-        ResponseEntity<String> response = template().getForEntity(String.format("/question/%d/form", testQuestion.getId()),
+        ResponseEntity<String> response = template().getForEntity(String.format("/questions/%d/form", testQuestion.getId()),
                 String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
@@ -79,7 +79,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     public void updateForm_login() throws Exception {
         User loginUser = defaultUser();
         ResponseEntity<String> response = basicAuthTemplate(loginUser)
-                .getForEntity(String.format("/question/%d/form", testQuestion.getId()), String.class);
+                .getForEntity(String.format("/questions/%d/form", testQuestion.getId()), String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).contains(defaultUser().getEmail());
     }
@@ -97,7 +97,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
                 .addParameter("contents", "changeContnet")
                 .build();
 
-        return template.postForEntity(String.format("/question/%d/form",testQuestion.getId()),request , String.class);
+        return template.postForEntity(String.format("/questions/%d/form",testQuestion.getId()),request , String.class);
     }
 
 }
