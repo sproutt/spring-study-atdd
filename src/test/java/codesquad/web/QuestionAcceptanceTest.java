@@ -28,7 +28,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     @Autowired
     private QuestionRepository questionRepository;
 
-    private String questionTitle = "testQuestion";
+    private Question testQuestion;
 
     @Test
     public void createForm() throws Exception {
@@ -39,6 +39,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void a_create() throws Exception {
+        String questionTitle = "test";
         HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
                 .addParameter("title", questionTitle)
                 .addParameter("contents", "testContents")
@@ -49,6 +50,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(questionRepository.findByTitle(questionTitle).isPresent()).isTrue();
+        testQuestion = questionRepository.findByTitle(questionTitle).orElseThrow(new NullEntityException());
     }
 
     @Test
@@ -56,19 +58,19 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         ResponseEntity<String> response = template().getForEntity("/", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         log.debug("body : {}", response.getBody());
-        assertThat(response.getBody()).contains(questionRepository.findByTitle(questionTitle).getTitle());
+        assertThat(response.getBody()).contains(testQuestion.getTitle());
     }
 
     @Test
     public void show() throws Exception{
-        ResponseEntity<String> response = template().getForEntity("/question/"+questionRepository.findByTitle(questionTitle).getId(), String.class);
+        ResponseEntity<String> response = template().getForEntity(String.format("/question/%d", testQuestion.getId(), String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).contains(questionRepository.findByTitle(questionTitle).getContents());
+        assertThat(response.getBody()).contains(testQuestion.getContents());
     }
 
     @Test
     public void updateForm_no_login() throws Exception {
-        ResponseEntity<String> response = template().getForEntity(String.format("/question/%d/form", questionRepository.findByTitle(questionTitle).getId()),
+        ResponseEntity<String> response = template().getForEntity(String.format("/question/%d/form", testQuestion.getId()),
                 String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
@@ -78,7 +80,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     public void updateForm_login() throws Exception {
         User loginUser = defaultUser();
         ResponseEntity<String> response = basicAuthTemplate(loginUser)
-                .getForEntity(String.format("/question/%d/form", questionRepository.findByTitle(questionTitle).getId()), String.class);
+                .getForEntity(String.format(String.format("/question/%d/form", testQuestion.getId()), String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).contains(defaultUser().getEmail());
     }
@@ -92,11 +94,11 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     private ResponseEntity<String> update(TestRestTemplate template) throws Exception {
         HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
-                .addParameter("title", questionTitle)
+                .addParameter("title", "change")
                 .addParameter("contents", "changeContnet")
                 .build();
 
-        return template.postForEntity(String.format("/question/%d/form", questionRepository.findByTitle(questionTitle).getId()), String.class);
+        return template.postForEntity(String.format("/question/%d/form",testQuestion.getId()),request , String.class);
     }
 
 }
