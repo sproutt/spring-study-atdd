@@ -32,7 +32,7 @@ public class QuestionController {
     }
 
     @PostMapping("")
-    public String create(Question question,@LoginUser User loginUser) {
+    public String create(Question question, @LoginUser User loginUser) {
         qnaService.create(loginUser,question);
         return "redirect:/";
     }
@@ -43,28 +43,28 @@ public class QuestionController {
         return "/qna/form";
     }
 
-    @GetMapping("/{id}/form")
-    public String updateForm(@LoginUser User loginUser, @PathVariable long id, Model model) {
-        Question question = qnaService.findById(id);
-
-        model.addAttribute("user", userService.findById(loginUser, id));
-        return "/user/updateForm";
-    }
-
-    @PutMapping("/{id}")
-    public String update(@LoginUser User loginUser, @PathVariable long id, User target) {
-        userService.update(loginUser, id, target);
-        return "redirect:/users";
-    }
-
-    @PostMapping("/login")
-    public String login(String userId, String password, HttpSession httpSession) throws UnAuthenticationException {
-        try {
-            httpSession.setAttribute(HttpSessionUtils.USER_SESSION_KEY, userService.login(userId,password));
-            return "redirect:/users";
-        } catch (Exception e) {
-            return "/user/login_failed";
-        }
-    }
+//    @GetMapping("/{id}/form")
+//    public String updateForm(@LoginUser User loginUser, @PathVariable long id, Model model) {
+//        Question question = qnaService.findById(id);
+//
+//        model.addAttribute("user", userService.findById(loginUser, id));
+//        return "/user/updateForm";
+//    }
+//
+//    @PutMapping("/{id}")
+//    public String update(@LoginUser User loginUser, @PathVariable long id, User target) {
+//        userService.update(loginUser, id, target);
+//        return "redirect:/users";
+//    }
+//
+//    @PostMapping("/login")
+//    public String login(String userId, String password, HttpSession httpSession) throws UnAuthenticationException {
+//        try {
+//            httpSession.setAttribute(HttpSessionUtils.USER_SESSION_KEY, userService.login(userId,password));
+//            return "redirect:/users";
+//        } catch (Exception e) {
+//            return "/user/login_failed";
+//        }
+//    }
 
 }

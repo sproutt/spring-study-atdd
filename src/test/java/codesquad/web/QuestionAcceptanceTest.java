@@ -31,7 +31,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void createForm() throws Exception {
-        ResponseEntity<String> response = template().getForEntity("/qusetions/form", String.class);
+        ResponseEntity<String> response = template().getForEntity("/qusetion/form", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         log.debug("body : {}", response.getBody());
     }
@@ -39,13 +39,14 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void create() throws Exception {
         String questionTitle = "test";
+        User loginUser = defaultUser();
+
         HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
                 .addParameter("title", questionTitle)
                 .addParameter("contents", "testContents")
-                .addParameter("writer", defaultUser())
                 .build();
 
-        ResponseEntity<String> response = template().postForEntity("/questions", request, String.class);
+        ResponseEntity<String> response = basicAuthTemplate(loginUser).postForEntity("/questions", request, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(questionRepository.findByTitle(questionTitle).isPresent()).isTrue();
