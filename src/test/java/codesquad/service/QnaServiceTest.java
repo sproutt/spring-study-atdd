@@ -1,7 +1,7 @@
 package codesquad.service;
 
 import codesquad.CannotDeleteException;
-import codesquad.UnAuthenticationException;
+import codesquad.UnAuthorizedException;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
@@ -14,9 +14,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
-import static org.hamcrest.CoreMatchers.is;
 
 @RunWith(MockitoJUnitRunner.class)
 public class QnaServiceTest {
@@ -44,18 +44,16 @@ public class QnaServiceTest {
         assertThat(qnaService.findById(question.getId()).get().getContents(), is(question.getContents()));
     }
 
-    @Test(expected = UnAuthenticationException.class)
+    @Test(expected = UnAuthorizedException.class)
     public void update_failed_when_wrong_user() {
-        User wrongUser = new User("bell", "1111", "named", "ww@gmail.com");
-        Question updateQuestion = new Question("hihi", "bye");
+        Question updateQuestion = new Question("hihi", "this is update");
 
-        qnaService.update(wrongUser, question.getId(), updateQuestion);
+        qnaService.update(new User("bell", "1111", "named", "ww@gmail.com"), question.getId(), updateQuestion);
     }
 
     @Test(expected = CannotDeleteException.class)
     public void delete_failed_when_wrong_user() throws CannotDeleteException {
-        User wrongUser = new User("bell", "1111", "named", "ww@gmail.com");
-        qnaService.deleteQuestion(wrongUser, question.getId());
+        qnaService.deleteQuestion(new User("bell", "1111", "named", "ww@gmail.com"), question.getId());
     }
 
     @Test
