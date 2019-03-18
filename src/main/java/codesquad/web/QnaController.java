@@ -29,13 +29,13 @@ public class QnaController {
 	}
 
 	@PutMapping("/{id}")
-	public String update(@LoginUser User user, @PathVariable long id, Question question) {
+	public String update(@LoginUser User user, @PathVariable long id, @Valid Question question) {
 		qnaService.update(user, id, question);
 		return "redirect:/questions/" + id;
 	}
 
 	@DeleteMapping("/{id}")
-	public String delete(@LoginUser User user, @PathVariable long id, Question question) throws Exception{
+	public String delete(@LoginUser User user, @PathVariable long id, @Valid Question question) throws Exception{
 		qnaService.deleteQuestion(user, id);
 		return "redirect:/questions";
 	}
