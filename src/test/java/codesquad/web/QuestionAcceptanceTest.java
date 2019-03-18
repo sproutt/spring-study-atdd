@@ -91,27 +91,36 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void updateForm_login() throws Exception {
-        User loginUser = defaultUser();
-        ResponseEntity<String> response = basicAuthTemplate(loginUser)
+        ResponseEntity<String> response = basicAuthTemplate(defaultUser())
                 .getForEntity(String.format("/questions/%d/form", defaultQuestion.getId()), String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).contains(defaultUser().getEmail());
+        assertThat(response.getBody()).contains(defaultQuestion.getTitle());
     }
 
     @Test
     public void update() throws Exception {
-        ResponseEntity<String> response = update(basicAuthTemplate());
+        String changeTitle = "changeTitle";
+        ResponseEntity<String> response = update(basicAuthTemplate(),changeTitle);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-        assertThat(response.getHeaders().getLocation().getPath()).startsWith("/users");
+        assertThat(response.getHeaders().getLocation().getPath()).startsWith("/questions");
+        assertThat(questionRepository.findById(defaultQuestion.getId())
+                                                              .orElseThrow(()->new NullEntityException())
+                                                              .getTitle()).isEqualTo(changeTitle);
     }
 
-    private ResponseEntity<String> update(TestRestTemplate template) throws Exception {
+    private ResponseEntity<String> update(TestRestTemplate template,String changeTitle) throws Exception {
         HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
-                .addParameter("title", "change")
-                .addParameter("contents", "changeContnet")
+                .addParameter("title", changeTitle)
                 .build();
 
         return template.postForEntity(String.format("/questions/%d/form", defaultQuestion.getId()),request , String.class);
     }
+
+    @Test
+    public void delete() throws Exception{
+        ResponseEntity<String> response = basicAuthTemplate(defaultUser())
+                .getForEntity(String.format("/questions/%d/form", defaultQuestion.getId()), String.class);
+    }
+
 
 }

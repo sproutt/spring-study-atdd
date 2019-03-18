@@ -43,13 +43,15 @@ public class QuestionController {
         return "/qna/show";
     }
 
-//    @GetMapping("/{id}/form")
-//    public String updateForm(@LoginUser User loginUser, @PathVariable long id, Model model) {
-//        Question question = qnaService.findById(id);
-//
-//        model.addAttribute("user", userService.findById(loginUser, id));
-//        return "/user/updateForm";
-//    }
+    @GetMapping("/{id}/form")
+    public String updateForm(@LoginUser User loginUser, @PathVariable long id, Model model) throws UnAuthenticationException {
+        Question question = qnaService.findById(id);
+        if(question.isOwner(loginUser)) {
+            model.addAttribute("question", question);
+            return "/qna/updateForm";
+        }
+        throw new UnAuthenticationException();
+    }
 //
 //    @PutMapping("/{id}")
 //    public String update(@LoginUser User loginUser, @PathVariable long id, User target) {
