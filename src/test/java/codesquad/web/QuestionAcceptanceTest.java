@@ -68,7 +68,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         ResponseEntity<String> response = template().getForEntity("/", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         log.debug("body : {}", response.getBody());
-        assertThat(response.getBody()).contains(defaultQuestion.getTitle());
+        assertThat(response.getBody()).contains(questionRepository.findById((long)2).orElseThrow(()->new NullEntityException()).getTitle());
     }
 
     @Test
