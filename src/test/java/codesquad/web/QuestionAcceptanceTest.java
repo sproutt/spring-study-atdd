@@ -5,13 +5,10 @@ import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +29,8 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     final private long TESTQUESTIONID = 1;
 
     @Before
-    public void setUp(){
-        defaultQuestion = questionRepository.findById(TESTQUESTIONID).orElseThrow(()->new NullEntityException());
+    public void setUp() {
+        defaultQuestion = questionRepository.findById(TESTQUESTIONID).orElseThrow(() -> new NullEntityException());
     }
 
     @Test
@@ -75,7 +72,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void show() throws Exception{
+    public void show() throws Exception {
         ResponseEntity<String> response = template().getForEntity(String.format("/questions/%d", defaultQuestion.getId()), String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).contains(defaultQuestion.getContents());
@@ -100,19 +97,28 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void update() throws Exception {
         String changeTitle = "changeTitle";
-
         HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
                 .addParameter("title", changeTitle)
-                .addParameter("contents",defaultQuestion.getContents())
+                .addParameter("contents", defaultQuestion.getContents())
                 .build();
 
-        basicAuthTemplate(defaultUser()).put(String.format("/questions/%d", defaultQuestion.getId()),request , String.class);
+        basicAuthTemplate(defaultUser()).put(String.format("/questions/%d", defaultQuestion.getId()), request, String.class);
 
         assertThat(questionRepository.findById(defaultQuestion.getId())
-                                                              .orElseThrow(()->new NullEntityException())
-                                                              .getTitle()).isEqualTo(changeTitle);
+                .orElseThrow(() -> new NullEntityException())
+                .getTitle()).isEqualTo(changeTitle);
     }
 
+
+    @Test
+    public void delete() throws Exception {
+
+        basicAuthTemplate(defaultUser()).delete(String.format("/questions/%d", defaultQuestion.getId()), String.class);
+
+        assertThat(questionRepository.findById(defaultQuestion.getId())
+                .orElseThrow(() -> new NullEntityException())
+                .isDeleted()).isEqualTo(true);
+    }
 
 
 }
