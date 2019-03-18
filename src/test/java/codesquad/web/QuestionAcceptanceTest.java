@@ -52,28 +52,29 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void createForm_no_login() throws Exception {
         ResponseEntity<String> response = template().getForEntity("/questions/form", String.class);
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-        log.debug("body : {}", response.getBody());
     }
 
     @Test
     public void createForm_login() throws Exception {
         ResponseEntity<String> response = basicAuthTemplate(defaultUser()).getForEntity("/questions/form", String.class);
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        log.debug("body : {}", response.getBody());
     }
 
     @Test
     public void list() throws Exception {
         ResponseEntity<String> response = template().getForEntity("/", String.class);
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        log.debug("body : {}", response.getBody());
         assertThat(response.getBody()).contains(questionRepository.findById((long)2).orElseThrow(()->new NullEntityException()).getTitle());
     }
 
     @Test
     public void show() throws Exception {
         ResponseEntity<String> response = template().getForEntity(String.format("/questions/%d", defaultQuestion.getId()), String.class);
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).contains(defaultQuestion.getContents());
     }
@@ -82,6 +83,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     public void updateForm_no_login() throws Exception {
         ResponseEntity<String> response = template().getForEntity(String.format("/questions/%d/form", defaultQuestion.getId()),
                 String.class);
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
@@ -90,6 +92,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     public void updateForm_login() throws Exception {
         ResponseEntity<String> response = basicAuthTemplate(defaultUser())
                 .getForEntity(String.format("/questions/%d/form", defaultQuestion.getId()), String.class);
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).contains(defaultQuestion.getTitle());
     }
@@ -112,7 +115,6 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void delete() throws Exception {
-
         basicAuthTemplate(defaultUser()).delete(String.format("/questions/%d", defaultQuestion.getId()), String.class);
 
         assertThat(questionRepository.findById(defaultQuestion.getId())
