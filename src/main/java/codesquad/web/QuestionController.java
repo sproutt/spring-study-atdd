@@ -52,12 +52,13 @@ public class QuestionController {
         }
         throw new UnAuthenticationException();
     }
-//
-//    @PutMapping("/{id}")
-//    public String update(@LoginUser User loginUser, @PathVariable long id, User target) {
-//        userService.update(loginUser, id, target);
-//        return "redirect:/users";
-//    }
+
+    @PutMapping("/{id}")
+    public String update(@LoginUser User loginUser, @PathVariable long id, Question target) {
+        qnaService.update(loginUser, id, target);
+        return "redirect:/";
+    }
+
 //
 //    @PostMapping("/login")
 //    public String login(String userId, String password, HttpSession httpSession) throws UnAuthenticationException {

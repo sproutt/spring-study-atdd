@@ -100,27 +100,19 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void update() throws Exception {
         String changeTitle = "changeTitle";
-        ResponseEntity<String> response = update(basicAuthTemplate(),changeTitle);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-        assertThat(response.getHeaders().getLocation().getPath()).startsWith("/questions");
+
+        HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
+                .addParameter("title", changeTitle)
+                .addParameter("contents",defaultQuestion.getContents())
+                .build();
+
+        basicAuthTemplate(defaultUser()).put(String.format("/questions/%d", defaultQuestion.getId()),request , String.class);
+
         assertThat(questionRepository.findById(defaultQuestion.getId())
                                                               .orElseThrow(()->new NullEntityException())
                                                               .getTitle()).isEqualTo(changeTitle);
     }
 
-    private ResponseEntity<String> update(TestRestTemplate template,String changeTitle) throws Exception {
-        HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
-                .addParameter("title", changeTitle)
-                .build();
-
-        return template.postForEntity(String.format("/questions/%d/form", defaultQuestion.getId()),request , String.class);
-    }
-
-    @Test
-    public void delete() throws Exception{
-        ResponseEntity<String> response = basicAuthTemplate(defaultUser())
-                .getForEntity(String.format("/questions/%d/form", defaultQuestion.getId()), String.class);
-    }
 
 
 }
