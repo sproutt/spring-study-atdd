@@ -3,6 +3,7 @@ package codesquad.web;
 import codesquad.CannotDeleteException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
+import codesquad.dto.QuestionDTO;
 import codesquad.security.LoginUser;
 import codesquad.service.QnaService;
 import org.springframework.stereotype.Controller;
@@ -31,9 +32,9 @@ public class QuestionController {
 
     @PostMapping("/")
     public String create(@LoginUser User loginUser, String title, String contents) {
-        qnaService.create(loginUser, new Question(title, contents));
+        qnaService.create(loginUser, new QuestionDTO(title, contents));
 
-        return "redirect:/questions/{id}";
+        return "redirect:/users";
     }
 
     @GetMapping("/{id}/form")
@@ -47,7 +48,7 @@ public class QuestionController {
     public String update(@LoginUser User loginUser, Question question) {
         qnaService.update(loginUser, question.getId(), question);
 
-        return "redirect:/questions/{id}";
+        return String.format("redirect:/questions/%d", question.getId());
     }
 
     @DeleteMapping("{id}")

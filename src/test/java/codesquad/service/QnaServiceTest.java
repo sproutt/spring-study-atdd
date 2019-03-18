@@ -5,6 +5,7 @@ import codesquad.UnAuthorizedException;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
+import codesquad.dto.QuestionDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,8 +40,7 @@ public class QnaServiceTest {
 
     @Test
     public void create_question() throws Exception {
-
-        qnaService.create(question.getWriter(), question);
+        qnaService.create(question.getWriter(), new QuestionDTO(question.getTitle(), question.getContents()));
         assertThat(qnaService.findById(question.getId()).get().getContents(), is(question.getContents()));
     }
 

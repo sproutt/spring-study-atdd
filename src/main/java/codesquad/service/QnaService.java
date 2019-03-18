@@ -1,9 +1,9 @@
 package codesquad.service;
 
 import codesquad.CannotDeleteException;
-import codesquad.UnAuthenticationException;
 import codesquad.UnAuthorizedException;
 import codesquad.domain.*;
+import codesquad.dto.QuestionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +27,8 @@ public class QnaService {
     @Resource(name = "deleteHistoryService")
     private DeleteHistoryService deleteHistoryService;
 
-    public Question create(User loginUser, Question question) {
+    public Question create(User loginUser, QuestionDTO questionDTO) {
+        Question question = new Question(questionDTO.getTitle(), questionDTO.getContents());
         question.writeBy(loginUser);
         log.debug("question : {}", question);
         return questionRepository.save(question);
