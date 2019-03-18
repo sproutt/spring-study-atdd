@@ -29,25 +29,25 @@ public class QuestionController {
 		return "redirect:/";
 	}
 
-	@GetMapping("{id}")
+	@GetMapping("/{id}")
 	public String show(@PathVariable Long id, Model model) {
 		model.addAttribute("question", qnaService.findById(id)
 				.orElseThrow(() -> new RuntimeException("question not found")));
 		return "/qna/show";
 	}
 
-	@GetMapping("{id}/form")
+	@GetMapping("/{id}/form")
 	public String updateForm(@LoginUser User loginUser) {
 		return "/qna/updateForm";
 	}
 
-	@PutMapping("{id}")
+	@PutMapping("/{id}")
 	public String update(@LoginUser User loginUser, @PathVariable Long id, Question question) {
 		qnaService.update(loginUser, id, question);
 		return "redirect:/";
 	}
 
-	@DeleteMapping("{id}")
+	@DeleteMapping("/{id}")
 	public String delete(@LoginUser User loginUser, @PathVariable Long id) {
 		try {
 			qnaService.deleteQuestion(loginUser, id);
