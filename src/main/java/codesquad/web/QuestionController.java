@@ -31,9 +31,8 @@ public class QuestionController {
     }
 
     @GetMapping("")
-    public String list(Model model) {
-        model.addAttribute("questions", questionService.findAll());
-        return "/home";
+    public String list() {
+        return "redirect:/";
     }
 
     @PostMapping("")

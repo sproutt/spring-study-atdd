@@ -132,6 +132,20 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         assertThat(questionRepository.findById(originalId).get().isDeleted()).isFalse();
     }
 
+    @Test
+    public void delete_no_user() {
+        Long originalId = 2L;
+        HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
+                .addParameter("_method", "delete")
+                .build();
+        ResponseEntity<String> response = template()
+                .postForEntity(String.format("/questions/%d", originalId), request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(questionRepository.findById(originalId).isPresent()).isTrue();
+        assertThat(questionRepository.findById(originalId).get().isDeleted()).isFalse();
+    }
+
 }
 
 
