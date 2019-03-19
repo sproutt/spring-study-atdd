@@ -1,7 +1,6 @@
 package codesquad.web;
 
 import codesquad.CannotDeleteException;
-import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.dto.QuestionDTO;
 import codesquad.security.LoginUser;
@@ -30,7 +29,7 @@ public class QuestionController {
         return "/qna/form";
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public String create(@LoginUser User loginUser, String title, String contents) {
         qnaService.create(loginUser, new QuestionDTO(title, contents));
 
@@ -44,17 +43,17 @@ public class QuestionController {
         return "/qna/updateForm";
     }
 
-    @PutMapping("/")
-    public String update(@LoginUser User loginUser, Question question) {
-        qnaService.update(loginUser, question.getId(), question);
+    @PutMapping("/{id}")
+    public String update(@LoginUser User loginUser, @PathVariable long id, QuestionDTO questionDTO) {
+        qnaService.update(loginUser, id, questionDTO);
 
-        return String.format("redirect:/questions/%d", question.getId());
+        return String.format("redirect:/questions/%d", id);
     }
 
     @DeleteMapping("{id}")
-    public String delete(@LoginUser User loginUser, @PathVariable long id) throws CannotDeleteException {
+    public String delete(@LoginUser User loginUser, @PathVariable long id) throws Exception {
         qnaService.deleteQuestion(loginUser, id);
 
-        return "/user/list";
+        return "redirect:/users";
     }
 }

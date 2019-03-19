@@ -39,16 +39,16 @@ public class QnaService {
     }
 
     @Transactional
-    public Question update(User loginUser, long id, Question updatedQuestion) {
+    public Question update(User loginUser, long id, QuestionDTO updatedQuestionDTO) {
         Question question = questionRepository
                 .findById(id).orElseThrow(UnAuthorizedException::new);
-        question.update(loginUser, updatedQuestion);
+        question.update(loginUser, updatedQuestionDTO);
 
         return questionRepository.save(question);
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
+    public void deleteQuestion(User loginUser, long questionId) throws Exception {
         Question question = questionRepository
                 .findById(questionId).orElseThrow(UnAuthorizedException::new);
         question.delete(loginUser);

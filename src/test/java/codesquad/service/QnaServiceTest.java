@@ -35,6 +35,7 @@ public class QnaServiceTest {
         user = new User("sanjigi", "password", "name", "javajigi@slipp.net");
         question = new Question("title", "this is test");
         question.writeBy(user);
+        System.out.println("유저" + user.getId());
         when(questionRepository.findById(question.getId())).thenReturn(Optional.of(question));
     }
 
@@ -46,24 +47,23 @@ public class QnaServiceTest {
 
     @Test(expected = UnAuthorizedException.class)
     public void update_failed_when_wrong_user() {
-        Question updateQuestion = new Question("hihi", "this is update");
-
-        qnaService.update(new User("bell", "1111", "named", "ww@gmail.com"), question.getId(), updateQuestion);
+        QuestionDTO updateQuestion = new QuestionDTO("hihi", "this is update");
+        qnaService.update(null, question.getId(), updateQuestion);
     }
 
     @Test(expected = CannotDeleteException.class)
-    public void delete_failed_when_wrong_user() throws CannotDeleteException {
-        qnaService.deleteQuestion(new User("bell", "1111", "named", "ww@gmail.com"), question.getId());
+    public void delete_failed_when_wrong_user() throws Exception {
+        qnaService.deleteQuestion(null, question.getId());
     }
 
     @Test
     public void update_question() {
-        qnaService.update(user, question.getId(), new Question("updateTitle", "this is update"));
+        qnaService.update(user, question.getId(), new QuestionDTO("updateTitle", "this is update"));
         assertThat(qnaService.findById(question.getId()).get().getContents(), is("this is update"));
     }
 
     @Test
-    public void delete_question() throws CannotDeleteException {
+    public void delete_question() throws Exception {
         qnaService.deleteQuestion(user, question.getId());
         assertThat(qnaService.findById(question.getId()).get().isDeleted(), is(question.isDeleted()));
     }
