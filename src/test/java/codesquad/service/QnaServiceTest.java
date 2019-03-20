@@ -35,7 +35,6 @@ public class QnaServiceTest {
         user = new User("sanjigi", "password", "name", "javajigi@slipp.net");
         question = new Question("title", "this is test");
         question.writeBy(user);
-        System.out.println("유저" + user.getId());
         when(questionRepository.findById(question.getId())).thenReturn(Optional.of(question));
     }
 

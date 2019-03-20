@@ -1,7 +1,5 @@
 package codesquad.service;
 
-import codesquad.CannotDeleteException;
-import codesquad.UnAuthorizedException;
 import codesquad.domain.*;
 import codesquad.dto.QuestionDTO;
 import org.slf4j.Logger;
@@ -12,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service("qnaService")
@@ -28,8 +27,7 @@ public class QnaService {
     private DeleteHistoryService deleteHistoryService;
 
     public Question create(User loginUser, QuestionDTO questionDTO) {
-        Question question = new Question(questionDTO.getTitle(), questionDTO.getContents());
-        question.writeBy(loginUser);
+        Question question = new Question(loginUser, questionDTO);
         log.debug("question : {}", question);
         return questionRepository.save(question);
     }
@@ -41,7 +39,7 @@ public class QnaService {
     @Transactional
     public Question update(User loginUser, long id, QuestionDTO updatedQuestionDTO) {
         Question question = questionRepository
-                .findById(id).orElseThrow(UnAuthorizedException::new);
+                .findById(id).orElseThrow(NoSuchElementException::new);
         question.update(loginUser, updatedQuestionDTO);
 
         return questionRepository.save(question);
@@ -50,8 +48,12 @@ public class QnaService {
     @Transactional
     public void deleteQuestion(User loginUser, long questionId) throws Exception {
         Question question = questionRepository
-                .findById(questionId).orElseThrow(UnAuthorizedException::new);
+                .findById(questionId).orElseThrow(NoSuchElementException::new);
         question.delete(loginUser);
+    }
+
+    public boolean isQuestionWriter(User loginUser, long id) {
+        return questionRepository.findById(id).orElseThrow(NoSuchElementException::new).isOwner(loginUser);
     }
 
     public Iterable<Question> findAll() {
@@ -68,11 +70,8 @@ public class QnaService {
     }
 
     public Answer deleteAnswer(User loginUser, long id) {
-        // TODO 답변 삭제 기능 구현 
+        // TODO 답변 삭제 기능 구현
         return null;
     }
 
-    public Question findById(User loginUser, long id) {
-        return null;
-    }
 }

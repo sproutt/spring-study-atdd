@@ -1,6 +1,6 @@
 package codesquad.web;
 
-import codesquad.CannotDeleteException;
+import codesquad.UnAuthorizedException;
 import codesquad.domain.User;
 import codesquad.dto.QuestionDTO;
 import codesquad.security.LoginUser;
@@ -38,7 +38,10 @@ public class QuestionController {
 
     @GetMapping("/{id}/form")
     public String updateForm(@LoginUser User loginUser, @PathVariable long id, Model model) {
-        model.addAttribute("question", qnaService.findById(loginUser, id));
+        if (!qnaService.isQuestionWriter(loginUser, id)) {
+            throw new UnAuthorizedException();
+        }
+        model.addAttribute("question", qnaService.findById(id));
 
         return "/qna/updateForm";
     }

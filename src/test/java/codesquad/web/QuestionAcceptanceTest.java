@@ -2,6 +2,7 @@ package codesquad.web;
 
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,32 +15,41 @@ import org.springframework.util.MultiValueMap;
 import support.HtmlFormDataBuilder;
 import support.test.AcceptanceTest;
 
+import java.util.NoSuchElementException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class QuestionAcceptanceTest extends AcceptanceTest {
+    private static final long DEFAULT_QUESTION_ID = 1;
     private static final Logger log = LoggerFactory.getLogger(UserAcceptanceTest.class);
 
     @Autowired
     private QuestionRepository questionRepository;
 
+    private Question defaultQuestion;
+
+    @Before
+    public void setUp() throws Exception {
+        defaultQuestion = questionRepository.findById(DEFAULT_QUESTION_ID).orElseThrow(NoSuchElementException::new);
+    }
+
     @Test
     public void create() {
-        Question question = defaultQuestion();
         HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
-                .addParameter("title", question.getTitle())
-                .addParameter("contents", question.getContents())
+                .addParameter("title", defaultQuestion.getTitle())
+                .addParameter("contents", defaultQuestion.getContents())
                 .build();
 
         ResponseEntity<String> response = basicAuthTemplate(defaultUser()).postForEntity("/questions", request, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-        assertThat(questionRepository.findById(question.getId()).isPresent()).isTrue();
+        assertThat(questionRepository.findById(defaultQuestion.getId()).isPresent()).isTrue();
         assertThat(response.getHeaders().getLocation().getPath().startsWith("/users"));
     }
 
     @Test
     public void show() {
-        ResponseEntity<String> response = basicAuthTemplate(defaultUser()).getForEntity(defaultQuestion().generateUrl(), String.class);
+        ResponseEntity<String> response = basicAuthTemplate(defaultUser()).getForEntity(defaultQuestion.generateUrl(), String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).contains(defaultUser().getName());
@@ -48,7 +58,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void updateForm_login() {
         ResponseEntity<String> response = basicAuthTemplate(defaultUser())
-                .getForEntity(defaultQuestion().generateUrl(), String.class);
+                .getForEntity(defaultQuestion.generateUrl(), String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).contains(defaultUser().getName());
     }
@@ -65,7 +75,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
                 .addParameter("title", "test")
                 .addParameter("contents", "this is update test")
                 .build();
-        return template.postForEntity(defaultQuestion().generateUrl(), request, String.class);
+        return template.postForEntity(defaultQuestion.generateUrl(), request, String.class);
     }
 
     @Test
