@@ -49,13 +49,10 @@ public class QnaService {
 		question.delete(loginUser);
 	}
 
-	public Iterable<Question> findAll() {
+	public List<Question> findAll() {
 		return questionRepository.findByDeleted(false);
 	}
 
-	public List<Question> findAll(Pageable pageable) {
-		return questionRepository.findAll(pageable).getContent();
-	}
 
 	public Answer addAnswer(User loginUser, long questionId, String contents) {
 		// TODO 답변 추가 기능 구현
