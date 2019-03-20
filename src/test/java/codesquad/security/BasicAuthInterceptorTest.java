@@ -30,7 +30,7 @@ public class BasicAuthInterceptorTest {
         String password = "password";
         MockHttpServletRequest request = basicAuthHttpRequest(userId, password);
         User loginUser = new User(userId, password, "name", "javajigi@slipp.net");
-        when(userService.login(new UserLoginDTO().toDTO(loginUser))).thenReturn(loginUser);
+        when(userService.login(new UserLoginDTO(loginUser))).thenReturn(loginUser);
 
         basicAuthInterceptor.preHandle(request, null, null);
         assertThat(request.getSession().getAttribute(HttpSessionUtils.USER_SESSION_KEY), is(loginUser));
