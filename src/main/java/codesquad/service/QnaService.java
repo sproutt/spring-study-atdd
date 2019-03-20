@@ -41,7 +41,7 @@ public class QnaService {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("question not found"));
 
-        if(!question.isOwner(loginUser)) {
+        if (!question.isOwner(loginUser)) {
             throw new UnAuthorizedException("mismatch writer");
         }
 
@@ -54,7 +54,7 @@ public class QnaService {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("question not found"));
 
-        if(!question.isOwner(loginUser)) {
+        if (!question.isOwner(loginUser)) {
             throw new CannotDeleteException("mismatch writer");
         }
 
