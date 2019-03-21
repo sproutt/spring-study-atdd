@@ -12,23 +12,13 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.List;
 
 @Controller
 @RequestMapping("/questions")
 public class QnaController {
 
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     @Resource(name = "qnaService")
     private QnaService qnaService;
-
-    @GetMapping("")
-    public String readList(Model model) {
-        List<Question> questions = qnaService.findAll();
-        log.debug("question size : {}", questions.size());
-        model.addAttribute("questions", questions);
-        return "/home";
-    }
 
     @GetMapping("/{id}")
     public String list(@PathVariable long id, Model model) {
