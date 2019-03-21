@@ -85,7 +85,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
                 .addParameter("email", "javajigi@slipp.net")
                 .build();
 
-        return template.postForEntity(String.format("/users/%d", defaultUser().getId()), request, String.class);
+        return template.postForEntity(String.format("question/%d", defaultUser().getId()), request, String.class);
     }
 
     @Test
@@ -94,4 +94,5 @@ public class UserAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(response.getHeaders().getLocation().getPath()).startsWith("/users");
     }
+
 }
