@@ -1,14 +1,11 @@
 package codesquad.web;
 
 import codesquad.CannotDeleteException;
-import codesquad.NullEntityException;
 import codesquad.UnAuthenticationException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
-import codesquad.security.HttpSessionUtils;
 import codesquad.security.LoginUser;
 import codesquad.service.QnaService;
-import codesquad.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -16,8 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpSession;
-import java.util.List;
 
 @Controller
 @RequestMapping("/questions")
@@ -34,24 +29,21 @@ public class QuestionController {
 
     @PostMapping("")
     public String create(Question question, @LoginUser User loginUser) {
-        qnaService.create(loginUser,question);
+        qnaService.create(loginUser, question);
         return "redirect:/";
     }
 
     @GetMapping("/{id}")
-    public String show(@PathVariable long id,Model model) {
-        model.addAttribute("question",qnaService.findById(id));
+    public String show(@PathVariable long id, Model model) {
+        model.addAttribute("question", qnaService.findById(id));
         return "/qna/show";
     }
 
     @GetMapping("/{id}/form")
     public String updateForm(@LoginUser User loginUser, @PathVariable long id, Model model) throws UnAuthenticationException {
-        Question question = qnaService.findById(id);
-        if(question.isOwner(loginUser)) {
-            model.addAttribute("question", question);
-            return "/qna/updateForm";
-        }
-        throw new UnAuthenticationException();
+        Question question = qnaService.ownerCheck(id, loginUser);
+        model.addAttribute("question", question);
+        return "/qna/updateForm";
     }
 
     @PutMapping("/{id}")

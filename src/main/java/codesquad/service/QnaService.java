@@ -2,6 +2,7 @@ package codesquad.service;
 
 import codesquad.CannotDeleteException;
 import codesquad.NullEntityException;
+import codesquad.UnAuthenticationException;
 import codesquad.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,14 @@ public class QnaService {
             original.delete();
         }
         throw new CannotDeleteException(original.toString());
+    }
+
+    public Question ownerCheck(long id, User loginUser) throws UnAuthenticationException {
+        Question question = findById(id);
+        if(question.isOwner(loginUser)){
+            return question;
+        }
+        throw new UnAuthenticationException();
     }
 
     public Iterable<Question> findAll() {
