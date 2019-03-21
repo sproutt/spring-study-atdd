@@ -1,6 +1,6 @@
 package codesquad.security;
 
-import codesquad.UnAuthorizedException;
+import codesquad.exception.UnAuthorizedException;
 import codesquad.domain.User;
 import org.junit.Before;
 import org.junit.Test;
