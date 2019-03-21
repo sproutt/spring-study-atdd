@@ -39,7 +39,9 @@ public class QnaService {
     @Transactional
     public Question update(User loginUser, long id, Question updatedQuestion) {
         Question original = findById(id);
-        original.update(updatedQuestion);
+        if(original.isOwner(loginUser)){
+            original.update(updatedQuestion);
+        }
         return original;
     }
 
