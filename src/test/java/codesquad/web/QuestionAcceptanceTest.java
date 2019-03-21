@@ -26,7 +26,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     private Question defaultQuestion;
 
-    final private long TESTQUESTIONID = 1;
+    final static private long TESTQUESTIONID = 1;
 
     @Before
     public void setUp() {
@@ -44,9 +44,10 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
                 .build();
 
         ResponseEntity<String> response = basicAuthTemplate(loginUser).postForEntity("/questions", request, String.class);
-
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-        assertThat(questionRepository.findByTitle(questionTitle).isPresent()).isTrue();
+
+        response = basicAuthTemplate(loginUser).getForEntity("/", String.class);
+        assertThat(response.getBody()).contains(questionTitle);
     }
 
     @Test
