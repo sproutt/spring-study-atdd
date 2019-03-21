@@ -5,37 +5,41 @@ import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class QnaServiceTest {
-
-    @InjectMocks
-    private QnaService qnaService;
 
     @Mock
     private QuestionRepository questionRepository;
 
+    @InjectMocks
+    private QnaService qnaService;
+
     private User user;
+    private User anotherUser;
     private Question question;
 
     @Before
     public void setUp() {
         user = new User("TestId", "password", "name", "email");
+        user.setId(1L);
+        anotherUser = new User("anotherUserId", "password", "another", "email");
+        anotherUser.setId(2L);
         question = new Question("title", "contents");
         questionRepository.save(question);
         question.setId(1L);
         question.writeBy(user);
+        when(questionRepository.findById((long) 1)).thenReturn(Optional.of(question));
     }
 
     @Test
@@ -55,15 +59,18 @@ public class QnaServiceTest {
 
     @Test(expected = UnAuthorizedException.class)
     public void update_failed() {
-        User anotherUser = new User("userId", "password", "anotherName", "anotherEmail");
-        when(questionRepository.findById(1L)).thenReturn(Optional.of(question));
-        qnaService.update(anotherUser, 1L, question);
+        qnaService.update(anotherUser, question.getId(), question);
     }
 
     @Test
     public void delete() throws Exception {
-        when(questionRepository.findById(1L)).thenReturn(Optional.of(question));
         qnaService.deleteQuestion(user, 1L);
         assertThat(question.isDeleted()).isTrue();
     }
+
+    @Test(expected = UnAuthorizedException.class)
+    public void delete_failed() throws Exception{
+        qnaService.deleteQuestion(anotherUser, 1L);
+    }
+
 }
