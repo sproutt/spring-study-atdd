@@ -1,5 +1,7 @@
 package support.test;
 
+import codesquad.domain.Question;
+import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
 import org.junit.runner.RunWith;
@@ -9,34 +11,43 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.NoSuchElementException;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public abstract class AcceptanceTest {
-    private static final String DEFAULT_LOGIN_USER = "javajigi";
+	private static final String DEFAULT_LOGIN_USER = "javajigi";
 
-    @Autowired
-    private TestRestTemplate template;
+	@Autowired
+	private TestRestTemplate template;
 
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    public TestRestTemplate template() {
-        return template;
-    }
+	@Autowired
+	private QuestionRepository questionRepository;
 
-    public TestRestTemplate basicAuthTemplate() {
-        return basicAuthTemplate(defaultUser());
-    }
+	public TestRestTemplate template() {
+		return template;
+	}
 
-    public TestRestTemplate basicAuthTemplate(User loginUser) {
-        return template.withBasicAuth(loginUser.getUserId(), loginUser.getPassword());
-    }
+	public TestRestTemplate basicAuthTemplate() {
+		return basicAuthTemplate(defaultUser());
+	}
 
-    protected User defaultUser() {
-        return findByUserId(DEFAULT_LOGIN_USER);
-    }
+	public TestRestTemplate basicAuthTemplate(User loginUser) {
+		return template.withBasicAuth(loginUser.getUserId(), loginUser.getPassword());
+	}
 
-    protected User findByUserId(String userId) {
-        return userRepository.findByUserId(userId).get();
-    }
+	protected User defaultUser() {
+		return findByUserId(DEFAULT_LOGIN_USER);
+	}
+
+	protected User findByUserId(String userId) {
+		return userRepository.findByUserId(userId).get();
+	}
+
+	protected Question defaultQuestion() {
+		return questionRepository.findById(defaultUser().getId()).orElseThrow(NoSuchElementException::new);
+	}
 }
