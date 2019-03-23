@@ -1,69 +1,124 @@
 package codesquad.web;
 
+import codesquad.domain.Question;
 import codesquad.domain.User;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import support.test.AcceptanceTest;
 
+import javax.validation.constraints.Null;
+
+import static codesquad.domain.UserTest.SANJIGI;
 import static codesquad.domain.UserTest.newUser;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ApiQuestionAcceptanceTest extends AcceptanceTest {
+    private static final Logger log = LoggerFactory.getLogger(ApiQuestionAcceptanceTest.class);
 
     @Test
-    public void create() throws Exception {
-        User newUser = newUser("testuser1");
-        ResponseEntity<Void> response = template().postForEntity("/api/users", newUser, Void.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        String location = response.getHeaders().getLocation().getPath();
-
-
-        User dbUser = basicAuthTemplate(findByUserId(newUser.getUserId())).getForObject(location, User.class);
-        assertThat(dbUser).isNotNull();
+    public void list(){
+        ResponseEntity<Void> response = template().getForEntity("/api/questions", Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        log.debug("body : {}", response.getBody());
     }
 
     @Test
-    public void show_다른_사람() throws Exception {
-        User newUser = newUser("testuser2");
-        ResponseEntity<Void> response = template().postForEntity("/api/users", newUser, Void.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        String location = response.getHeaders().getLocation().getPath();
+    public void create(){
+        Question newQuestion = new Question("new title", "new context");
+        String location = createResourceWithAuth("/api/questions", newQuestion);
 
-        response = basicAuthTemplate(defaultUser()).getForEntity(location, Void.class);
+        assertThat(getResource(location, Question.class , defaultUser())).isNotNull();
+    }
+
+    @Test
+    public void create_not_login(){
+        Question newQuestion = new Question("new title1", "new context1");
+        ResponseEntity<Void> response = template().postForEntity("/api/questions", newQuestion, Void.class);
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
-    public void update() throws Exception {
-        User newUser = newUser("testuser3");
-        ResponseEntity<Void> response = template().postForEntity("/api/users", newUser, Void.class);
-        String location = response.getHeaders().getLocation().getPath();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        User original = basicAuthTemplate(newUser).getForObject(location, User.class);
+    public void detail(){
+        Question newQuestion = new Question("new title2", "new context2");
+        String location = createResourceWithAuth("/api/questions", newQuestion);
+        Question question= template().getForObject(location, Question.class);
 
-        User updateUser = new User
-                (original.getId(), original.getUserId(), original.getPassword(),
-                        "javajigi2", "javajigi2@slipp.net");
-
-        ResponseEntity<User> responseEntity =
-                basicAuthTemplate(newUser).exchange(location, HttpMethod.PUT, createHttpEntity(updateUser), User.class);
-
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(updateUser.equalsNameAndEmail(responseEntity.getBody())).isTrue();
+        assertThat(question).isNotNull();
     }
 
     @Test
-    public void update_다른_사람() throws Exception {
-        User newUser = newUser("testuser4");
-        ResponseEntity<Void> response = template().postForEntity("/api/users", newUser, Void.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        String location = response.getHeaders().getLocation().getPath();
+    public void update() {
+        Question newQuestion = new Question("new title3", "new context3");
+        String location = createResourceWithAuth("/api/questions", newQuestion);
+        Question original = basicAuthTemplate().getForObject(location, Question.class);
+        Question updateQuestion = new Question("update3", "update3");
 
-        User updateUser = new User(newUser.getUserId(), "password", "name2", "javajigi@slipp.net2");
+        ResponseEntity<Question> response = basicAuthTemplate().exchange(location, HttpMethod.PUT, createHttpEntity(updateQuestion),Question.class);
 
-        ResponseEntity<Void> responseEntity =
-                basicAuthTemplate(defaultUser()).exchange(location, HttpMethod.PUT, createHttpEntity(updateUser), Void.class);
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getTitle()).isEqualTo(updateQuestion.getTitle());
+    }
+
+    @Test
+    public void update_not_login(){
+        Question newQuestion = new Question("new title4", "new context4");
+        String location = createResourceWithAuth("/api/questions", newQuestion);
+        Question original = basicAuthTemplate().getForObject(location, Question.class);
+        Question updateQuestion = new Question("update4", "update4");
+
+        ResponseEntity<Question> response = template().exchange(location, HttpMethod.PUT, createHttpEntity(updateQuestion),Question.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(original.getTitle()).isEqualTo(template().getForObject(location, Question.class).getTitle());
+    }
+
+    @Test
+    public void update_not_match_user(){
+        Question newQuestion = new Question("new title5", "new context5");
+        String location = createResourceWithAuth("/api/questions", newQuestion);
+        Question original = basicAuthTemplate().getForObject(location, Question.class);
+        Question updateQuestion = new Question("update5", "update5");
+
+        ResponseEntity<Question> response = basicAuthTemplate(SANJIGI).exchange(location, HttpMethod.PUT, createHttpEntity(updateQuestion),Question.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(original.getTitle()).isEqualTo(template().getForObject(location, Question.class).getTitle());
+    }
+
+    @Test
+    public void delete(){
+        Question newQuestion = new Question("new title6", "new context6");
+        String location = createResourceWithAuth("/api/questions", newQuestion);
+
+        ResponseEntity<Void> response =  basicAuthTemplate().exchange(location, HttpMethod.DELETE, createHttpEntity(null), Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(basicAuthTemplate().getForObject(location, Question.class)).isNull();
+    }
+
+    @Test
+    public void delete_not_login(){
+        Question newQuestion = new Question("new title7", "new context7");
+        String location = createResourceWithAuth("/api/questions", newQuestion);
+
+        ResponseEntity<Void> response = template().exchange(location, HttpMethod.DELETE, createHttpEntity(null), Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(template().getForObject(location, Question.class)).isNotNull();
+    }
+
+    @Test
+    public void delete_not_match_user(){
+        Question newQuestion = new Question("new title8", "new context8");
+        String location = createResourceWithAuth("/api/questions", newQuestion);
+
+        ResponseEntity<Void> response = basicAuthTemplate(SANJIGI).exchange(location, HttpMethod.DELETE, createHttpEntity(null), Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(template().getForObject(location, Question.class)).isNotNull();
     }
 
     private HttpEntity createHttpEntity(Object body) {
