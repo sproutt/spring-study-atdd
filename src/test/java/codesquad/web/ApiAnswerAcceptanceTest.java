@@ -5,16 +5,25 @@ import org.junit.Before;
 import org.junit.Test;
 import support.test.AcceptanceTest;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     private static final String ANSWER_API = "/api/answers";
 
     private Answer answer;
     private String resourceLocation;
-    
+
+    @Before
+    public void setUp(){
+        answer = new Answer(defaultUser(), "contents");
+        resourceLocation = createResource(ANSWER_API, answer, defaultUser());
+    }
+
     @Test
     public void create() {
-        answer = getResource(resourceLocation)
+        answer = getResource(resourceLocation, Answer.class, defaultUser());
+        assertThat(answer).isNotNull();
     }
 
     @Test
