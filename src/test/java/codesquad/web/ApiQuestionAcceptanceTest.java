@@ -16,29 +16,43 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     private static final String QUESTION_API = "/api/questions";
 
-    private List<Question> questions;
-    private Question question;
     private Question newQuestion;
     @Autowired
     private QuestionRepository questionRepository;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         newQuestion = new Question("newTitle", "newContents");
     }
+
     @Test
     public void create() {
-        ResponseEntity<Void> response = template().postForEntity(QUESTION_API, newQuestion, Void.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        String location = response.getHeaders().getLocation().getPath();
-
-        Question dbQuestion = basicAuthTemplate(defaultUser()).getForObject(location, Question.class);
-        assertThat(dbQuestion).isNotNull();
+        String location = createResource("/api/questions", newQuestion);
+        Question question = getResource(location, Question.class, defaultUser());
+        assertThat(question).isNotNull();
     }
 
     @Test
-    public void create_no_login(){
+    public void create_no_login() {
         ResponseEntity<Void> response = template().postForEntity(QUESTION_API, newQuestion, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    public void show() {
+        String location = createResource("/api/questions", newQuestion);
+        Question question = getResource(location, Question.class, defaultUser());
+        assertThat(question.getTitle()).isEqualTo(newQuestion.getTitle());
+        assertThat(question.getContents()).isEqualTo(newQuestion.getContents());
+    }
+
+    @Test
+    public void update(){
+
+    }
+
+    @Test
+    public void update_failed(){
+
     }
 }
