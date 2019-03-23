@@ -62,8 +62,23 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void update_failed() {
         ResponseEntity<Question> responseEntity =
-                template().exchange(resourceLocation, HttpMethod.PUT,
+                template().exchange(resourceLocation, HttpMethod.PUT, createHttpEntity(newQuestion), Question.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
-    public void creat
+    @Test
+    public void delete() {
+        ResponseEntity<Question> responseEntity =
+                basicAuthTemplate().exchange(resourceLocation, HttpMethod.DELETE, createHttpEntity(newQuestion), Question.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void delete_failed() {
+        ResponseEntity<Question> responseEntity =
+                template().exchange(resourceLocation, HttpMethod.DELETE, createHttpEntity(newQuestion), Question.class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
 }
