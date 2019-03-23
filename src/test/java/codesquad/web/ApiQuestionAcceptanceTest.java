@@ -5,11 +5,10 @@ import codesquad.domain.QuestionRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import support.test.AcceptanceTest;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,13 +17,17 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     private Question newQuestion;
     private String resourceLocation;
+
     @Autowired
     private QuestionRepository questionRepository;
 
     @Before
     public void setUp() {
         newQuestion = new Question("newTitle", "newContents");
-        resourceLocation = createResource(QUESTION_API, newQuestion);
+        newQuestion.writeBy(defaultUser());
+        resourceLocation = createResource(QUESTION_API, newQuestion, defaultUser());
+
+
     }
 
     @Test
@@ -47,12 +50,20 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void update(){
+    public void update() {
+        ResponseEntity<Question> responseEntity =
+                basicAuthTemplate().exchange(resourceLocation, HttpMethod.PUT, createHttpEntity(newQuestion), Question.class);
 
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody().getTitle()).isEqualTo(newQuestion.getTitle());
+        assertThat(responseEntity.getBody().getContents()).isEqualTo(newQuestion.getContents());
     }
 
     @Test
-    public void update_failed(){
-
+    public void update_failed() {
+        ResponseEntity<Question> responseEntity =
+                template().exchange(resourceLocation, HttpMethod.PUT,
     }
+
+    public void creat
 }
