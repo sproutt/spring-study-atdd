@@ -65,7 +65,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         ResponseEntity<Question> responseEntity =
                 basicAuthTemplate().exchange(resourceLocation, HttpMethod.DELETE, createHttpEntity(newQuestion), Question.class);
 
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test

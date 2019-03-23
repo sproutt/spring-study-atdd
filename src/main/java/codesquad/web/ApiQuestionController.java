@@ -20,7 +20,7 @@ public class ApiQuestionController {
     private QnaService qnaService;
 
     @PostMapping
-    public ResponseEntity<Void> create(@LoginUser User loginUser, @Valid @RequestBody Question question){
+    public ResponseEntity<Void> create(@LoginUser User loginUser, @Valid @RequestBody Question question) {
         Question savedQuestion = qnaService.create(loginUser, question);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/api/questions/" + savedQuestion.getId()));
@@ -28,15 +28,18 @@ public class ApiQuestionController {
     }
 
     @GetMapping("{id}")
-    public Question show(@LoginUser User loginUser, @PathVariable long id) throws Exception{
+    public Question show(@LoginUser User loginUser, @PathVariable long id) throws Exception {
         return qnaService.findById(id);
     }
 
     @PutMapping("{id}")
-    public Question update(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody Question updateQuestion){
+    public Question update(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody Question updateQuestion) {
         return qnaService.update(loginUser, id, updateQuestion);
     }
 
-
+    @DeleteMapping("{id}")
+    public void delete(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody Question question) throws Exception {
+        qnaService.deleteQuestion(loginUser, id);
+    }
 
 }

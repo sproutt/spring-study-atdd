@@ -21,13 +21,13 @@ public class QnaController {
     private QnaService qnaService;
 
     @GetMapping("/{id}")
-    public String list(@PathVariable long id, Model model) {
+    public String list(@PathVariable long id, Model model) throws Exception {
         model.addAttribute("question", qnaService.findById(id));
         return "/qna/show";
     }
 
     @GetMapping("/{id}/show")
-    public String updateForm(@PathVariable long id, Model model) {
+    public String updateForm(@PathVariable long id, Model model) throws Exception {
         model.addAttribute("question", qnaService.findById(id));
         return "/qna/updateForm";
     }
