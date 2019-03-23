@@ -27,7 +27,9 @@ public class QuestionService {
     }
 
     public Question create(User loginUser, QuestionDTO questionDto) {
-        return questionRepository.save(new Question(questionDto.getTitle(), questionDto.getContent()));
+        Question question = new Question(questionDto.getTitle(), questionDto.getContent());
+        question.writeBy(loginUser);
+        return questionRepository.save(question);
     }
 
     public Question findById(Long id) {

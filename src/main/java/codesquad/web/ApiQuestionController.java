@@ -16,7 +16,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/api/questions")
 public class ApiQuestionController {
 
@@ -35,7 +35,6 @@ public class ApiQuestionController {
 
     @PostMapping("")
     public ResponseEntity<Void> create(@LoginUser User loginUser, @Valid @RequestBody QuestionDTO questionDTO){
-        //DTO로 해도되는지 모르겠다.
         Question question=questonServie.create(loginUser, questionDTO);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/api/questions/"+question.getId()));
@@ -45,13 +44,11 @@ public class ApiQuestionController {
     @PutMapping("/{id}")
     public Question update(@LoginUser User loginUser , @Valid @RequestBody QuestionDTO questionDTO, @PathVariable Long id){
         Question question= questonServie.update(loginUser, questionDTO, id);
-        System.out.println("로그 :" + question.getId() + question.getTitle());
         return question;
     }
 
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@LoginUser User loginUser, @PathVariable Long id){
-        //DTO로 해도되는지 모르겠다.
         questonServie.delete(loginUser, id);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/api/questions"));
