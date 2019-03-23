@@ -22,7 +22,6 @@ public class ApiUserAcceptanceTest extends AcceptanceTest {
     public void show_다른_사람() throws Exception {
         User newUser = newUser("testuser2");
         String location = createResource("/api/users", newUser);
-
         ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).getForEntity(location, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }

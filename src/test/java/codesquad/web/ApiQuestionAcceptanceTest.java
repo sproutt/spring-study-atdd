@@ -16,10 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     private static final Logger log = LoggerFactory.getLogger(ApiQuestionAcceptanceTest.class);
-
+    private static final String URL_API_QUESTION = "/api/questions";
     @Test
     public void list(){
-        ResponseEntity<Void> response = template().getForEntity("/api/questions", Void.class);
+        ResponseEntity<Void> response = template().getForEntity(URL_API_QUESTION, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         log.debug("body : {}", response.getBody());
     }
@@ -27,7 +27,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void create(){
         Question newQuestion = new Question("new title", "new context");
-        String location = createResourceWithAuth("/api/questions", newQuestion);
+        String location = createResourceWithAuth(URL_API_QUESTION, newQuestion);
 
         assertThat(getResource(location, Question.class , defaultUser())).isNotNull();
     }
@@ -35,7 +35,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void create_not_login(){
         Question newQuestion = new Question("new title1", "new context1");
-        ResponseEntity<Void> response = template().postForEntity("/api/questions", newQuestion, Void.class);
+        ResponseEntity<Void> response = template().postForEntity(URL_API_QUESTION, newQuestion, Void.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
@@ -43,7 +43,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void detail(){
         Question newQuestion = new Question("new title2", "new context2");
-        String location = createResourceWithAuth("/api/questions", newQuestion);
+        String location = createResourceWithAuth(URL_API_QUESTION, newQuestion);
         Question question= template().getForObject(location, Question.class);
 
         assertThat(question).isNotNull();
@@ -52,7 +52,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void update() {
         Question newQuestion = new Question("new title3", "new context3");
-        String location = createResourceWithAuth("/api/questions", newQuestion);
+        String location = createResourceWithAuth(URL_API_QUESTION, newQuestion);
         Question original = basicAuthTemplate().getForObject(location, Question.class);
         Question updateQuestion = new Question("update3", "update3");
 
@@ -65,7 +65,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void update_not_login(){
         Question newQuestion = new Question("new title4", "new context4");
-        String location = createResourceWithAuth("/api/questions", newQuestion);
+        String location = createResourceWithAuth(URL_API_QUESTION, newQuestion);
         Question original = basicAuthTemplate().getForObject(location, Question.class);
         Question updateQuestion = new Question("update4", "update4");
 
@@ -78,7 +78,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void update_not_match_user(){
         Question newQuestion = new Question("new title5", "new context5");
-        String location = createResourceWithAuth("/api/questions", newQuestion);
+        String location = createResourceWithAuth(URL_API_QUESTION, newQuestion);
         Question original = basicAuthTemplate().getForObject(location, Question.class);
         Question updateQuestion = new Question("update5", "update5");
 
@@ -91,7 +91,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void delete(){
         Question newQuestion = new Question("new title6", "new context6");
-        String location = createResourceWithAuth("/api/questions", newQuestion);
+        String location = createResourceWithAuth(URL_API_QUESTION, newQuestion);
 
         ResponseEntity<Void> response =  basicAuthTemplate().exchange(location, HttpMethod.DELETE, createHttpEntity(null), Void.class);
 
@@ -102,7 +102,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void delete_not_login(){
         Question newQuestion = new Question("new title7", "new context7");
-        String location = createResourceWithAuth("/api/questions", newQuestion);
+        String location = createResourceWithAuth(URL_API_QUESTION, newQuestion);
 
         ResponseEntity<Void> response = template().exchange(location, HttpMethod.DELETE, createHttpEntity(null), Void.class);
 
@@ -113,7 +113,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void delete_not_match_user(){
         Question newQuestion = new Question("new title8", "new context8");
-        String location = createResourceWithAuth("/api/questions", newQuestion);
+        String location = createResourceWithAuth(URL_API_QUESTION, newQuestion);
 
         ResponseEntity<Void> response = basicAuthTemplate(SANJIGI).exchange(location, HttpMethod.DELETE, createHttpEntity(null), Void.class);
 
