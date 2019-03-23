@@ -1,6 +1,5 @@
 package codesquad.web;
 
-
 import codesquad.domain.UserRepository;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

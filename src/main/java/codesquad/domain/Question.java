@@ -9,7 +9,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Entity
 public class Question extends AbstractEntity implements UrlGeneratable {

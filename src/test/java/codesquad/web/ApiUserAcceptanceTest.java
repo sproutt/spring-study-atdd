@@ -10,25 +10,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ApiUserAcceptanceTest extends AcceptanceTest {
 
+    private static final String USER_API = "/api/users";
+    
     @Test
     public void create() throws Exception {
         User newUser = newUser("testuser1");
-        ResponseEntity<Void> response = template().postForEntity("/api/users", newUser, Void.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        String location = response.getHeaders().getLocation().getPath();
-
-        User dbUser = basicAuthTemplate(findByUserId(newUser.getUserId())).getForObject(location, User.class);
+        String location = createResource(USER_API, newUser, User.GUEST_USER);
+        User dbUser = getResource(location, User.class, newUser);
         assertThat(dbUser).isNotNull();
     }
 
     @Test
     public void show_다른_사람() throws Exception {
         User newUser = newUser("testuser2");
-        ResponseEntity<Void> response = template().postForEntity("/api/users", newUser, Void.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        String location = response.getHeaders().getLocation().getPath();
-
-        response = basicAuthTemplate(defaultUser()).getForEntity(location, Void.class);
+        String location = createResource(USER_API, newUser, User.GUEST_USER);
+        ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).getForEntity(location, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 

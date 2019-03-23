@@ -26,8 +26,6 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         newQuestion = new Question("newTitle", "newContents");
         newQuestion.writeBy(defaultUser());
         resourceLocation = createResource(QUESTION_API, newQuestion, defaultUser());
-
-
     }
 
     @Test
