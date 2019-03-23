@@ -3,6 +3,8 @@ package codesquad.web;
 import codesquad.domain.Answer;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import support.test.AcceptanceTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +30,8 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void create_failed() {
-
+        ResponseEntity<Void> response = template().postForEntity(ANSWER_API, answer, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
