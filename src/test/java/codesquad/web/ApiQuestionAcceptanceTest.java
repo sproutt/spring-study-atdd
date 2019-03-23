@@ -3,6 +3,7 @@ package codesquad.web;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionDTO;
 import codesquad.domain.User;
+import codesquad.exception.QuestionDeletedException;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,14 +96,14 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void delete(){
+    public void delete() throws Exception{
         QuestionDTO newQuestion = new QuestionDTO("new title6", "new context6");
         String location = createResourceWithAuth(URL_API_QUESTION, newQuestion);
 
         ResponseEntity<Void> response =  basicAuthTemplate().exchange(location, HttpMethod.DELETE, createHttpEntity(null), Void.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(basicAuthTemplate().getForObject(location, Question.class)).isNull();
+        assertThat(basicAuthTemplate().getForEntity(location, Question.class).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -113,7 +114,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         ResponseEntity<Void> response = template().exchange(location, HttpMethod.DELETE, createHttpEntity(null), Void.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-        assertThat(template().getForObject(location, Question.class)).isNotNull();
+        assertThat(template().getForObject(location, Question.class).isDeleted()).isFalse();
     }
 
     @Test
