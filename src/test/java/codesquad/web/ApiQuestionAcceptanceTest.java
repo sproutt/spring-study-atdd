@@ -1,10 +1,8 @@
 package codesquad.web;
 
 import codesquad.domain.Question;
-import codesquad.domain.QuestionRepository;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +15,6 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     private Question newQuestion;
     private String resourceLocation;
-
-    @Autowired
-    private QuestionRepository questionRepository;
 
     @Before
     public void setUp() {
