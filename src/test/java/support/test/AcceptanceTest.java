@@ -56,9 +56,9 @@ public abstract class AcceptanceTest {
         return questionRepository.findById(defaultUser().getId()).orElseThrow(NoSuchElementException::new);
     }
 
-    protected String createResource(String path, Object bodyPayload) {
-        ResponseEntity<String> response = template().postForEntity(path, bodyPayload, String.class);
-        assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
+    protected String createResource(String path, Object bodyPayload, User user) {
+        ResponseEntity<String> response = basicAuthTemplate(user).postForEntity(path, bodyPayload, String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         return response.getHeaders().getLocation().getPath();
     }
 

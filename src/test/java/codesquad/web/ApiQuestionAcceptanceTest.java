@@ -17,18 +17,19 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     private static final String QUESTION_API = "/api/questions";
 
     private Question newQuestion;
+    private String resourceLocation;
     @Autowired
     private QuestionRepository questionRepository;
 
     @Before
     public void setUp() {
         newQuestion = new Question("newTitle", "newContents");
+        resourceLocation = createResource(QUESTION_API, newQuestion);
     }
 
     @Test
     public void create() {
-        String location = createResource("/api/questions", newQuestion);
-        Question question = getResource(location, Question.class, defaultUser());
+        Question question = getResource(resourceLocation, Question.class, defaultUser());
         assertThat(question).isNotNull();
     }
 
@@ -40,8 +41,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void show() {
-        String location = createResource("/api/questions", newQuestion);
-        Question question = getResource(location, Question.class, defaultUser());
+        Question question = getResource(resourceLocation, Question.class, defaultUser());
         assertThat(question.getTitle()).isEqualTo(newQuestion.getTitle());
         assertThat(question.getContents()).isEqualTo(newQuestion.getContents());
     }
