@@ -7,10 +7,7 @@ import codesquad.service.QnaService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -28,6 +25,11 @@ public class ApiQuestionController {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/api/questions/" + savedQuestion.getId()));
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
+    }
+
+    @GetMapping("{id}")
+    public Question show(@LoginUser User loginUser, @PathVariable long id){
+        return qnaService.findById(id);
     }
 
 
