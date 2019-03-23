@@ -28,9 +28,15 @@ public class ApiQuestionController {
     }
 
     @GetMapping("{id}")
-    public Question show(@LoginUser User loginUser, @PathVariable long id){
+    public Question show(@LoginUser User loginUser, @PathVariable long id) throws Exception{
         return qnaService.findById(id);
     }
+
+    @PutMapping("{id}")
+    public Question update(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody Question updateQuestion){
+        return qnaService.update(loginUser, id, updateQuestion);
+    }
+
 
 
 }
