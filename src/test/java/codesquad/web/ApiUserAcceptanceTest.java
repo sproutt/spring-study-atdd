@@ -13,9 +13,9 @@ public class ApiUserAcceptanceTest extends AcceptanceTest {
     @Test
     public void create() throws Exception {
         User newUser = newUser("testuser1");
-
         User dbUser =
                 getResource(createResource("/api/users", newUser), User.class, findByUserId(newUser.getUserId()));
+
         assertThat(dbUser).isNotNull();
     }
 
@@ -25,6 +25,7 @@ public class ApiUserAcceptanceTest extends AcceptanceTest {
 
         ResponseEntity<Void> response =
                 basicAuthTemplate(defaultUser()).getForEntity(createResource("/api/users", newUser), Void.class);
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
@@ -48,13 +49,13 @@ public class ApiUserAcceptanceTest extends AcceptanceTest {
     @Test
     public void update_다른_사람() throws Exception {
         User newUser = newUser("testuser4");
-
         User updateUser = new User(newUser.getUserId(), "password", "name2", "javajigi@slipp.net2");
 
         ResponseEntity<Void> responseEntity =
                 basicAuthTemplate(defaultUser())
                         .exchange(createResource("/api/users", newUser), HttpMethod.PUT,
                                 createHttpEntity(updateUser), Void.class);
+
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 }

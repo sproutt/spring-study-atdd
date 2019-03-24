@@ -18,6 +18,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         newQuestion.writeBy(user);
 
         ResponseEntity<Void> response = basicAuthTemplate(user).postForEntity("/api/questions", newQuestion, Void.class);
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
@@ -28,6 +29,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         newQuestion.writeBy(user);
 
         ResponseEntity<Void> response = template().postForEntity("/api/questions", newQuestion, Void.class);
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
@@ -39,6 +41,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
         ResponseEntity<Void> response =
                 template().getForEntity(createResource("/api/questions", newQuestion, user), Void.class);
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -58,7 +61,6 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(updateQuestion.getContents()).isEqualTo(responseEntity.getBody().getContents());
         assertThat(updateQuestion.getTitle()).isEqualTo(responseEntity.getBody().getTitle());
-
     }
 
     @Test
