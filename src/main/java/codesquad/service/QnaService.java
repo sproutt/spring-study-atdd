@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -56,13 +57,16 @@ public class QnaService {
     }
 
 
-    public Answer addAnswer(User loginUser, long questionId, String contents) {
-        // TODO 답변 추가 기능 구현
-        return null;
+    public Answer addAnswer(User loginUser, long questionId, String contents) throws Exception {
+        Question question = findById(questionId);
+        Answer answer = new Answer(loginUser, contents);
+        question.addAnswer(answer);
+        answer.toQuestion(question);
+        return answerRepository.save(answer);
     }
 
-    public Answer deleteAnswer(User loginUser, long id) {
-        // TODO 답변 삭제 기능 구현
-        return null;
+    public void deleteAnswer(User loginUser, long id) throws Exception {
+        Answer answer = answerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
+        answer.delete(loginUser);
     }
 }

@@ -1,5 +1,6 @@
 package codesquad.domain;
 
+import codesquad.CannotDeleteException;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
@@ -65,6 +66,12 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
 
     public boolean isDeleted() {
         return deleted;
+    }
+
+    public void delete(User loginUser) throws Exception {
+        if (!isOwner(loginUser))
+            throw new CannotDeleteException("User not equal");
+        this.deleted = true;
     }
 
     @Override
