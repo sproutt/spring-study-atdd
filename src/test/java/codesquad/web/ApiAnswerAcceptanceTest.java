@@ -27,7 +27,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     public void create() throws Exception {
         Answer newAnswer = new Answer("testAnswer1");
 
-        ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).postForEntity("/api/questions/"+defaultQuestion.getId(), newAnswer, Void.class);
+        ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).postForEntity("/api/questions/"+defaultQuestion.getId()+"/answers", newAnswer, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         String location = response.getHeaders().getLocation().getPath();
 
@@ -40,4 +40,5 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new HttpEntity(body, headers);
     }
+
 }
