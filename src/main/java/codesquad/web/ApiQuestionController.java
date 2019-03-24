@@ -6,6 +6,7 @@ import codesquad.domain.User;
 import codesquad.security.LoginUser;
 import codesquad.service.QnaService;
 import codesquad.service.QuestionService;
+import org.aspectj.weaver.ast.ITestVisitor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class ApiQuestionController {
     private QnaService qnaService;
 
     @GetMapping("")
-    public List<Question> list(){
+    public Iterable<Question> list(){
         return qnaService.findAllNotDeleted();
     }
 

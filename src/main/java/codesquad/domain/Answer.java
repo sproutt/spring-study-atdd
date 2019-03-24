@@ -1,5 +1,6 @@
 package codesquad.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
@@ -10,9 +11,11 @@ import javax.validation.constraints.Size;
 public class Answer extends AbstractEntity implements UrlGeneratable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_writer"))
+    @JsonIgnore
     private User writer;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_to_question"))
     private Question question;
 

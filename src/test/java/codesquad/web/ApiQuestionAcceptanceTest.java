@@ -12,6 +12,8 @@ import support.test.AcceptanceTest;
 
 import javax.validation.constraints.Null;
 
+import java.util.List;
+
 import static codesquad.domain.UserTest.SANJIGI;
 import static codesquad.domain.UserTest.newUser;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,7 +24,8 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void list(){
-        ResponseEntity<Void> response = template().getForEntity(URL_API_QUESTION, Void.class);
+        ResponseEntity<Iterable> response = template().getForEntity(URL_API_QUESTION, Iterable.class);
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         log.debug("body : {}", response.getBody());
     }
