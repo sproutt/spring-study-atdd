@@ -47,7 +47,7 @@ public class QnaService {
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
+    public void delete(User loginUser, long questionId) throws CannotDeleteException {
         Question original = findById(questionId);
         if(original.isOwner(loginUser)){
             original.delete();
