@@ -4,6 +4,7 @@ import codesquad.domain.Answer;
 import codesquad.domain.Question;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import support.test.AcceptanceTest;
@@ -17,6 +18,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     private Question question;
     private Answer answer;
     private String questionLocation;
+
     @Before
     public void setUp() {
         question = new Question("Title", "Contents");
@@ -40,28 +42,38 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void show() {
-        Answer createdAnswer = getResource(questionLocation+ANSWER_API, Answer.class, defaultUser());
+        Answer createdAnswer = getResource(questionLocation + ANSWER_API, Answer.class, defaultUser());
         assertThat(createdAnswer.getWriter()).isEqualTo(defaultUser());
         assertThat(createdAnswer.getContents()).isEqualTo(answer.getContents());
     }
 
     @Test
     public void update() {
-
+        ResponseEntity<Answer> response =
+                basicAuthTemplate().exchange(questionLocation + ANSWER_API, HttpMethod.PUT, createHttpEntity(answer), Answer.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getContents()).isEqualTo(answer.getContents());
+        assertThat(response.getBody().getWriter()).isEqualTo(defaultUser());
     }
 
     @Test
     public void update_failed() {
-
+        ResponseEntity<Answer> response
+                = template().exchange(questionLocation + ANSWER_API, HttpMethod.PUT, createHttpEntity(answer), Answer.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
     public void delete() {
-
+        ResponseEntity<Answer> response
+                = basicAuthTemplate().exchange(questionLocation+ANSWER_API, HttpMethod.DELETE, createHttpEntity(answer), Answer.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     public void delete_failed() {
-
+        ResponseEntity<Answer> responseEntity =
+                template().exchange(questionLocation+ANSWER_API, HttpMethod.DELETE, createHttpEntity(answer), Answer.class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 }
