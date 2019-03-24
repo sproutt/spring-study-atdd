@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.springframework.http.*;
 import support.test.AcceptanceTest;
 
+import static codesquad.domain.UserTest.newUser;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ApiQuestionAcceptanceTest extends AcceptanceTest {
@@ -81,11 +82,10 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         Question updateQuestion = new Question("updatetitle2", "updatecontents2");
 
         ResponseEntity<Question> responseEntity =
-                basicAuthTemplate(user)
+                basicAuthTemplate(newUser("burrito"))
                         .exchange(location, HttpMethod.PUT, createHttpEntity(updateQuestion), Question.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-
     }
 
     private HttpEntity createHttpEntity(Object body) {

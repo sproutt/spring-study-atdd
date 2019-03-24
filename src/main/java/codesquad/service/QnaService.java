@@ -37,7 +37,7 @@ public class QnaService {
     }
 
     @Transactional
-    public Question update(User loginUser, Long id, Question updatedQuestion) {
+    public Question update(User loginUser, Long id, Question updateQuestion) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("question not found"));
 
@@ -45,7 +45,7 @@ public class QnaService {
             throw new UnAuthorizedException("mismatch writer");
         }
 
-        question.update(updatedQuestion);
+        question.update(updateQuestion);
         return questionRepository.save(question);
     }
 

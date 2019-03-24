@@ -33,4 +33,9 @@ public class ApiQuestionController {
         return qnaService.findById(id)
                 .orElseThrow(() -> new RuntimeException("question not found"));
     }
+
+    @PutMapping("/{id}")
+    public Question update(@LoginUser User loginUser, @PathVariable Long id, @RequestBody Question updateQuestion) {
+        return qnaService.update(loginUser, id, updateQuestion);
+    }
 }
