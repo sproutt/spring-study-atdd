@@ -100,7 +100,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         ResponseEntity<Void> response =  basicAuthTemplate().exchange(location, HttpMethod.DELETE, createHttpEntity(null), Void.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(basicAuthTemplate().getForEntity(location, Question.class).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(basicAuthTemplate().getForEntity(location, Question.class).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test

@@ -51,7 +51,7 @@ public class ApiQuestionController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@LoginUser User loginUser, @PathVariable Long id){
-        qnaService.delete(loginUser, id);
+        qnaService.deleteQuestionWithAnswer(loginUser, id);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/api/questions"));
         return new ResponseEntity<Void>(headers, HttpStatus.OK);
