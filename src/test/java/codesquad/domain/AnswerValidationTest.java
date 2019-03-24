@@ -20,15 +20,15 @@ public class AnswerValidationTest {
     private static Validator validator;
 
     @BeforeClass
-    public static void setup(){
+    public static void setup() {
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-        validator= validatorFactory.getValidator();
+        validator = validatorFactory.getValidator();
     }
 
     @Test
-    public void empty_content() throws Exception{
+    public void empty_content() throws Exception {
         Answer answer = new Answer(new User(), "");
         Set<ConstraintViolation<Answer>> constraintViolations = validator.validate(answer);
-        assertThat(constraintViolations.size(),is(1));
+        assertThat(constraintViolations.size(), is(1));
     }
 }

@@ -1,14 +1,11 @@
 package codesquad.web;
 
+import codesquad.domain.QuestionDTO;
 import codesquad.domain.User;
 import codesquad.exception.UnAuthorizedException;
 import codesquad.security.HttpSessionUtils;
 import codesquad.security.LoginUser;
 import codesquad.service.QnaService;
-import codesquad.service.QuestionService;
-import codesquad.domain.QuestionDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

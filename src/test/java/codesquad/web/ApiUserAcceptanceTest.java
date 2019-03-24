@@ -2,7 +2,9 @@ package codesquad.web;
 
 import codesquad.domain.User;
 import org.junit.Test;
-import org.springframework.http.*;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import support.test.AcceptanceTest;
 
 import static codesquad.domain.UserTest.newUser;
@@ -32,12 +34,9 @@ public class ApiUserAcceptanceTest extends AcceptanceTest {
         String location = createResource("/api/users", newUser);
         User original = basicAuthTemplate(newUser).getForObject(location, User.class);
 
-        User updateUser = new User
-                (original.getId(), original.getUserId(), original.getPassword(),
-                        "javajigi2", "javajigi2@slipp.net");
+        User updateUser = new User(original.getId(), original.getUserId(), original.getPassword(), "javajigi2", "javajigi2@slipp.net");
 
-        ResponseEntity<User> responseEntity =
-                basicAuthTemplate(newUser).exchange(location, HttpMethod.PUT, createHttpEntity(updateUser), User.class);
+        ResponseEntity<User> responseEntity = basicAuthTemplate(newUser).exchange(location, HttpMethod.PUT, createHttpEntity(updateUser), User.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(updateUser.equalsNameAndEmail(responseEntity.getBody())).isTrue();
@@ -50,8 +49,7 @@ public class ApiUserAcceptanceTest extends AcceptanceTest {
 
         User updateUser = new User(newUser.getUserId(), "password", "name2", "javajigi@slipp.net2");
 
-        ResponseEntity<Void> responseEntity =
-                basicAuthTemplate(defaultUser()).exchange(location, HttpMethod.PUT, createHttpEntity(updateUser), Void.class);
+        ResponseEntity<Void> responseEntity = basicAuthTemplate(defaultUser()).exchange(location, HttpMethod.PUT, createHttpEntity(updateUser), Void.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 }

@@ -2,7 +2,6 @@ package support.test;
 
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
-import com.sun.deploy.net.HttpResponse;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,28 +44,25 @@ public abstract class AcceptanceTest {
         return userRepository.findByUserId(userId).get();
     }
 
-    protected String createResource(String path, Object bodyPayLoad){
+    protected String createResource(String path, Object bodyPayLoad) {
         ResponseEntity<String> response = template().postForEntity(path, bodyPayLoad, String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         return response.getHeaders().getLocation().getPath();
     }
 
-    protected String createResourceWithAuth(String path, Object bodyPayLoad){
+    protected String createResourceWithAuth(String path, Object bodyPayLoad) {
         ResponseEntity<String> response = basicAuthTemplate().postForEntity(path, bodyPayLoad, String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         return response.getHeaders().getLocation().getPath();
     }
 
-    protected String createResourceWithAuth(String path, String key, String value){
-        HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
-                .addParameter(key, value)
-                .build();
+    protected String createResourceWithAuth(String path, String key, String value) {
+        HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm().addParameter(key, value).build();
         ResponseEntity<String> response = basicAuthTemplate().postForEntity(path, request, String.class);
         return response.getHeaders().getLocation().getPath();
     }
 
-
-    protected <T> T getResource(String location, Class<T> responseType , User loginUser){
+    protected <T> T getResource(String location, Class<T> responseType, User loginUser) {
         return basicAuthTemplate(loginUser).getForObject(location, responseType);
     }
 

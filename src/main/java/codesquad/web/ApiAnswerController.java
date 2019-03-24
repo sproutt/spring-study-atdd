@@ -20,13 +20,13 @@ public class ApiAnswerController {
     private QnaService qnaService;
 
     @GetMapping("")
-    public Iterable<Answer> list(@PathVariable Long questionId){
+    public Iterable<Answer> list(@PathVariable Long questionId) {
         return qnaService.findAllAnswerNotDeleted(questionId);
     }
 
 
     @PostMapping("")
-    public ResponseEntity<Void> create(@LoginUser User loginUser, @PathVariable Long questionId, String contents){
+    public ResponseEntity<Void> create(@LoginUser User loginUser, @PathVariable Long questionId, String contents) {
         Answer answer = qnaService.addAnswer(loginUser, questionId, contents);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(new StringBuilder("/api/questions/")
@@ -38,12 +38,12 @@ public class ApiAnswerController {
     }
 
     @GetMapping("/{answerId}")
-    public Answer detail(@PathVariable Long answerId){
+    public Answer detail(@PathVariable Long answerId) {
         return qnaService.findAnswerByIdNotDeleted(answerId);
     }
 
     @DeleteMapping("/{answerId}")
-    public Answer delete(@LoginUser User loginUser , @PathVariable Long answerId){
+    public Answer delete(@LoginUser User loginUser, @PathVariable Long answerId) {
         return qnaService.deleteAnswer(loginUser, answerId);
     }
 }
