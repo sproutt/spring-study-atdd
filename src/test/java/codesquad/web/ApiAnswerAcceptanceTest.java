@@ -56,7 +56,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void update_다른_사람() throws Exception {
-        String testContents = "testContents2";
+        String testContents = "testContents3";
 
         ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).postForEntity(DEFAULTQUESTIONURL, testContents, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -66,6 +66,36 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
         ResponseEntity<Answer> responseEntity =
                 basicAuthTemplate(anotherUser).exchange(location, HttpMethod.PUT, createHttpEntity(updateString), Answer.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    public void delete() throws Exception {
+        String testContents = "testContents4";
+
+        ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).postForEntity(DEFAULTQUESTIONURL, testContents, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        String location = response.getHeaders().getLocation().getPath();
+
+
+        basicAuthTemplate(defaultUser()).delete(location);
+
+        Answer dbAnswer = template().getForObject(location, Answer.class);
+        assertThat(dbAnswer.isDeleted()).isTrue();
+    }
+
+    @Test
+    public void delete_다른사람() throws Exception {
+        String testContents = "testContents5";
+
+        ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).postForEntity(DEFAULTQUESTIONURL, testContents, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        String location = response.getHeaders().getLocation().getPath();
+
+
+        basicAuthTemplate(anotherUser).delete(location);
+
+        Answer dbAnswer = template().getForObject(location, Answer.class);
+        assertThat(dbAnswer.isDeleted()).isTrue();
     }
 
 
