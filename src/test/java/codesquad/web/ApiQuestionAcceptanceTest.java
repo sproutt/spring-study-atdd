@@ -28,7 +28,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     public void create() throws Exception {
         Question newQuestion = new Question("testQuestion1","testContents");
 
-        ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).postForEntity("/api/quetions", newQuestion, Void.class);
+        ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).postForEntity("/api/questions", newQuestion, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         String location = response.getHeaders().getLocation().getPath();
 
@@ -40,7 +40,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     public void update() throws Exception {
 
         Question newQuestion = new Question("testQuestion2","testContents");
-        ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).postForEntity("/api/quetions", newQuestion, Void.class);
+        ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).postForEntity("/api/questions", newQuestion, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         String location = response.getHeaders().getLocation().getPath();
 
@@ -53,7 +53,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void update_다른_사람() throws Exception {
         Question newQuestion = new Question("testQuestion3","testContents");
-        ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).postForEntity("/api/quetions", newQuestion, Void.class);
+        ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).postForEntity("/api/questions", newQuestion, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         String location = response.getHeaders().getLocation().getPath();
 
@@ -67,7 +67,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void delete() throws Exception {
         Question newQuestion = new Question("testQuestion3","testContents");
-        ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).postForEntity("/api/quetions", newQuestion, Void.class);
+        ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).postForEntity("/api/questions", newQuestion, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         String location = response.getHeaders().getLocation().getPath();
 
@@ -80,7 +80,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void delete_다른사람() throws Exception {
         Question newQuestion = new Question("testQuestion4","testContents");
-        ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).postForEntity("/api/quetions", newQuestion, Void.class);
+        ResponseEntity<Void> response = basicAuthTemplate(defaultUser()).postForEntity("/api/questions", newQuestion, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         String location = response.getHeaders().getLocation().getPath();
 

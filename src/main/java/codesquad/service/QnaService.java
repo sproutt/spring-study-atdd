@@ -1,8 +1,6 @@
 package codesquad.service;
 
-import codesquad.CannotDeleteException;
-import codesquad.NullEntityException;
-import codesquad.UnAuthenticationException;
+import codesquad.*;
 import codesquad.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,30 +32,31 @@ public class QnaService {
     }
 
     public Question findById(long id) {
-        return questionRepository.findById(id).orElseThrow(()->new NullEntityException());
+        return questionRepository.findById(id).orElseThrow(() -> new NullEntityException());
     }
 
     @Transactional
-    public Question update(User loginUser, long id, Question updatedQuestion) {
+    public Question update(User loginUser, long id, Question updatedQuestion) throws UnAuthenticationException {
         Question original = findById(id);
-        if(original.isOwner(loginUser)){
+        if (original.isOwner(loginUser)) {
             original.update(updatedQuestion);
+            return original;
         }
-        return original;
+        throw new UnAuthorizedException();
     }
 
     @Transactional
-    public void delete(User loginUser, long questionId) throws CannotDeleteException {
+    public void delete(User loginUser, long questionId) throws UnAuthenticationException {
         Question original = findById(questionId);
-        if(original.isOwner(loginUser)){
+        if (original.isOwner(loginUser)) {
             original.delete();
         }
-        throw new CannotDeleteException(original.toString());
+        throw new UnAuthenticationException();
     }
 
     public Question ownerCheck(long id, User loginUser) throws UnAuthenticationException {
         Question question = findById(id);
-        if(question.isOwner(loginUser)){
+        if (question.isOwner(loginUser)) {
             return question;
         }
         throw new UnAuthenticationException();
