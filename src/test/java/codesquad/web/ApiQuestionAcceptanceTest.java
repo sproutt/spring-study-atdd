@@ -25,7 +25,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void post_no_login() {
         User user = defaultUser();
-        Question newQuestion = new Question("title1", "contents1");
+        Question newQuestion = new Question("title2", "contents2");
         newQuestion.writeBy(user);
 
         ResponseEntity<Void> response = template().postForEntity("/api/questions", newQuestion, Void.class);
@@ -36,7 +36,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void show() {
         User user = defaultUser();
-        Question newQuestion = new Question("title1", "contents1");
+        Question newQuestion = new Question("title3", "contents3");
         newQuestion.writeBy(user);
 
         ResponseEntity<Void> response = basicAuthTemplate(user).postForEntity("/api/questions", newQuestion, Void.class);

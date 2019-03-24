@@ -32,12 +32,12 @@ public class QnaService {
         return questionRepository.save(question);
     }
 
-    public Optional<Question> findById(long id) {
+    public Optional<Question> findById(Long id) {
         return questionRepository.findById(id);
     }
 
     @Transactional
-    public Question update(User loginUser, long id, Question updatedQuestion) {
+    public Question update(User loginUser, Long id, Question updatedQuestion) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("question not found"));
 
@@ -50,7 +50,7 @@ public class QnaService {
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, long id) throws CannotDeleteException {
+    public void deleteQuestion(User loginUser, Long id) throws CannotDeleteException {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("question not found"));
 
@@ -70,12 +70,12 @@ public class QnaService {
         return questionRepository.findAll(pageable).getContent();
     }
 
-    public Answer addAnswer(User loginUser, long questionId, String contents) {
+    public Answer addAnswer(User loginUser, Long questionId, String contents) {
         // TODO 답변 추가 기능 구현
         return null;
     }
 
-    public Answer deleteAnswer(User loginUser, long id) {
+    public Answer deleteAnswer(User loginUser, Long id) {
         // TODO 답변 삭제 기능 구현 
         return null;
     }
