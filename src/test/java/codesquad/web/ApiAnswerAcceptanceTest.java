@@ -1,7 +1,6 @@
 package codesquad.web;
 
 import codesquad.domain.Answer;
-import codesquad.domain.Question;
 import codesquad.domain.User;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
@@ -51,7 +50,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     @Test
     public void delete_다른_사람() {
         String contents = "contents4";
-        User user = newUser("testuser2");
+        User user = newUser("testuser1");
         createResource("/api/users", user);
 
         ResponseEntity<Answer> responseEntity =

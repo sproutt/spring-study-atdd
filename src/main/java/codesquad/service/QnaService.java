@@ -78,8 +78,15 @@ public class QnaService {
         return answerRepository.save(answer);
     }
 
-    public Answer deleteAnswer(User loginUser, Long id) {
-        // TODO 답변 삭제 기능 구현 
-        return null;
+    public Answer deleteAnswer(User loginUser, Long id) throws CannotDeleteException {
+        Answer answer = answerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("answer not found"));
+
+        if (!answer.isOwner(loginUser)) {
+            throw new CannotDeleteException("mismatch writer");
+        }
+
+        answer.delete();
+        return answerRepository.save(answer);
     }
 }
