@@ -66,14 +66,14 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     @Test
     public void delete() {
         ResponseEntity<Answer> response
-                = basicAuthTemplate().exchange(questionLocation+ANSWER_API, HttpMethod.DELETE, createHttpEntity(answer), Answer.class);
+                = basicAuthTemplate().exchange(questionLocation + ANSWER_API, HttpMethod.DELETE, createHttpEntity(answer), Answer.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     public void delete_failed() {
         ResponseEntity<Answer> responseEntity =
-                template().exchange(questionLocation+ANSWER_API, HttpMethod.DELETE, createHttpEntity(answer), Answer.class);
+                template().exchange(questionLocation + ANSWER_API, HttpMethod.DELETE, createHttpEntity(answer), Answer.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 }
