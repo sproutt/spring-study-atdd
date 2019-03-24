@@ -5,10 +5,14 @@ import codesquad.domain.User;
 import codesquad.security.LoginUser;
 import codesquad.service.QnaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.net.URI;
+
+@RestController
 @RequestMapping("/api/questions/{questionId}/answers")
 public class ApiAnswerController {
 
@@ -22,8 +26,15 @@ public class ApiAnswerController {
 
 
     @PostMapping("")
-    public Answer create(@LoginUser User loginUser, @PathVariable Long questionId, String contents){
-        return qnaService.addAnswer(loginUser, questionId, contents);
+    public ResponseEntity<Void> create(@LoginUser User loginUser, @PathVariable Long questionId, String contents){
+        Answer answer = qnaService.addAnswer(loginUser, questionId, contents);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(new StringBuilder("/api/questions/")
+                .append(questionId)
+                .append("/answers/")
+                .append(answer.getId())
+                .toString()));
+        return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 
     @GetMapping("/{answerId}")

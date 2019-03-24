@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,9 +57,22 @@ public abstract class AcceptanceTest {
         return response.getHeaders().getLocation().getPath();
     }
 
+    protected String createResourceWithAuth(String path, String key, String value){
+        HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
+                .addParameter(key, value)
+                .build();
+        ResponseEntity<String> response = basicAuthTemplate().postForEntity(path, request, String.class);
+        return response.getHeaders().getLocation().getPath();
+    }
+
+
     protected <T> T getResource(String location, Class<T> responseType , User loginUser){
         return basicAuthTemplate(loginUser).getForObject(location, responseType);
     }
 
-
+    public HttpEntity createHttpEntity(Object body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new HttpEntity(body, headers);
+    }
 }
