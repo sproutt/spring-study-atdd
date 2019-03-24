@@ -71,8 +71,11 @@ public class QnaService {
     }
 
     public Answer addAnswer(User loginUser, Long questionId, String contents) {
-        // TODO 답변 추가 기능 구현
-        return null;
+        Answer answer = new Answer(loginUser, contents);
+        answer.toQuestion(questionRepository.findById(questionId)
+                .orElseThrow(() -> new RuntimeException("question not found")));
+
+        return answerRepository.save(answer);
     }
 
     public Answer deleteAnswer(User loginUser, Long id) {

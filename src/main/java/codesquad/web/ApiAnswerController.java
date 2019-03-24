@@ -3,7 +3,7 @@ package codesquad.web;
 import codesquad.domain.Answer;
 import codesquad.domain.User;
 import codesquad.security.LoginUser;
-import codesquad.service.AnswerService;
+import codesquad.service.QnaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,20 +17,14 @@ import java.net.URI;
 public class ApiAnswerController {
 
     @Autowired
-    private AnswerService answerService;
+    private QnaService qnaService;
 
     @PostMapping("")
-    public ResponseEntity<Void> post(@LoginUser User loginUser, @PathVariable Long questionId, @RequestBody Answer answer) {
-        Answer savedAnswer = answerService.save(loginUser, questionId, answer);
+    public ResponseEntity<Void> post(@LoginUser User loginUser, @PathVariable Long questionId, @RequestBody String contents) {
+        Answer savedAnswer = qnaService.addAnswer(loginUser, questionId, contents);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/api" + savedAnswer.generateUrl()));
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
-    }
-
-    @GetMapping("/{id}")
-    public Answer show(@PathVariable Long id) {
-        return answerService.findById(id)
-                .orElseThrow(() -> new RuntimeException("answer not found"));
     }
 }
