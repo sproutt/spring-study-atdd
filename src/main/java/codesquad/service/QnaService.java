@@ -67,7 +67,11 @@ public class QnaService {
     }
 
     public Answer deleteAnswer(User loginUser, long id) {
-        return findAnswerByIdNotDeleted(id).delete(loginUser);
+        Answer answer = findAnswerByIdNotDeleted(id);
+        answer.delete();
+        DeleteHistory deleteHistory = new DeleteHistory(ContentType.ANSWER ,id, loginUser, answer.getCreatedAt());
+        deleteHistoryService.save(deleteHistory);
+        return answerRepository.save(answer);
     }
 
     public Question findByIdNotDeleted(Long id) {
@@ -83,10 +87,18 @@ public class QnaService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public Question deleteQuestionWithAnswer(User loginUser, long id) {
         Question question = findByIdNotDeleted(id);
+
+        List<DeleteHistory> deleteHistories = question.getAnswers().stream().map(answer -> {
+            answer.delete();
+            return new DeleteHistory(ContentType.ANSWER, answer.getId(), loginUser, answer.getCreatedAt());
+        }).collect(Collectors.toList());
+
         question.delete(loginUser);
-        question.getAnswers().stream().forEach(Answer::delete);
+        deleteHistories.add(new DeleteHistory(ContentType.QUESTION, id, loginUser, question.getCreatedAt()));
+        deleteHistoryService.saveAll(deleteHistories);
         return questionRepository.save(question);
     }
 
