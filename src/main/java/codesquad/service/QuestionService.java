@@ -45,9 +45,6 @@ public class QuestionService {
     }
 
     public Question findByIdNotDeleted(Long id) {
-        return questionRepository.findById(id)
-                .filter(question -> !question.isDeleted())
-                .orElseThrow(QuestionDeletedException::new);
-
+        return questionRepository.findById(id).filter(question -> !question.isDeleted()).orElseThrow(QuestionDeletedException::new);
     }
 }

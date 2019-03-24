@@ -4,6 +4,7 @@ import codesquad.domain.User;
 import codesquad.exception.UnAuthorizedException;
 import codesquad.security.HttpSessionUtils;
 import codesquad.security.LoginUser;
+import codesquad.service.QnaService;
 import codesquad.service.QuestionService;
 import codesquad.domain.QuestionDTO;
 import org.slf4j.Logger;
@@ -19,8 +20,8 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/questions")
 public class QuestionController {
 
-    @Resource(name = "questionService")
-    private QuestionService questionService;
+    @Resource(name = "qnaService")
+    private QnaService questionService;
 
     @GetMapping("/form")
     public String form(HttpSession httpSession) {

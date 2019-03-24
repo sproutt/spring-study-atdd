@@ -4,6 +4,7 @@ import codesquad.domain.Question;
 import codesquad.domain.QuestionDTO;
 import codesquad.domain.User;
 import codesquad.security.LoginUser;
+import codesquad.service.QnaService;
 import codesquad.service.QuestionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,22 +21,22 @@ import java.util.List;
 @RequestMapping("/api/questions")
 public class ApiQuestionController {
 
-    @Resource(name="questionService")
-    private QuestionService questonServie;
+    @Resource(name="qnaService")
+    private QnaService qnaService;
 
     @GetMapping("")
     public List<Question> list(){
-        return questonServie.findAllNotDeleted();
+        return qnaService.findAllNotDeleted();
     }
 
     @GetMapping("/{id}")
     public Question detail(@PathVariable Long id){
-        return questonServie.findByIdNotDeleted(id);
+        return qnaService.findByIdNotDeleted(id);
     }
 
     @PostMapping("")
     public ResponseEntity<Void> create(@LoginUser User loginUser, @Valid @RequestBody QuestionDTO questionDTO){
-        Question question=questonServie.create(loginUser, questionDTO);
+        Question question=qnaService.create(loginUser, questionDTO);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/api/questions/"+question.getId()));
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
@@ -43,13 +44,13 @@ public class ApiQuestionController {
 
     @PutMapping("/{id}")
     public Question update(@LoginUser User loginUser , @Valid @RequestBody QuestionDTO questionDTO, @PathVariable Long id){
-        Question question= questonServie.update(loginUser, questionDTO, id);
+        Question question= qnaService.update(loginUser, questionDTO, id);
         return question;
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@LoginUser User loginUser, @PathVariable Long id){
-        questonServie.delete(loginUser, id);
+        qnaService.delete(loginUser, id);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/api/questions"));
         return new ResponseEntity<Void>(headers, HttpStatus.OK);
