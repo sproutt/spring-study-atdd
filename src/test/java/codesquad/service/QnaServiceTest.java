@@ -36,11 +36,11 @@ public class QnaServiceTest {
     @InjectMocks
     private QnaService qnaService;
 
-    public Question question1;
-    public Answer answer1;
+    public static Question question1;
+    public static Answer answer1;
 
     @BeforeClass
-    public void init(){
+    public static void init(){
         question1 = new Question("title", "context");
         question1.setId(1);
         question1.writeBy(JAVAJIGI);
@@ -58,11 +58,12 @@ public class QnaServiceTest {
         Question deletedQuestion = qnaService.deleteQuestionWithAnswer(JAVAJIGI, question1.getId());
 
         assertThat(deletedQuestion.isDeleted()).isEqualTo(true);
-        assertThat(deletedQuestion.getAnswers().stream().filter(answer-> !answer.isDeleted())).isNull();
+        assertThat(deletedQuestion.getAnswers().stream().filter(answer-> !answer.isDeleted())).isEmpty();
     };
 
     @Test(expected = UnAuthorizedException.class)
     public void delete_question_with_answers_unmatch_id(){
+        when(questionRepository.findById(question1.getId())).thenReturn(Optional.of(question1));
         Question deletedQuestion = qnaService.deleteQuestionWithAnswer(SANJIGI, question1.getId());
     }
 

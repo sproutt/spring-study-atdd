@@ -3,7 +3,7 @@ package codesquad.service;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
-import codesquad.exception.QuestionDeletedException;
+import codesquad.exception.EntityDeletedException;
 import codesquad.exception.QuestionNotFoundException;
 import codesquad.domain.QuestionDTO;
 import org.springframework.stereotype.Service;
@@ -45,6 +45,6 @@ public class QuestionService {
     }
 
     public Question findByIdNotDeleted(Long id) {
-        return questionRepository.findById(id).filter(question -> !question.isDeleted()).orElseThrow(QuestionDeletedException::new);
+        return questionRepository.findById(id).filter(question -> !question.isDeleted()).orElseThrow(EntityDeletedException::new);
     }
 }

@@ -2,17 +2,11 @@ package codesquad.web;
 
 import codesquad.domain.Question;
 import codesquad.domain.QuestionDTO;
-import codesquad.domain.User;
-import codesquad.exception.QuestionDeletedException;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import support.test.AcceptanceTest;
-
-import javax.validation.constraints.Null;
-
-import java.util.List;
 
 import static codesquad.domain.UserTest.SANJIGI;
 import static codesquad.domain.UserTest.newUser;

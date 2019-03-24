@@ -11,7 +11,8 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.util.Set;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class AnswerValidationTest {
     private static final Logger log = LoggerFactory.getLogger(AnswerValidationTest.class);
@@ -26,8 +27,8 @@ public class AnswerValidationTest {
 
     @Test
     public void empty_content() throws Exception{
-        Answer answer = new Answer();
+        Answer answer = new Answer(new User(), "");
         Set<ConstraintViolation<Answer>> constraintViolations = validator.validate(answer);
-        assertThat(constraintViolations.size()).isEqualTo(1);
+        assertThat(constraintViolations.size(),is(1));
     }
 }
