@@ -16,11 +16,38 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     public void post() {
         User user = defaultUser();
         Question question = defaultQuestion();
-        Answer newAnswer = new Answer(1l, user, question, "contents1");
+        Answer newAnswer = new Answer();
+        newAnswer.setContents("contents1");
 
         ResponseEntity<Void> response =
-                basicAuthTemplate(user).postForEntity(String.format("/api/questions/{id}/answers", question.getId()), newAnswer, Void.class);
+                basicAuthTemplate(user).postForEntity("/api" + question.generateUrl() + "/answers", newAnswer, Void.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    }
+
+    @Test
+    public void post_no_login() {
+        User user = defaultUser();
+        Question question = defaultQuestion();
+        Answer newAnswer = new Answer();
+        newAnswer.setContents("contents2");
+
+        ResponseEntity<Void> response =
+                template().postForEntity("/api" + question.generateUrl() + "/answers", newAnswer, Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    public void show() {
+        User user = defaultUser();
+        Question question = defaultQuestion();
+        Answer newAnswer = new Answer();
+        newAnswer.setContents("contents3");
+
+        ResponseEntity<Void> response =
+                template().getForEntity(createResource("/api" + question.generateUrl() + "/answers", newAnswer, user), Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 }
