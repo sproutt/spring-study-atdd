@@ -27,4 +27,10 @@ public class ApiAnswerController {
         headers.setLocation(URI.create("/api" + savedAnswer.generateUrl()));
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
+
+    @GetMapping("/{id}")
+    public Answer show(@PathVariable Long id) {
+        return answerService.findById(id)
+                .orElseThrow(() -> new RuntimeException("answer not found"));
+    }
 }
