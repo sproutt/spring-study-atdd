@@ -45,8 +45,8 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         String location = response.getHeaders().getLocation().getPath();
 
         Question updateQuestion = new Question("updateQuestion1","updateContents");
-        ResponseEntity<Void> responseEntity =
-                basicAuthTemplate(defaultUser()).exchange(location, HttpMethod.PUT, createHttpEntity(updateQuestion), Void.class);
+        ResponseEntity<Question> responseEntity =
+                basicAuthTemplate(defaultUser()).exchange(location, HttpMethod.PUT, createHttpEntity(updateQuestion), Question.class);
         assertThat(updateQuestion.isEqualTitleAndContents(responseEntity.getBody())).isTrue();
     }
 
