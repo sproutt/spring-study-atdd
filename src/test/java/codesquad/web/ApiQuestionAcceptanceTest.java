@@ -70,11 +70,13 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void update_다른_사람() {
-        User user = defaultUser();
+        User user = newUser("testuser1");
+        ResponseEntity<Void> response = template().postForEntity("/api/users", user, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         Question newQuestion = new Question("title5", "contents5");
         newQuestion.writeBy(user);
 
-        ResponseEntity<Void> response = basicAuthTemplate(user).postForEntity("/api/questions", newQuestion, Void.class);
+        response = basicAuthTemplate(user).postForEntity("/api/questions", newQuestion, Void.class);
         String location = response.getHeaders().getLocation().getPath();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
@@ -82,7 +84,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         Question updateQuestion = new Question("updatetitle2", "updatecontents2");
 
         ResponseEntity<Question> responseEntity =
-                basicAuthTemplate(newUser("burrito"))
+                basicAuthTemplate(defaultUser())
                 .exchange(location, HttpMethod.PUT, createHttpEntity(updateQuestion), Question.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
@@ -108,19 +110,22 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void delete_다른_사람() {
-        User user = defaultUser();
-        Question newQuestion = new Question("title6", "contents6");
+        User user = newUser("testuser2");
+        ResponseEntity<Void> response = template().postForEntity("/api/users", user, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        Question newQuestion = new Question("title7", "contents7");
         newQuestion.writeBy(user);
 
-        ResponseEntity<Void> response = basicAuthTemplate(user).postForEntity("/api/questions", newQuestion, Void.class);
+        response = basicAuthTemplate(user).postForEntity("/api/questions", newQuestion, Void.class);
         String location = response.getHeaders().getLocation().getPath();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         ResponseEntity<Question> responseEntity =
-                basicAuthTemplate(newUser("chicken"))
+                basicAuthTemplate(defaultUser())
                 .exchange(location, HttpMethod.DELETE, createHttpEntity(null), Question.class);
 
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNull();
     }
 
     private HttpEntity createHttpEntity(Object body) {

@@ -50,7 +50,7 @@ public class QnaService {
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, Long id) throws CannotDeleteException {
+    public Question deleteQuestion(User loginUser, Long id) throws CannotDeleteException {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("question not found"));
 
@@ -59,7 +59,7 @@ public class QnaService {
         }
 
         question.delete();
-        questionRepository.save(question);
+        return questionRepository.save(question);
     }
 
     public Iterable<Question> findAll() {
