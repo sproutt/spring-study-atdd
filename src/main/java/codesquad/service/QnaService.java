@@ -1,6 +1,8 @@
 package codesquad.service;
 
-import codesquad.*;
+import codesquad.NullEntityException;
+import codesquad.UnAuthenticationException;
+import codesquad.UnAuthorizedException;
 import codesquad.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Optional;
 
 @Service("qnaService")
 public class QnaService {
@@ -76,7 +77,7 @@ public class QnaService {
     }
 
     public Answer addAnswer(User loginUser, long questionId, String contents) {
-        Answer answer = new Answer(loginUser,contents);
+        Answer answer = new Answer(loginUser, contents);
         answer.toQuestion(findById(questionId));
         return answerRepository.save(answer);
     }
@@ -84,7 +85,7 @@ public class QnaService {
     @Transactional
     public Answer deleteAnswer(User loginUser, long id) throws UnAuthorizedException {
         Answer answer = findByAnswerId(id);
-        if(answer.isOwner(loginUser)){
+        if (answer.isOwner(loginUser)) {
             answer.delete();
             return answerRepository.save(answer);
         }
@@ -94,7 +95,7 @@ public class QnaService {
     @Transactional
     public Answer updateAnswer(User loginUser, long id, String updatedContents) throws UnAuthorizedException {
         Answer answer = findByAnswerId(id);
-        if(answer.isOwner(loginUser)){
+        if (answer.isOwner(loginUser)) {
             answer.setContents(updatedContents);
             return answerRepository.save(answer);
         }
