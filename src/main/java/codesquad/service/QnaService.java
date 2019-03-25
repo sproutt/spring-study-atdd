@@ -40,22 +40,23 @@ public class QnaService {
     }
 
     @Transactional
-    public Question update(User loginUser, long id, Question updatedQuestion) throws UnAuthenticationException {
+    public Question update(User loginUser, long id, Question updatedQuestion) throws UnAuthorizedException {
         Question original = findById(id);
         if (original.isOwner(loginUser)) {
             original.update(updatedQuestion);
-            return original;
+            return questionRepository.save(original);
         }
         throw new UnAuthorizedException();
     }
 
     @Transactional
-    public void delete(User loginUser, long questionId) throws UnAuthenticationException {
+    public Question delete(User loginUser, long questionId) throws UnAuthorizedException {
         Question original = findById(questionId);
         if (original.isOwner(loginUser)) {
             original.delete();
+            return questionRepository.save(original);
         }
-        throw new UnAuthenticationException();
+        throw new UnAuthorizedException();
     }
 
     public Question ownerCheck(long id, User loginUser) throws UnAuthenticationException {
@@ -75,14 +76,28 @@ public class QnaService {
     }
 
     public Answer addAnswer(User loginUser, long questionId, String contents) {
-        // TODO 답변 추가 기능 구현
         Answer answer = new Answer(loginUser,contents);
-        answerRepository.save(answer);
-        return answer;
+        answer.toQuestion(findById(questionId));
+        return answerRepository.save(answer);
     }
 
-    public Answer deleteAnswer(User loginUser, long id) {
-        // TODO 답변 삭제 기능 구현 
-        return null;
+    @Transactional
+    public Answer deleteAnswer(User loginUser, long id) throws UnAuthorizedException {
+        Answer answer = findByAnswerId(id);
+        if(answer.isOwner(loginUser)){
+            answer.delete();
+            return answerRepository.save(answer);
+        }
+        throw new UnAuthorizedException();
+    }
+
+    @Transactional
+    public Answer updateAnswer(User loginUser, long id, String updatedContents) throws UnAuthorizedException {
+        Answer answer = findByAnswerId(id);
+        if(answer.isOwner(loginUser)){
+            answer.setContents(updatedContents);
+            return answerRepository.save(answer);
+        }
+        throw new UnAuthorizedException();
     }
 }

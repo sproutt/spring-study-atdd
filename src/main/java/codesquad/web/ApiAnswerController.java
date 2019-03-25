@@ -1,6 +1,7 @@
 package codesquad.web;
 
 import codesquad.UnAuthenticationException;
+import codesquad.UnAuthorizedException;
 import codesquad.domain.Answer;
 import codesquad.domain.Question;
 import codesquad.domain.User;
@@ -31,8 +32,18 @@ public class ApiAnswerController {
     }
 
     @GetMapping("/{id}")
-    public Question show(@PathVariable long id) {
-        return qnaService.findById(id);
+    public Answer show(@PathVariable long id) {
+        return qnaService.findByAnswerId(id);
+    }
+
+    @PutMapping("/{id}")
+    public Answer update(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody String updatedContents) throws UnAuthorizedException {
+        return qnaService.updateAnswer(loginUser, id, updatedContents);
+    }
+
+    @DeleteMapping("/{id}")
+    public Answer delete(@LoginUser User loginUser, @PathVariable long id) throws UnAuthorizedException {
+        return qnaService.deleteAnswer(loginUser, id);
     }
 
 }

@@ -1,6 +1,6 @@
 package codesquad.web;
 
-import codesquad.UnAuthenticationException;
+import codesquad.UnAuthorizedException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.security.LoginUser;
@@ -29,19 +29,19 @@ public class ApiQuestionController {
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public Question show(@PathVariable long id) {
         return qnaService.findById(id);
     }
 
-    @PutMapping("{id}")
-    public Question update(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody Question updatedQuestion) throws UnAuthenticationException {
+    @PutMapping("/{id}")
+    public Question update(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody Question updatedQuestion) throws UnAuthorizedException {
         return qnaService.update(loginUser, id, updatedQuestion);
     }
 
-    @DeleteMapping("{id}")
-    public void delete(@LoginUser User loginUser, @PathVariable long id) throws UnAuthenticationException {
-        qnaService.delete(loginUser, id);
+    @DeleteMapping("/{id}")
+    public Question delete(@LoginUser User loginUser, @PathVariable long id) throws UnAuthorizedException {
+        return qnaService.delete(loginUser, id);
     }
 
 }
