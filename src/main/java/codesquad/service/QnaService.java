@@ -70,6 +70,11 @@ public class QnaService {
                 .orElseThrow(UnAuthenticationException::new);
     }
 
+    public Answer updateAnswer(User loginUser, long id) throws Exception {
+        Answer answer = answerRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        return answer.update(loginUser, answer);
+    }
+
     public void deleteAnswer(User loginUser, long id) throws Exception {
         Answer answer = answerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
         answer.delete(loginUser);

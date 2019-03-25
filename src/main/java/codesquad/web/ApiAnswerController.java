@@ -32,6 +32,8 @@ public class ApiAnswerController {
         return qnaService.findAnswerById(id);
     }
 
+    @PutMapping("{id}")
+    p
 
 }
 
