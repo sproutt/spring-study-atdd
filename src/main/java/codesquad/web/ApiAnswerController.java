@@ -27,6 +27,11 @@ public class ApiAnswerController {
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 
+    @GetMapping("{id}")
+    public Answer show(@LoginUser User loginUser, @PathVariable long id) throws Exception{
+        return qnaService.findAnswerById(id);
+    }
+
 
 }
 

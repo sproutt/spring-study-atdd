@@ -65,6 +65,11 @@ public class QnaService {
         return answerRepository.save(answer);
     }
 
+    public Answer findAnswerById(long answerId) throws Exception {
+        return answerRepository.findById(answerId)
+                .orElseThrow(UnAuthenticationException::new);
+    }
+
     public void deleteAnswer(User loginUser, long id) throws Exception {
         Answer answer = answerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
         answer.delete(loginUser);
