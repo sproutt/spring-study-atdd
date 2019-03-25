@@ -15,13 +15,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
+    final private static String DEFAULTANSWERURL = "/api/questions/1/answers";
+
     @Autowired
     QuestionRepository questionRepository;
 
     @Autowired
     UserRepository userRepository;
-
-    final private static String DEFAULTANSWERURL = "/api/questions/1/answers";
 
     User anotherUser;
 

@@ -45,7 +45,7 @@ public abstract class AcceptanceTest {
     }
 
     protected String createResource(String path, Object bodyPayload) {
-        ResponseEntity<String> response = template().postForEntity(path, bodyPayload, String.class);
+        ResponseEntity<String> response = basicAuthTemplate(defaultUser()).postForEntity(path, bodyPayload, String.class);
         assertThat(response.getStatusCode().equals(HttpStatus.CREATED));
         return response.getHeaders().getLocation().getPath();
     }
