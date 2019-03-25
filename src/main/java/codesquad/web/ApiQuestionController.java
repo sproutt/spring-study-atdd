@@ -27,17 +27,17 @@ public class ApiQuestionController {
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public Question show(@LoginUser User loginUser, @PathVariable long id) throws Exception {
         return qnaService.findById(id);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public Question update(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody Question updateQuestion) {
         return qnaService.update(loginUser, id, updateQuestion);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public void delete(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody Question question) throws Exception {
         qnaService.deleteQuestion(loginUser, id);
     }
