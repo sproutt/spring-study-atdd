@@ -5,7 +5,6 @@ import codesquad.UnAuthenticationException;
 import codesquad.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,7 +55,6 @@ public class QnaService {
         return questionRepository.findByDeleted(false);
     }
 
-
     public Answer addAnswer(User loginUser, long questionId, String contents) throws Exception {
         Question question = findById(questionId);
         Answer answer = new Answer(loginUser, contents);
@@ -68,11 +66,6 @@ public class QnaService {
     public Answer findAnswerById(long answerId) throws Exception {
         return answerRepository.findById(answerId)
                 .orElseThrow(UnAuthenticationException::new);
-    }
-
-    public Answer updateAnswer(User loginUser, long id) throws Exception {
-        Answer answer = answerRepository.findById(id).orElseThrow(NoSuchElementException::new);
-        return answer.update(loginUser, answer);
     }
 
     public void deleteAnswer(User loginUser, long id) throws Exception {

@@ -15,21 +15,24 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     private static final String ANSWER_API = "/answers";
     private static final String QUESTION_API = "/api/questions";
+    private String questionLocation;
+    private String answerLocation;
     private Question question;
     private Answer answer;
-    private String questionLocation;
+
+    private static final Long QUESTION_ID = 1L;
+    private static final Long ANSWER_ID = 1L;
 
     @Before
     public void setUp() {
-        question = new Question("Title", "Contents");
-        answer = new Answer(defaultUser(), "contents");
-        answer.toQuestion(question);
+        question = defaultQuestion();
+        answer = defaultAnswer();
         questionLocation = createResource(QUESTION_API, question, defaultUser());
+        answerLocation = createResource(questionLocation + ANSWER_API, answer, defaultUser());
     }
 
     @Test
     public void create() {
-        String answerLocation = createResource(questionLocation + ANSWER_API, answer, defaultUser());
         Answer createdAnswer = getResource(answerLocation, Answer.class, defaultUser());
         assertThat(createdAnswer).isNotNull();
     }
@@ -40,40 +43,23 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
-    @Test
-    public void show() {
-        Answer createdAnswer = getResource(questionLocation + ANSWER_API, Answer.class, defaultUser());
-        assertThat(createdAnswer.getWriter()).isEqualTo(defaultUser());
-        assertThat(createdAnswer.getContents()).isEqualTo(answer.getContents());
-    }
-
-    @Test
-    public void update() {
-        ResponseEntity<Answer> response =
-                basicAuthTemplate().exchange(questionLocation + ANSWER_API, HttpMethod.PUT, createHttpEntity(answer), Answer.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getContents()).isEqualTo(answer.getContents());
-        assertThat(response.getBody().getWriter()).isEqualTo(defaultUser());
-    }
-
-    @Test
-    public void update_failed() {
-        ResponseEntity<Answer> response
-                = template().exchange(questionLocation + ANSWER_API, HttpMethod.PUT, createHttpEntity(answer), Answer.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-    }
 
     @Test
     public void delete() {
-        ResponseEntity<Answer> response
-                = basicAuthTemplate().exchange(questionLocation + ANSWER_API, HttpMethod.DELETE, createHttpEntity(answer), Answer.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        ResponseEntity<Answer> responseEntity =
+                basicAuthTemplate(defaultUser()).exchange(answerLocation, HttpMethod.DELETE, createHttpEntity(null), Answer.class);
+
+        assertThat(responseEntity.getBody().isDeleted()).isTrue();
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+
     }
 
     @Test
     public void delete_failed() {
+
         ResponseEntity<Answer> responseEntity =
-                template().exchange(questionLocation + ANSWER_API, HttpMethod.DELETE, createHttpEntity(answer), Answer.class);
+                template().exchange(answerLocation, HttpMethod.DELETE, createHttpEntity(null), Answer.class);
+
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 }

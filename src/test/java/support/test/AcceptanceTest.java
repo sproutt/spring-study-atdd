@@ -1,9 +1,6 @@
 package support.test;
 
-import codesquad.domain.Question;
-import codesquad.domain.QuestionRepository;
-import codesquad.domain.User;
-import codesquad.domain.UserRepository;
+import codesquad.domain.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,6 +27,9 @@ public abstract class AcceptanceTest {
     @Autowired
     private QuestionRepository questionRepository;
 
+    @Autowired
+    private AnswerRepository answerRepository;
+
     public TestRestTemplate template() {
         return template;
     }
@@ -54,6 +54,10 @@ public abstract class AcceptanceTest {
         return questionRepository.findById(defaultUser().getId()).orElseThrow(NoSuchElementException::new);
     }
 
+    protected Answer defaultAnswer() {
+        return answerRepository.findById(defaultUser().getId()).orElseThrow(NoSuchElementException::new);
+    }
+
     protected String createResource(String path, Object bodyPayload, User user) {
         ResponseEntity<String> response = basicAuthTemplate(user).postForEntity(path, bodyPayload, String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -64,7 +68,7 @@ public abstract class AcceptanceTest {
         return basicAuthTemplate(loginUser).getForObject(location, responseType);
     }
 
-    protected HttpEntity createHttpEntity(Object body){
+    protected HttpEntity createHttpEntity(Object body) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new HttpEntity(body, headers);

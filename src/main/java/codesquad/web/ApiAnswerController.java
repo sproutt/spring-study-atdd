@@ -27,13 +27,10 @@ public class ApiAnswerController {
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 
-    @GetMapping("{id}")
-    public Answer show(@LoginUser User loginUser, @PathVariable long id) throws Exception{
-        return qnaService.findAnswerById(id);
+    @DeleteMapping("/{id}")
+    public void delete(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody Answer answer) throws Exception {
+        qnaService.deleteAnswer(loginUser, id);
     }
-
-    @PutMapping("{id}")
-    p
 
 }
 
