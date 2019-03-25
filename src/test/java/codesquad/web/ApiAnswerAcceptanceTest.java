@@ -20,9 +20,6 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     private Question question;
     private Answer answer;
 
-    private static final Long QUESTION_ID = 1L;
-    private static final Long ANSWER_ID = 1L;
-
     @Before
     public void setUp() {
         question = defaultQuestion();
@@ -56,7 +53,6 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void delete_failed() {
-
         ResponseEntity<Answer> responseEntity =
                 template().exchange(answerLocation, HttpMethod.DELETE, createHttpEntity(null), Answer.class);
 
