@@ -35,7 +35,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
         String testContents = "testContents1";
         String location = createResource(DEFAULTANSWERURL,testContents);
 
-        Answer dbAnswer = basicAuthTemplate().getForObject(location, Answer.class);
+        Answer dbAnswer = getResource(location,Answer.class,defaultUser());
         assertThat(dbAnswer).isNotNull();
     }
 
@@ -70,7 +70,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
         basicAuthTemplate(defaultUser()).delete(location);
 
-        Answer dbAnswer = template().getForObject(location, Answer.class);
+        Answer dbAnswer = getResource(location,Answer.class,defaultUser());
         assertThat(dbAnswer.isDeleted()).isTrue();
     }
 
@@ -81,7 +81,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
         basicAuthTemplate(anotherUser).delete(location);
 
-        Answer dbAnswer = template().getForObject(location, Answer.class);
+        Answer dbAnswer = getResource(location,Answer.class,defaultUser());
         assertThat(dbAnswer.isDeleted()).isFalse();
     }
 

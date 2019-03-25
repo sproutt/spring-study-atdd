@@ -31,7 +31,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         Question newQuestion = new Question("testQuestion1", "testContents");
         String location = createResource(DEFAULTQUESTIONURL,newQuestion);
 
-        Question dbQuestion = basicAuthTemplate(defaultUser()).getForObject(location, Question.class);
+        Question dbQuestion = getResource(location,Question.class,defaultUser());
         assertThat(dbQuestion).isNotNull();
     }
 
@@ -66,7 +66,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
         basicAuthTemplate(defaultUser()).delete(location);
 
-        Question dbQuestion = template().getForObject(location, Question.class);
+        Question dbQuestion = getResource(location,Question.class,defaultUser());
         assertThat(dbQuestion.isDeleted()).isTrue();
     }
 
@@ -77,7 +77,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
         basicAuthTemplate(anotherUser).delete(location);
 
-        Question dbQuestion = template().getForObject(location, Question.class);
+        Question dbQuestion = getResource(location,Question.class,defaultUser());
         assertThat(dbQuestion.isDeleted()).isFalse();
     }
 
