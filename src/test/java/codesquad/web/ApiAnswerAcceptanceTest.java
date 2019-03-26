@@ -20,16 +20,6 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     @Autowired
     QuestionRepository questionRepository;
 
-    @Autowired
-    UserRepository userRepository;
-
-    User anotherUser;
-
-    @Before
-    public void setUp() throws NullEntityException {
-        anotherUser = userRepository.findByUserId("sanjigi").orElseThrow(NullEntityException::new);
-    }
-
     @Test
     public void create() throws Exception {
         String testContents = "testContents1";
@@ -58,7 +48,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
         String updateString = "testString";
         ResponseEntity<Answer> responseEntity =
-                basicAuthTemplate(anotherUser).exchange(location, HttpMethod.PUT, createHttpEntity(updateString), Answer.class);
+                basicAuthTemplate(anotherUser()).exchange(location, HttpMethod.PUT, createHttpEntity(updateString), Answer.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
@@ -79,7 +69,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
         String testContents = "testContents5";
         String location = createResource(DEFAULT_ANSWER_URL,testContents);
 
-        basicAuthTemplate(anotherUser).delete(location);
+        basicAuthTemplate(anotherUser()).delete(location);
 
         Answer dbAnswer = getResource(location,Answer.class,defaultUser());
         assertThat(dbAnswer.isDeleted()).isFalse();
