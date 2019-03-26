@@ -39,20 +39,20 @@ public class QuestionController {
     }
 
     @GetMapping("/{id}/form")
-    public String updateForm(@LoginUser User loginUser, @PathVariable long id, Model model) throws UnAuthenticationException {
+    public String updateForm(@LoginUser User loginUser, @PathVariable long id, Model model) throws Exception {
         Question question = qnaService.ownerCheck(id, loginUser);
         model.addAttribute("question", question);
         return "/qna/updateForm";
     }
 
     @PutMapping("/{id}")
-    public String update(@LoginUser User loginUser, @PathVariable long id, Question target) throws UnAuthenticationException {
+    public String update(@LoginUser User loginUser, @PathVariable long id, Question target) throws Exception {
         qnaService.update(loginUser, id, target);
         return "redirect:/";
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@LoginUser User loginUser, @PathVariable long id) throws UnAuthenticationException {
+    public String delete(@LoginUser User loginUser, @PathVariable long id) throws Exception {
         qnaService.delete(loginUser, id);
         return "redirect:/";
     }

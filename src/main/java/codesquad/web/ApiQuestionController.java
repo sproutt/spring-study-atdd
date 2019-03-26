@@ -35,12 +35,12 @@ public class ApiQuestionController {
     }
 
     @PutMapping("/{id}")
-    public Question update(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody Question updatedQuestion) throws UnAuthorizedException {
+    public Question update(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody Question updatedQuestion) throws Exception {
         return qnaService.update(loginUser, id, updatedQuestion);
     }
 
     @DeleteMapping("/{id}")
-    public Question delete(@LoginUser User loginUser, @PathVariable long id) throws UnAuthorizedException {
+    public Question delete(@LoginUser User loginUser, @PathVariable long id) throws Exception {
         return qnaService.delete(loginUser, id);
     }
 

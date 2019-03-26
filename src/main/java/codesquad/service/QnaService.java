@@ -43,29 +43,29 @@ public class QnaService {
     @Transactional
     public Question update(User loginUser, long id, Question updatedQuestion) throws UnAuthorizedException {
         Question original = findById(id);
-        if (original.isOwner(loginUser)) {
-            original.update(updatedQuestion);
-            return questionRepository.save(original);
+        if (!original.isOwner(loginUser)) {
+            throw new UnAuthorizedException();
         }
-        throw new UnAuthorizedException();
+        original.update(updatedQuestion);
+        return questionRepository.save(original);
     }
 
     @Transactional
-    public Question delete(User loginUser, long questionId) throws UnAuthorizedException {
+    public Question delete(User loginUser, long questionId) throws Exception {
         Question original = findById(questionId);
-        if (original.isOwner(loginUser)) {
-            original.delete();
-            return questionRepository.save(original);
+        if (!original.isOwner(loginUser)) {
+            throw new UnAuthorizedException();
         }
-        throw new UnAuthorizedException();
+        original.delete();
+        return questionRepository.save(original);
     }
 
-    public Question ownerCheck(long id, User loginUser) throws UnAuthenticationException {
+    public Question ownerCheck(long id, User loginUser) throws Exception {
         Question question = findById(id);
-        if (question.isOwner(loginUser)) {
-            return question;
+        if (!question.isOwner(loginUser)) {
+            throw new UnAuthenticationException();
         }
-        throw new UnAuthenticationException();
+        return question;
     }
 
     public Iterable<Question> findAll() {
@@ -83,22 +83,22 @@ public class QnaService {
     }
 
     @Transactional
-    public Answer deleteAnswer(User loginUser, long id) throws UnAuthorizedException {
+    public Answer deleteAnswer(User loginUser, long id) throws Exception {
         Answer answer = findByAnswerId(id);
-        if (answer.isOwner(loginUser)) {
-            answer.delete();
-            return answerRepository.save(answer);
+        if (!answer.isOwner(loginUser)) {
+            throw new UnAuthorizedException();
         }
-        throw new UnAuthorizedException();
+        answer.delete();
+        return answerRepository.save(answer);
     }
 
     @Transactional
-    public Answer updateAnswer(User loginUser, long id, String updatedContents) throws UnAuthorizedException {
+    public Answer updateAnswer(User loginUser, long id, String updatedContents) throws Exception {
         Answer answer = findByAnswerId(id);
-        if (answer.isOwner(loginUser)) {
-            answer.setContents(updatedContents);
-            return answerRepository.save(answer);
+        if (!answer.isOwner(loginUser)) {
+            throw new UnAuthorizedException();
         }
-        throw new UnAuthorizedException();
+        answer.setContents(updatedContents);
+        return answerRepository.save(answer);
     }
 }
