@@ -37,14 +37,14 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void update() throws Exception {
-
         Question newQuestion = new Question("testQuestion2", "testContents");
         String location = createResource(DEFAULT_QUESTION_URL,newQuestion);
 
         Question updateQuestion = new Question("updateQuestion1", "updateContents");
         ResponseEntity<Question> responseEntity =
                 basicAuthTemplate(defaultUser()).exchange(location, HttpMethod.PUT, createHttpEntity(updateQuestion), Question.class);
-        assertThat(updateQuestion.isEqualTitleAndContents(responseEntity.getBody())).isTrue();
+        assertThat(responseEntity.getBody().getTitle()).isEqualTo(updateQuestion.getTitle());
+        assertThat(responseEntity.getBody().getContents()).isEqualTo(updateQuestion.getContents());
     }
 
     @Test

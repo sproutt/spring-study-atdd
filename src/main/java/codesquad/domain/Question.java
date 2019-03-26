@@ -95,13 +95,4 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     public void delete() {
         this.deleted = true;
     }
-
-    public boolean isEqualTitleAndContents(Question question) {
-        if (this.title.equals(question.getTitle())) {
-            if (this.contents.equals(question.getContents())) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
