@@ -29,11 +29,7 @@ public class ApiAnswerController {
     public ResponseEntity<Void> create(@LoginUser User loginUser, @PathVariable Long questionId, String contents) {
         Answer answer = qnaService.addAnswer(loginUser, questionId, contents);
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(new StringBuilder("/api/questions/")
-                .append(questionId)
-                .append("/answers/")
-                .append(answer.getId())
-                .toString()));
+        headers.setLocation(URI.create("/api"+answer.generateUrl()));
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 

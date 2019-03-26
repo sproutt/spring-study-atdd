@@ -18,7 +18,7 @@ import javax.servlet.http.HttpSession;
 public class QuestionController {
 
     @Resource(name = "qnaService")
-    private QnaService questionService;
+    private QnaService qnaService;
 
     @GetMapping("/form")
     public String form(HttpSession httpSession) {
@@ -35,25 +35,25 @@ public class QuestionController {
 
     @PostMapping("")
     public String create(@LoginUser User loginUser, QuestionDTO questionDto) {
-        questionService.create(loginUser, questionDto);
+        qnaService.create(loginUser, questionDto);
         return "redirect:/questions";
     }
 
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
-        model.addAttribute("questions", questionService.findById(id));
+        model.addAttribute("questions", qnaService.findById(id));
         return "/qna/show";
     }
 
     @PutMapping("/{id}")
     public String update(@LoginUser User loginUser, QuestionDTO questionDto, @PathVariable Long id) {
-        questionService.update(loginUser, questionDto, id);
+        qnaService.update(loginUser, questionDto, id);
         return "redirect:/questions/" + id;
     }
 
     @DeleteMapping("/{id}")
     public String delete(@LoginUser User loginUser, @PathVariable Long id) {
-        questionService.delete(loginUser, id);
+        qnaService.delete(loginUser, id);
         return "redirect:/questions";
     }
 }
