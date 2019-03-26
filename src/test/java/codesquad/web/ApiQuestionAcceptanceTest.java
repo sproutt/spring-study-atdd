@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
-    final private static String DEFAULTQUESTIONURL = "/api/questions";
+    final private static String DEFAULT_QUESTION_URL = "/api/questions";
 
     @Autowired
     UserRepository userRepository;
@@ -29,7 +29,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void create() throws Exception {
         Question newQuestion = new Question("testQuestion1", "testContents");
-        String location = createResource(DEFAULTQUESTIONURL,newQuestion);
+        String location = createResource(DEFAULT_QUESTION_URL,newQuestion);
 
         Question dbQuestion = getResource(location,Question.class,defaultUser());
         assertThat(dbQuestion).isNotNull();
@@ -39,7 +39,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     public void update() throws Exception {
 
         Question newQuestion = new Question("testQuestion2", "testContents");
-        String location = createResource(DEFAULTQUESTIONURL,newQuestion);
+        String location = createResource(DEFAULT_QUESTION_URL,newQuestion);
 
         Question updateQuestion = new Question("updateQuestion1", "updateContents");
         ResponseEntity<Question> responseEntity =
@@ -50,7 +50,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void update_다른_사람() throws Exception {
         Question newQuestion = new Question("testQuestion3", "testContents");
-        String location = createResource(DEFAULTQUESTIONURL,newQuestion);
+        String location = createResource(DEFAULT_QUESTION_URL,newQuestion);
 
         Question updateQuestion = new Question("updateQuestion2", "updateContents");
 
@@ -62,7 +62,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void delete() throws Exception {
         Question newQuestion = new Question("testQuestion3", "testContents");
-        String location = createResource(DEFAULTQUESTIONURL,newQuestion);
+        String location = createResource(DEFAULT_QUESTION_URL,newQuestion);
 
         basicAuthTemplate(defaultUser()).delete(location);
 
@@ -73,7 +73,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void delete_다른사람() throws Exception {
         Question newQuestion = new Question("testQuestion4", "testContents");
-        String location = createResource(DEFAULTQUESTIONURL,newQuestion);
+        String location = createResource(DEFAULT_QUESTION_URL,newQuestion);
 
         basicAuthTemplate(anotherUser).delete(location);
 
