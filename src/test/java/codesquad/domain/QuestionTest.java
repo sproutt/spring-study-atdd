@@ -27,4 +27,28 @@ public class QuestionTest {
 		assertThat(question.isDeleted()).isTrue();
 	}
 
+	@Test
+	public void delete_fail_question_not_exist(){
+
+	}
+
+	@Test
+	public void delete_fail_different_user(){
+
+	}
+
+	@Test
+	public void delete_success_same_user_with_no_answers(){
+
+	}
+
+	@Test
+	public void delete_success_same_user_with_same_answers_writer(){
+
+	}
+
+	@Test
+	public void delete_fail_same_user_but_different_answers_writer(){
+
+	}
 }

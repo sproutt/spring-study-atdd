@@ -69,7 +69,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void delete_failed() {
+    public void delete_no_login() {
         ResponseEntity<Question> responseEntity =
                 template().exchange(resourceLocation, HttpMethod.DELETE, createHttpEntity(newQuestion), Question.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
