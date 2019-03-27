@@ -71,5 +71,6 @@ public class QnaService {
     public void deleteAnswer(User loginUser, long id) throws Exception {
         Answer answer = answerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
         answer.delete(loginUser);
+        answerRepository.save(answer);
     }
 }

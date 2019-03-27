@@ -73,4 +73,8 @@ public abstract class AcceptanceTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new HttpEntity(body, headers);
     }
+
+    protected HttpEntity createHttpEntity() {
+        return createHttpEntity(null);
+    }
 }
