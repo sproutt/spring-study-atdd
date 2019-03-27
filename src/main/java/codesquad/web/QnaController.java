@@ -4,8 +4,6 @@ import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.security.LoginUser;
 import codesquad.service.QnaService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,13 +19,13 @@ public class QnaController {
     private QnaService qnaService;
 
     @GetMapping("/{id}")
-    public String list(@PathVariable long id, Model model) {
+    public String list(@PathVariable long id, Model model) throws Exception {
         model.addAttribute("question", qnaService.findById(id));
         return "/qna/show";
     }
 
     @GetMapping("/{id}/show")
-    public String updateForm(@PathVariable long id, Model model) {
+    public String updateForm(@PathVariable long id, Model model) throws Exception {
         model.addAttribute("question", qnaService.findById(id));
         return "/qna/updateForm";
     }

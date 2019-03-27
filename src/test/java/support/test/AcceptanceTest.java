@@ -1,53 +1,80 @@
 package support.test;
 
-import codesquad.domain.Question;
-import codesquad.domain.QuestionRepository;
-import codesquad.domain.User;
-import codesquad.domain.UserRepository;
+import codesquad.domain.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.NoSuchElementException;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public abstract class AcceptanceTest {
-	private static final String DEFAULT_LOGIN_USER = "javajigi";
+    private static final String DEFAULT_LOGIN_USER = "javajigi";
 
-	@Autowired
-	private TestRestTemplate template;
+    @Autowired
+    private TestRestTemplate template;
 
-	@Autowired
-	private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-	@Autowired
-	private QuestionRepository questionRepository;
+    @Autowired
+    private QuestionRepository questionRepository;
 
-	public TestRestTemplate template() {
-		return template;
-	}
+    @Autowired
+    private AnswerRepository answerRepository;
 
-	public TestRestTemplate basicAuthTemplate() {
-		return basicAuthTemplate(defaultUser());
-	}
+    public TestRestTemplate template() {
+        return template;
+    }
 
-	public TestRestTemplate basicAuthTemplate(User loginUser) {
-		return template.withBasicAuth(loginUser.getUserId(), loginUser.getPassword());
-	}
+    public TestRestTemplate basicAuthTemplate() {
+        return basicAuthTemplate(defaultUser());
+    }
 
-	protected User defaultUser() {
-		return findByUserId(DEFAULT_LOGIN_USER);
-	}
+    public TestRestTemplate basicAuthTemplate(User loginUser) {
+        return template.withBasicAuth(loginUser.getUserId(), loginUser.getPassword());
+    }
 
-	protected User findByUserId(String userId) {
-		return userRepository.findByUserId(userId).get();
-	}
+    protected User defaultUser() {
+        return findByUserId(DEFAULT_LOGIN_USER);
+    }
 
-	protected Question defaultQuestion() {
-		return questionRepository.findById(defaultUser().getId()).orElseThrow(NoSuchElementException::new);
-	}
+    protected User findByUserId(String userId) {
+        return userRepository.findByUserId(userId).get();
+    }
+
+    protected Question defaultQuestion() {
+        return questionRepository.findById(defaultUser().getId()).orElseThrow(NoSuchElementException::new);
+    }
+
+    protected Answer defaultAnswer() {
+        return answerRepository.findById(defaultUser().getId()).orElseThrow(NoSuchElementException::new);
+    }
+
+    protected String createResource(String path, Object bodyPayload, User user) {
+        ResponseEntity<String> response = basicAuthTemplate(user).postForEntity(path, bodyPayload, String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        return response.getHeaders().getLocation().getPath();
+    }
+
+    protected <T> T getResource(String location, Class<T> responseType, User loginUser) {
+        return basicAuthTemplate(loginUser).getForObject(location, responseType);
+    }
+
+    protected HttpEntity createHttpEntity(Object body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new HttpEntity(body, headers);
+    }
+
+    protected HttpEntity createHttpEntity() {
+        return createHttpEntity(null);
+    }
 }
