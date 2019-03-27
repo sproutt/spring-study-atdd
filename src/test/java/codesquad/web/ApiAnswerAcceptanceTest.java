@@ -49,9 +49,6 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void delete() {
-        String location = createResource(QUESTION_URI, createdQuestion, defaultUser());
-        String answerLocation = createResource(location + ANSWER_URI, createdAnswer, defaultUser());
-        Answer answer = basicAuthTemplate().getForObject(answerLocation, Answer.class);
         ResponseEntity<Void> responseEntity =
                 basicAuthTemplate().exchange(String.format("/api/questions/%d/answers/%d", 1l, 1l), HttpMethod.DELETE, createHttpEntity(null), Void.class);
 
