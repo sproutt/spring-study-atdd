@@ -1,7 +1,7 @@
 package codesquad.service;
 
-import codesquad.exception.CannotDeleteException;
 import codesquad.domain.*;
+import codesquad.exception.QuestionNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -9,8 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service("qnaService")
 public class QnaService {
@@ -25,25 +26,24 @@ public class QnaService {
     @Resource(name = "deleteHistoryService")
     private DeleteHistoryService deleteHistoryService;
 
-    public Question create(User loginUser, Question question) {
+    public Question create(User loginUser, QuestionDTO questionDTO) {
+        Question question = new Question(questionDTO.getTitle(), questionDTO.getContent());
         question.writeBy(loginUser);
-        log.debug("question : {}", question);
         return questionRepository.save(question);
     }
 
-    public Optional<Question> findById(long id) {
-        return questionRepository.findById(id);
+    public Question findById(Long id) {
+        return questionRepository.findById(id).orElseThrow(QuestionNotFoundException::new);
     }
 
     @Transactional
-    public Question update(User loginUser, long id, Question updatedQuestion) {
-        // TODO 수정 기능 구현
-        return null;
+    public Question update(User loginUser, QuestionDTO updatedQuestionDTO, long id) {
+        return questionRepository.save(findById(id).update(loginUser, updatedQuestionDTO));
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
-        // TODO 삭제 기능 구현
+    public void delete(User loginUser, long questionId) {
+        questionRepository.save(findById(questionId).delete(loginUser));
     }
 
     public Iterable<Question> findAll() {
@@ -54,13 +54,48 @@ public class QnaService {
         return questionRepository.findAll(pageable).getContent();
     }
 
+    public Iterable<Answer> findAllAnswerNotDeleted(Long questionId) {
+        return findByIdNotDeleted(questionId).getAnswers();
+    }
+
     public Answer addAnswer(User loginUser, long questionId, String contents) {
-        // TODO 답변 추가 기능 구현
-        return null;
+        Answer answer = new Answer(loginUser, contents);
+        answer.toQuestion(findByIdNotDeleted(questionId));
+        return answerRepository.save(answer);
     }
 
     public Answer deleteAnswer(User loginUser, long id) {
-        // TODO 답변 삭제 기능 구현 
-        return null;
+        Answer answer = findAnswerByIdNotDeleted(id);
+        answer.delete();
+        DeleteHistory deleteHistory = new DeleteHistory(ContentType.ANSWER, id, loginUser, answer.getCreatedAt());
+        deleteHistoryService.save(deleteHistory);
+        return answerRepository.save(answer);
+    }
+
+    public Question findByIdNotDeleted(Long id) {
+        return questionRepository.findById(id).filter(question -> !question.isDeleted()).orElseThrow(EntityNotFoundException::new);
+    }
+
+    public List<Question> findAllNotDeleted() {
+        return questionRepository.findAll().stream().filter(question -> !question.isDeleted()).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Question deleteQuestionWithAnswer(User loginUser, long id) {
+        Question question = findByIdNotDeleted(id);
+
+        List<DeleteHistory> deleteHistories = question.getAnswers().stream().map(answer -> {
+            answer.delete();
+            return new DeleteHistory(ContentType.ANSWER, answer.getId(), loginUser, answer.getCreatedAt());
+        }).collect(Collectors.toList());
+
+        question.delete(loginUser);
+        deleteHistories.add(new DeleteHistory(ContentType.QUESTION, id, loginUser, question.getCreatedAt()));
+        deleteHistoryService.saveAll(deleteHistories);
+        return questionRepository.save(question);
+    }
+
+    public Answer findAnswerByIdNotDeleted(Long answerId) {
+        return answerRepository.findById(answerId).filter(answer -> !answer.isDeleted()).orElseThrow(EntityNotFoundException::new);
     }
 }

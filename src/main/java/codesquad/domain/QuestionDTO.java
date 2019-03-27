@@ -2,8 +2,11 @@ package codesquad.domain;
 
 import codesquad.domain.Question;
 
+import javax.validation.constraints.NotNull;
+
 public class QuestionDTO {
 
+    @NotNull
     private String title;
     private String content;
 
@@ -34,5 +37,7 @@ public class QuestionDTO {
     public String getContent(){
         return content;
     }
+
+
 
 }

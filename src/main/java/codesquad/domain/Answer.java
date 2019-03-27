@@ -1,5 +1,7 @@
 package codesquad.domain;
 
+import codesquad.exception.UnAuthorizedException;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
@@ -10,9 +12,11 @@ import javax.validation.constraints.Size;
 public class Answer extends AbstractEntity implements UrlGeneratable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_writer"))
+    @JsonIgnore
     private User writer;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_to_question"))
     private Question question;
 
@@ -65,6 +69,18 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
 
     public boolean isDeleted() {
         return deleted;
+    }
+
+    public void delete() {
+        this.deleted = true;
+    }
+
+    public Answer delete(User loginUser) {
+        if (!loginUser.equalsNameAndEmail(writer)) {
+            throw new UnAuthorizedException();
+        }
+        this.deleted = true;
+        return this;
     }
 
     @Override

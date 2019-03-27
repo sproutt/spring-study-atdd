@@ -1,13 +1,11 @@
 package codesquad.web;
 
+import codesquad.domain.QuestionDTO;
 import codesquad.domain.User;
 import codesquad.exception.UnAuthorizedException;
 import codesquad.security.HttpSessionUtils;
 import codesquad.security.LoginUser;
-import codesquad.service.QuestionService;
-import codesquad.domain.QuestionDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import codesquad.service.QnaService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +17,8 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/questions")
 public class QuestionController {
 
-    @Resource(name = "questionService")
-    private QuestionService questionService;
+    @Resource(name = "qnaService")
+    private QnaService qnaService;
 
     @GetMapping("/form")
     public String form(HttpSession httpSession) {
@@ -37,25 +35,25 @@ public class QuestionController {
 
     @PostMapping("")
     public String create(@LoginUser User loginUser, QuestionDTO questionDto) {
-        questionService.create(loginUser, questionDto);
+        qnaService.create(loginUser, questionDto);
         return "redirect:/questions";
     }
 
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
-        model.addAttribute("questions", questionService.findById(id));
+        model.addAttribute("questions", qnaService.findById(id));
         return "/qna/show";
     }
 
     @PutMapping("/{id}")
     public String update(@LoginUser User loginUser, QuestionDTO questionDto, @PathVariable Long id) {
-        questionService.update(loginUser, questionDto, id);
+        qnaService.update(loginUser, questionDto, id);
         return "redirect:/questions/" + id;
     }
 
     @DeleteMapping("/{id}")
     public String delete(@LoginUser User loginUser, @PathVariable Long id) {
-        questionService.delete(loginUser, id);
+        qnaService.delete(loginUser, id);
         return "redirect:/questions";
     }
 }
