@@ -28,7 +28,7 @@ public class ApiQuestionController {
 
     @GetMapping("/{id}")
     public Question detail(@PathVariable Long id) {
-        return qnaService.findByIdNotDeleted(id);
+        return qnaService.findById(id);
     }
 
     @PostMapping("")
@@ -47,7 +47,7 @@ public class ApiQuestionController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@LoginUser User loginUser, @PathVariable Long id) {
-        qnaService.deleteQuestionWithAnswer(loginUser, id);
+        qnaService.delete(loginUser, id);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/api/questions"));
         return new ResponseEntity<Void>(headers, HttpStatus.OK);

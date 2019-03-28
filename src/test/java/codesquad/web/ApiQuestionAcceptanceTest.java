@@ -130,33 +130,26 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void delete_question_with_answer_by_other() {
-        ResponseEntity<Void> response = basicAuthTemplate().exchange(URL_API_QUESTION+"/1", HttpMethod.DELETE, createHttpEntity(null), Void.class);
+        ResponseEntity<Void> response = basicAuthTemplate().exchange(URL_API_QUESTION + "/1", HttpMethod.DELETE, createHttpEntity(null), Void.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 
-        ResponseEntity<Answer> answerResponse = basicAuthTemplate().getForEntity(URL_API_QUESTION+"/1", Answer.class);
+        ResponseEntity<Answer> answerResponse = basicAuthTemplate().getForEntity(URL_API_QUESTION + "/1", Answer.class);
         assertThat(answerResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(answerResponse.getBody().getContents()).isNotEmpty();
     }
 
     @Test
     public void delete_question_with_only_answer_by_writer() {
-        ResponseEntity<Void> response = basicAuthTemplate().exchange(URL_API_QUESTION+"/1", HttpMethod.DELETE, createHttpEntity(null), Void.class);
+        QuestionDTO newQuestion = new QuestionDTO("new title8", "new context8");
+        String location = createResourceWithAuth(URL_API_QUESTION, newQuestion);
+        String answerLocation = createResourceWithAuth(location + "/answers", "answer contents");
 
+        ResponseEntity<Void> response = basicAuthTemplate().exchange(location, HttpMethod.DELETE, createHttpEntity(null), Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        ResponseEntity<Answer> answerResponse = basicAuthTemplate().getForEntity(URL_API_QUESTION+"/1", Answer.class);
+        ResponseEntity<Answer> answerResponse = basicAuthTemplate().getForEntity(answerLocation, Answer.class);
         assertThat(answerResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
-
-    @Test
-    public void delete_question_also_delete_answers_by_writer() {
-        ResponseEntity<Void> response = basicAuthTemplate().exchange(URL_API_QUESTION+"/1", HttpMethod.DELETE, createHttpEntity(null), Void.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        ResponseEntity<Answer> answerResponse = basicAuthTemplate().getForEntity(URL_API_QUESTION+"/1/answers/1", Answer.class);
-        assertThat(answerResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    }
 }

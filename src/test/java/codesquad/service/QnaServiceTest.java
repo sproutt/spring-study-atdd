@@ -4,8 +4,7 @@ import codesquad.domain.Answer;
 import codesquad.domain.AnswerRepository;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
-import codesquad.exception.UnAuthorizedException;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -38,42 +37,36 @@ public class QnaServiceTest {
     private QnaService qnaService;
 
     public static Question question1;
+    public static Answer answer3;
     public static Answer answer1;
+    public static Answer answer2;
 
-    @BeforeClass
-    public static void init() {
+    @Before
+    public void init() {
         question1 = new Question("title", "context");
         question1.setId(1);
         question1.writeBy(JAVAJIGI);
-        question1.addAnswer(new Answer(1L, SANJIGI, question1, "answer title1"));
-        question1.addAnswer(new Answer(2L, JAVAJIGI, question1, "answer title2"));
-
-        answer1 = new Answer(3L, JAVAJIGI, question1, "answer title3");
+        answer1 = new Answer(1L, JAVAJIGI, question1, "answer title1");
+        answer2 = new Answer(2L, JAVAJIGI, question1, "answer title2");
+        answer3 = new Answer(3L, SANJIGI, question1, "answer title3");
+        question1.addAnswer(answer1);
+        question1.addAnswer(answer2);
     }
 
     @Test
     public void delete_question_with_answers() {
-        when(questionRepository.findById(question1.getId())).thenReturn(Optional.of(question1));
+        when(questionRepository.findByIdAndDeleted(1L, false)).thenReturn(Optional.of(question1));
         when(questionRepository.save(question1)).thenReturn(question1);
 
-        Question deletedQuestion = qnaService.deleteQuestionWithAnswer(JAVAJIGI, question1.getId());
+        qnaService.delete(JAVAJIGI, question1.getId());
 
-        assertThat(deletedQuestion.isDeleted()).isEqualTo(true);
-        assertThat(deletedQuestion.getAnswers().stream().filter(answer -> !answer.isDeleted())).isEmpty();
-    }
-
-    ;
-
-    @Test(expected = UnAuthorizedException.class)
-    public void delete_question_with_answers_unmatch_id() {
-        when(questionRepository.findById(question1.getId())).thenReturn(Optional.of(question1));
-        Question deletedQuestion = qnaService.deleteQuestionWithAnswer(SANJIGI, question1.getId());
+        assertThat(question1.isDeleted()).isEqualTo(true);
+        assertThat(question1.getAnswers().stream().filter(answer -> !answer.isDeleted())).isEmpty();
     }
 
     @Test
     public void add_answer() {
-        when(questionRepository.findById(question1.getId())).thenReturn(Optional.of(question1));
-        when(questionRepository.save(question1)).thenReturn(question1);
+        when(questionRepository.findByIdAndDeleted(1L, false)).thenReturn(Optional.of(question1));
 
         qnaService.addAnswer(JAVAJIGI, question1.getId(), "add content");
 
@@ -82,12 +75,12 @@ public class QnaServiceTest {
 
     @Test
     public void delete_answer() {
-        when(answerRepository.findById(answer1.getId())).thenReturn(Optional.of(answer1));
+        when(answerRepository.findByIdAndDeleted(answer3.getId(), false)).thenReturn(Optional.of(answer3));
+        when(answerRepository.save(answer3)).thenReturn(answer3);
 
-        Answer deletedAnswer = qnaService.deleteAnswer(JAVAJIGI, answer1.getId());
+        Answer deletedAnswer = qnaService.deleteAnswer(JAVAJIGI, answer3.getId());
 
         assertThat(deletedAnswer.isDeleted()).isEqualTo(true);
-
     }
 
 }
