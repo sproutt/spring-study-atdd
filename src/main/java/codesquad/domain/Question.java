@@ -87,7 +87,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 		if(this.deleted == true){
 			throw new AlreadyDeletedException("이미 삭제된 질문");
 		}
-		if(canDelete(user)){
+		if(hasNoAnswers(user)){
 			this.deleted = true;
 		}
 	}
@@ -100,7 +100,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 		return deleted;
 	}
 
-	public boolean canDelete(User user){
+	public boolean hasNoAnswers(User user){
 		if(!writer.equals(user)){
 			throw new UnAuthorizedException();
 		}

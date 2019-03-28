@@ -1,12 +1,10 @@
 package codesquad.domain;
 
 import codesquad.AlreadyDeletedException;
-import codesquad.UnAuthorizedException;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.isA;
 
 
 public class QuestionTest {
@@ -42,7 +40,7 @@ public class QuestionTest {
     @Test
     public void delete_success_same_user_with_no_answers() throws Exception {
         question.writeBy(user);
-        assertThat(question.canDelete(user)).isTrue();
+        assertThat(question.hasNoAnswers(user)).isTrue();
 
         question.delete(user);
         assertThat(question.isDeleted()).isTrue();
