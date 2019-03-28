@@ -83,5 +83,4 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
-
 }

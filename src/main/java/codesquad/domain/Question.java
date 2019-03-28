@@ -87,7 +87,9 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 		if(this.deleted == true){
 			throw new AlreadyDeletedException("이미 삭제된 질문");
 		}
-		this.deleted = true;
+		if(canDelete(user)){
+			this.deleted = true;
+		}
 	}
 
 	public boolean isOwner(User loginUser) {
@@ -96,6 +98,16 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 
 	public boolean isDeleted() {
 		return deleted;
+	}
+
+	public boolean canDelete(User user){
+		if(!writer.equals(user)){
+			throw new UnAuthorizedException();
+		}
+		if(answers.size()==0){
+			return true;
+		}else
+			return false;
 	}
 
 	@Override

@@ -40,8 +40,12 @@ public class QuestionTest {
     }
 
     @Test
-    public void delete_success_same_user_with_no_answers() {
+    public void delete_success_same_user_with_no_answers() throws Exception {
+        question.writeBy(user);
+        assertThat(question.canDelete(user)).isTrue();
 
+        question.delete(user);
+        assertThat(question.isDeleted()).isTrue();
     }
 
     @Test
