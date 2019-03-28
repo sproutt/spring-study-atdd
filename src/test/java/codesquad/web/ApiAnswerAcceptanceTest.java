@@ -1,9 +1,7 @@
 package codesquad.web;
 
-import codesquad.CannotDeleteException;
 import codesquad.domain.Answer;
 import codesquad.domain.Question;
-import codesquad.domain.UserTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
