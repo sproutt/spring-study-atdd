@@ -9,6 +9,7 @@ import support.domain.UrlGeneratable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,17 +82,19 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return this;
     }
 
-    public void delete(User user) throws Exception {
-        if (!writer.equals(user)) {
-            throw new UnAuthorizedException();
+    public List<DeleteHistory> delete(User loginUser) throws Exception {
+        if (!writer.equals(loginUser)) {
+            throw new CannotDeleteException("다른 사용자의 질문 삭제 불가");
         }
-        if (this.deleted == true) {
-            throw new AlreadyDeletedException("이미 삭제된 질문");
-        }
-        if(!hasSameWriterAnswers()){
+        List<DeleteHistory> historyList = new ArrayList<>();
+        historyList.add(new DeleteHistory(ContentType.QUESTION, getId(), loginUser, LocalDateTime.now()));
+        if (!hasSameWriterAnswers()) {
             throw new CannotDeleteException("질문의 답변 삭제 권한이 없습니다.");
         }
-        this.deleted = true;
+        for (Answer answer : answers) {
+            historyList.add(answer.delete(loginUser));
+        }
+        return historyList;
     }
 
     public boolean isOwner(User loginUser) {
@@ -109,9 +112,10 @@ public class Question extends AbstractEntity implements UrlGeneratable {
             return false;
     }
 
-    public boolean hasSameWriterAnswers(){
+    public boolean hasSameWriterAnswers() {
         return answers.stream().allMatch(answer -> answer.getWriter().equals(writer));
     }
+
     @Override
     public String generateUrl() {
         return String.format("/questions/%d", getId());

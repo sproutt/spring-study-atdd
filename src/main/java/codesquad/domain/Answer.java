@@ -7,6 +7,9 @@ import support.domain.UrlGeneratable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Answer extends AbstractEntity implements UrlGeneratable {
@@ -69,10 +72,12 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         return deleted;
     }
 
-    public void delete(User loginUser) throws Exception {
+
+    public DeleteHistory delete(User loginUser) throws Exception {
         if (!isOwner(loginUser))
             throw new CannotDeleteException("User not equal");
         this.deleted = true;
+        return new DeleteHistory(ContentType.ANSWER, this.getId(), loginUser, LocalDateTime.now());
     }
 
     @Override
