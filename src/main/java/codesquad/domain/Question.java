@@ -86,15 +86,19 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         if (!writer.equals(loginUser)) {
             throw new CannotDeleteException("다른 사용자의 질문 삭제 불가");
         }
-        List<DeleteHistory> historyList = new ArrayList<>();
-        historyList.add(new DeleteHistory(ContentType.QUESTION, getId(), loginUser, LocalDateTime.now()));
         if (!hasSameWriterAnswers()) {
             throw new CannotDeleteException("질문의 답변 삭제 권한이 없습니다.");
         }
-        for (Answer answer : answers) {
-            historyList.add(answer.delete(loginUser));
+        if(this.deleted == true){
+            throw new AlreadyDeletedException("이미 삭제된 질문");
         }
-        return historyList;
+        this.deleted = true;
+        List<DeleteHistory> histories = new ArrayList<>();
+        histories.add(new DeleteHistory(ContentType.QUESTION, getId(), loginUser, LocalDateTime.now()));
+        for (Answer answer : answers) {
+            histories.add(answer.delete(loginUser));
+        }
+        return histories;
     }
 
     public boolean isOwner(User loginUser) {
