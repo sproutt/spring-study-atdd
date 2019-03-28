@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.domain.Answer;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionDTO;
 import org.junit.Test;
@@ -126,4 +127,36 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         assertThat(template().getForObject(location, Question.class)).isNotNull();
     }
 
+
+    @Test
+    public void delete_question_with_answer_by_other() {
+        ResponseEntity<Void> response = basicAuthTemplate().exchange(URL_API_QUESTION+"/1", HttpMethod.DELETE, createHttpEntity(null), Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+
+        ResponseEntity<Answer> answerResponse = basicAuthTemplate().getForEntity(URL_API_QUESTION+"/1", Answer.class);
+        assertThat(answerResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(answerResponse.getBody().getContents()).isNotEmpty();
+    }
+
+    @Test
+    public void delete_question_with_only_answer_by_writer() {
+        ResponseEntity<Void> response = basicAuthTemplate().exchange(URL_API_QUESTION+"/1", HttpMethod.DELETE, createHttpEntity(null), Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        ResponseEntity<Answer> answerResponse = basicAuthTemplate().getForEntity(URL_API_QUESTION+"/1", Answer.class);
+        assertThat(answerResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+
+    @Test
+    public void delete_question_also_delete_answers_by_writer() {
+        ResponseEntity<Void> response = basicAuthTemplate().exchange(URL_API_QUESTION+"/1", HttpMethod.DELETE, createHttpEntity(null), Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        ResponseEntity<Answer> answerResponse = basicAuthTemplate().getForEntity(URL_API_QUESTION+"/1/answers/1", Answer.class);
+        assertThat(answerResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
 }

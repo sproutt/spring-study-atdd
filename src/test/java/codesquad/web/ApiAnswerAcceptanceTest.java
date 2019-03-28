@@ -64,16 +64,4 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
-    @Test
-    public void delete_question_also_delete_answer() {
-        String location = createResourceWithAuth(URL_API_ANSWER, "contents", "answer test3");
-
-        ResponseEntity<Void> response = basicAuthTemplate().exchange(URL_API_QUESTION_DETAIL, HttpMethod.DELETE, createHttpEntity(null), Void.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        ResponseEntity<Answer> answerResponse = basicAuthTemplate().getForEntity(location, Answer.class);
-        assertThat(answerResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    }
-
 }
