@@ -77,8 +77,8 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void delete_fail_different_writer(){
-        ResponseEntity<Question> responseEntity=
+    public void delete_fail_different_writer() {
+        ResponseEntity<Question> responseEntity =
                 basicAuthTemplate(UserTest.SANJIGI).exchange(resourceLocation, HttpMethod.DELETE, createHttpEntity(newQuestion), Question.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }

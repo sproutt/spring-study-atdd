@@ -89,7 +89,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         if (!hasSameWriterAnswers()) {
             throw new CannotDeleteException("질문의 답변 삭제 권한이 없습니다.");
         }
-        if(this.deleted == true){
+        if (this.deleted == true) {
             throw new AlreadyDeletedException("이미 삭제된 질문");
         }
         this.deleted = true;
