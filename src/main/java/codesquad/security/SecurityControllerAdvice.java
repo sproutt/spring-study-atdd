@@ -1,5 +1,6 @@
 package codesquad.security;
 
+import codesquad.AlreadyDeletedException;
 import codesquad.CannotDeleteException;
 import codesquad.UnAuthenticationException;
 import codesquad.UnAuthorizedException;

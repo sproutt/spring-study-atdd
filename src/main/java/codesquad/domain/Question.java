@@ -1,6 +1,7 @@
 package codesquad.domain;
 
 import codesquad.UnAuthorizedException;
+import codesquad.AlreadyDeletedException;
 import org.hibernate.annotations.Where;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
@@ -79,9 +80,12 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 		return this;
 	}
 
-	public void delete(User user) {
+	public void delete(User user) throws Exception {
 		if (!writer.equals(user)) {
 			throw new UnAuthorizedException();
+		}
+		if(this.deleted == true){
+			throw new AlreadyDeletedException("이미 삭제된 질문");
 		}
 		this.deleted = true;
 	}

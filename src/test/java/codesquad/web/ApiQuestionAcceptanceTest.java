@@ -1,6 +1,7 @@
 package codesquad.web;
 
 import codesquad.domain.Question;
+import codesquad.domain.UserTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
@@ -69,9 +70,18 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void delete_no_login() {
+    public void delete_fail() {
         ResponseEntity<Question> responseEntity =
                 template().exchange(resourceLocation, HttpMethod.DELETE, createHttpEntity(newQuestion), Question.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
+
+    @Test
+    public void delete_fail_different_writer(){
+        ResponseEntity<Question> responseEntity=
+                basicAuthTemplate(UserTest.SANJIGI).exchange(resourceLocation, HttpMethod.DELETE, createHttpEntity(newQuestion), Question.class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+
 }
