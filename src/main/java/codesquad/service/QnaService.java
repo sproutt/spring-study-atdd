@@ -54,7 +54,7 @@ public class QnaService {
         return questionRepository.findAll(pageable).getContent();
     }
 
-    public Iterable<Answer> findAllAnswerNotDeleted(Long questionId) {
+    public Iterable<Answer> findAllAnswer(Long questionId) {
         return findByIdNotDeleted(questionId).getAnswers();
     }
 
