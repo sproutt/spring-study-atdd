@@ -47,8 +47,13 @@ public class QuestionTest {
     }
 
     @Test
-    public void delete_success_same_user_with_same_answers_writer() {
+    public void delete_success_same_user_with_same_answers_writer() throws Exception {
+        question.writeBy(user);
+        question.addAnswer(new Answer(user, "contents"));
+        assertThat(question.hasSameWriterAnswers()).isTrue();
 
+        question.delete(user);
+        assertThat(question.isDeleted()).isTrue();
     }
 
     @Test
