@@ -1,6 +1,5 @@
 package codesquad.security;
 
-import codesquad.AlreadyDeletedException;
 import codesquad.CannotDeleteException;
 import codesquad.UnAuthenticationException;
 import codesquad.UnAuthorizedException;
@@ -37,7 +36,7 @@ public class SecurityControllerAdvice {
 
     @ExceptionHandler(CannotDeleteException.class)
     @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-    public void cannotDeleteAuthorized(){
+    public void cannotDeleteAuthorized() {
         log.debug("Cannot delete if different User!");
     }
 

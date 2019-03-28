@@ -1,15 +1,12 @@
 package codesquad.domain;
 
 import codesquad.CannotDeleteException;
-import codesquad.UnAuthenticationException;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class Answer extends AbstractEntity implements UrlGeneratable {

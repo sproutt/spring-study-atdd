@@ -12,6 +12,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 @Entity
 public class Question extends AbstractEntity implements UrlGeneratable {
@@ -95,9 +96,10 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         this.deleted = true;
         List<DeleteHistory> histories = new ArrayList<>();
         histories.add(new DeleteHistory(ContentType.QUESTION, getId(), loginUser, LocalDateTime.now()));
-        for (Answer answer : answers) {
-            histories.add(answer.delete(loginUser));
-        }
+
+        answers.stream()
+                .filter(answer -> answer.isOwner(writer))
+                .map(wrapper(answer -> histories.add(answer.delete(loginUser))));
         return histories;
     }
 
@@ -118,6 +120,16 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 
     public boolean hasSameWriterAnswers() {
         return answers.stream().allMatch(answer -> answer.getWriter().equals(writer));
+    }
+
+    private <T, R, E extends Exception> Function<T, R> wrapper(FunctionWithException<T, R, E> fe) {
+        return arg -> {
+            try {
+                return fe.apply(arg);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
     }
 
     @Override

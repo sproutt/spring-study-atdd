@@ -70,7 +70,7 @@ public class QnaServiceTest {
     }
 
     @Test(expected = CannotDeleteException.class)
-    public void delete_failed() throws Exception{
+    public void delete_failed() throws Exception {
         qnaService.deleteQuestion(anotherUser, 1L);
     }
 
