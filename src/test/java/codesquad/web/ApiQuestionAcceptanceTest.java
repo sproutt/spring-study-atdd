@@ -59,8 +59,8 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
                                 createHttpEntity(updateQuestion), Question.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(updateQuestion.getContents()).isEqualTo(responseEntity.getBody().getContents());
-        assertThat(updateQuestion.getTitle()).isEqualTo(responseEntity.getBody().getTitle());
+        assertThat(responseEntity.getBody().getContents()).isEqualTo(updateQuestion.getContents());
+        assertThat(responseEntity.getBody().getTitle()).isEqualTo(updateQuestion.getTitle());
     }
 
     @Test

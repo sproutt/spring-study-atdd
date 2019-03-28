@@ -50,12 +50,12 @@ public class QnaService {
     }
 
     @Transactional
-    public Question deleteQuestion(User loginUser, Long id) throws CannotDeleteException {
+    public Question deleteQuestion(User loginUser, Long id) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("question not found"));
 
         if (!question.isOwner(loginUser)) {
-            throw new CannotDeleteException("mismatch writer");
+            throw new UnAuthorizedException("mismatch writer");
         }
 
         question.delete();
@@ -78,12 +78,12 @@ public class QnaService {
         return answerRepository.save(answer);
     }
 
-    public Answer deleteAnswer(User loginUser, Long id) throws CannotDeleteException {
+    public Answer deleteAnswer(User loginUser, Long id) {
         Answer answer = answerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("answer not found"));
 
         if (!answer.isOwner(loginUser)) {
-            throw new CannotDeleteException("mismatch writer");
+            throw new UnAuthorizedException("mismatch writer");
         }
 
         answer.delete();
