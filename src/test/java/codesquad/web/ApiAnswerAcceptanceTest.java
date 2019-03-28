@@ -58,7 +58,6 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
                         .exchange(createResource("/api" + defaultQuestion().generateUrl() + "/answers", contents, user), HttpMethod.DELETE,
                                 createHttpEntity(null), Answer.class);
 
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).isNull();
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 }
