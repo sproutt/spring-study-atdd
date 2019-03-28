@@ -1,6 +1,7 @@
 package codesquad.domain;
 
 import codesquad.AlreadyDeletedException;
+import codesquad.CannotDeleteException;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,8 +57,11 @@ public class QuestionTest {
         assertThat(question.isDeleted()).isTrue();
     }
 
-    @Test
-    public void delete_fail_same_user_but_different_answers_writer() {
-
+    @Test(expected = CannotDeleteException.class)
+    public void delete_fail_same_user_but_different_answers_writer() throws Exception {
+        question.writeBy(user);
+        question.addAnswer(new Answer(UserTest.SANJIGI, "Contents"));
+        assertThat(question.hasSameWriterAnswers()).isFalse();
+        question.delete(user);
     }
 }

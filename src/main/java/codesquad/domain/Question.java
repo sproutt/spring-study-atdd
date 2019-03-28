@@ -1,5 +1,6 @@
 package codesquad.domain;
 
+import codesquad.CannotDeleteException;
 import codesquad.UnAuthorizedException;
 import codesquad.AlreadyDeletedException;
 import org.hibernate.annotations.Where;
@@ -87,9 +88,10 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         if (this.deleted == true) {
             throw new AlreadyDeletedException("이미 삭제된 질문");
         }
-        if (hasNoAnswers(user) || hasSameWriterAnswers()) {
-            this.deleted = true;
+        if(!hasSameWriterAnswers()){
+            throw new CannotDeleteException("질문의 답변 삭제 권한이 없습니다.");
         }
+        this.deleted = true;
     }
 
     public boolean isOwner(User loginUser) {
