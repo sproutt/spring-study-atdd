@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 import static codesquad.domain.UserTest.JAVAJIGI;
@@ -62,6 +63,16 @@ public class QnaServiceTest {
 
         assertThat(question1.isDeleted()).isEqualTo(true);
         assertThat(question1.getAnswers().stream().filter(answer -> !answer.isDeleted())).isEmpty();
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void delete_question_not_found(){
+        //given
+        Long notFoundId = 100000L;
+        when(questionRepository.findByIdAndDeleted(notFoundId, false)).thenReturn(Optional.empty());
+
+        //when
+        qnaService.delete(JAVAJIGI, notFoundId);
     }
 
     @Test

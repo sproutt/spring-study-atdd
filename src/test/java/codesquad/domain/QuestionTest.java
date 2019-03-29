@@ -1,5 +1,6 @@
 package codesquad.domain;
 
+import codesquad.exception.CannotDeleteException;
 import codesquad.exception.UnAuthorizedException;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -42,7 +43,7 @@ public class QuestionTest {
     }
 
     @Test
-    public void delete_question() throws Exception {
+    public void delete_question_with_answer_by_same_writer() throws Exception {
         originQuestion.delete(JAVAJIGI);
 
         assertThat(originQuestion.isDeleted()).isEqualTo(true);
@@ -53,7 +54,7 @@ public class QuestionTest {
         originQuestion.delete(SANJIGI);
     }
 
-    @Test(expected =UnAuthorizedException.class)
+    @Test(expected = UnAuthorizedException.class)
     public void delete_question_with_answer_by_other() throws Exception{
         Answer answer = new Answer(SANJIGI, "title for other");
         originQuestion.addAnswer(answer);
