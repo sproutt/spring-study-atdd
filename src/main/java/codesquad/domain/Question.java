@@ -98,7 +98,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         List<DeleteHistory> histories = new ArrayList<>();
 
         for (Answer answer : answers) {
-            histories.add(new DeleteHistory(ContentType.ANSWER, answer.delete(loginUser), loginUser, LocalDateTime.now()));
+            histories.add(answer.delete(loginUser));
         }
 
         if (!isOwner(loginUser)) {

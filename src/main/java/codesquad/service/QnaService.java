@@ -1,6 +1,5 @@
 package codesquad.service;
 
-import codesquad.CannotDeleteException;
 import codesquad.UnAuthorizedException;
 import codesquad.domain.*;
 import org.slf4j.Logger;
@@ -40,7 +39,7 @@ public class QnaService {
     @Transactional
     public Question update(User loginUser, Long id, Question updateQuestion) {
         Question question = questionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("question not found"));
+                .orElseThrow(() -> new EntityNotFoundException("question not found"));
 
         if (!question.isOwner(loginUser)) {
             throw new UnAuthorizedException("mismatch writer");
