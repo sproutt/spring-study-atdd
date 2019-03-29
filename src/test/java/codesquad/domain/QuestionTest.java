@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import static codesquad.domain.UserTest.JAVAJIGI;
 import static codesquad.domain.UserTest.SANJIGI;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class QuestionTest {
     private Question question;
@@ -25,6 +26,7 @@ public class QuestionTest {
     @Test
     public void delete_성공_같은_질문작성자() {
         question.delete(JAVAJIGI);
+        assertThat(question.isDeleted()).isTrue();
     }
 
     @Test
@@ -32,6 +34,7 @@ public class QuestionTest {
         question.addAnswer(new Answer(JAVAJIGI, "contents"));
 
         question.delete(JAVAJIGI);
+        assertThat(question.isDeleted()).isTrue();
     }
 
     @Test(expected = UnAuthorizedException.class)
