@@ -1,5 +1,7 @@
 package support.test;
 
+import codesquad.domain.Question;
+import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
 import org.junit.runner.RunWith;
@@ -13,12 +15,16 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public abstract class AcceptanceTest {
     private static final String DEFAULT_LOGIN_USER = "javajigi";
+    private static final long DEFAULT_QUESTION_ID = 1;
 
     @Autowired
     private TestRestTemplate template;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private QuestionRepository questionRepository;
 
     public TestRestTemplate template() {
         return template;
@@ -30,6 +36,10 @@ public abstract class AcceptanceTest {
 
     public TestRestTemplate basicAuthTemplate(User loginUser) {
         return template.withBasicAuth(loginUser.getUserId(), loginUser.getPassword());
+    }
+
+    protected Question defaultQuestion() {
+        return questionRepository.findById(DEFAULT_QUESTION_ID).get();
     }
 
     protected User defaultUser() {
