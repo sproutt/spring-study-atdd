@@ -66,7 +66,7 @@ public class QnaServiceTest {
     }
 
     @Test(expected = EntityNotFoundException.class)
-    public void delete_question_not_found(){
+    public void delete_question_not_found() {
         //given
         Long notFoundId = 100000L;
         when(questionRepository.findByIdAndDeleted(notFoundId, false)).thenReturn(Optional.empty());

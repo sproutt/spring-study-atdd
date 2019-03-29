@@ -1,11 +1,8 @@
 package codesquad.domain;
 
-import codesquad.exception.CannotDeleteException;
 import codesquad.exception.UnAuthorizedException;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,8 +16,8 @@ public class QuestionTest {
     public void setup() {
         originQuestion = new Question("테스트용 제목", "테스트용 내용");
         originQuestion.writeBy(JAVAJIGI);
-        Answer answer1 = new Answer(JAVAJIGI,"contents for answer1");
-        Answer answer2 = new Answer(JAVAJIGI,"contents for answer2");
+        Answer answer1 = new Answer(JAVAJIGI, "contents for answer1");
+        Answer answer2 = new Answer(JAVAJIGI, "contents for answer2");
         originQuestion.addAnswer(answer1);
         originQuestion.addAnswer(answer2);
     }
@@ -55,7 +52,7 @@ public class QuestionTest {
     }
 
     @Test(expected = UnAuthorizedException.class)
-    public void delete_question_with_answer_by_other() throws Exception{
+    public void delete_question_with_answer_by_other() throws Exception {
         Answer answer = new Answer(SANJIGI, "title for other");
         originQuestion.addAnswer(answer);
 

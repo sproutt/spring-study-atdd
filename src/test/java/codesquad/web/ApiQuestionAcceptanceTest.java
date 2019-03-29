@@ -152,4 +152,14 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         assertThat(answerResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
+    @Test
+    public void delete_not_found_question() {
+        //given
+        Long notFoundId = 10000L;
+        //when
+        ResponseEntity<Void> response = basicAuthTemplate().exchange(URL_API_QUESTION + "/" + notFoundId, HttpMethod.DELETE, createHttpEntity(null), Void.class);
+        //then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
 }
