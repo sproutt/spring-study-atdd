@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,13 +53,10 @@ public class QnaService {
     @Transactional
     public Question deleteQuestion(User loginUser, Long id) {
         Question question = questionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("question not found"));
+                .orElseThrow(() -> new EntityNotFoundException("question not found"));
 
-        if (!question.isOwner(loginUser)) {
-            throw new UnAuthorizedException("mismatch writer");
-        }
+        deleteHistoryService.saveAll(question.delete(loginUser));
 
-        question.delete();
         return questionRepository.save(question);
     }
 
@@ -73,20 +71,16 @@ public class QnaService {
     public Answer addAnswer(User loginUser, Long questionId, String contents) {
         Answer answer = new Answer(loginUser, contents);
         answer.toQuestion(questionRepository.findById(questionId)
-                .orElseThrow(() -> new RuntimeException("question not found")));
+                .orElseThrow(() -> new EntityNotFoundException("question not found")));
 
         return answerRepository.save(answer);
     }
 
     public Answer deleteAnswer(User loginUser, Long id) {
         Answer answer = answerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("answer not found"));
+                .orElseThrow(() -> new EntityNotFoundException("answer not found"));
 
-        if (!answer.isOwner(loginUser)) {
-            throw new UnAuthorizedException("mismatch writer");
-        }
-
-        answer.delete();
+        answer.delete(loginUser);
         return answerRepository.save(answer);
     }
 }

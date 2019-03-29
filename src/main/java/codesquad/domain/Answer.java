@@ -1,5 +1,6 @@
 package codesquad.domain;
 
+import codesquad.UnAuthorizedException;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
@@ -59,8 +60,12 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         this.question = question;
     }
 
-    public void delete() {
+    public Long delete(User loginUser) {
+        if(!isOwner(loginUser)) {
+            throw new UnAuthorizedException("mismatch answer owner");
+        }
         this.deleted = true;
+        return getId();
     }
 
     public boolean isOwner(User loginUser) {
