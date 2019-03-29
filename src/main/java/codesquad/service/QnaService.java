@@ -32,12 +32,12 @@ public class QnaService {
         return questionRepository.save(question);
     }
 
-    public Optional<Question> findById(long id) {
+    public Optional<Question> findById(Long id) {
         return questionRepository.findById(id);
     }
 
     @Transactional
-    public Question update(User loginUser, long id, Question updatedQuestion) {
+    public Question update(User loginUser, Long id, Question updateQuestion) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("question not found"));
 
@@ -45,21 +45,21 @@ public class QnaService {
             throw new UnAuthorizedException("mismatch writer");
         }
 
-        question.update(updatedQuestion);
+        question.update(updateQuestion);
         return questionRepository.save(question);
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, long id) throws CannotDeleteException {
+    public Question deleteQuestion(User loginUser, Long id) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("question not found"));
 
         if (!question.isOwner(loginUser)) {
-            throw new CannotDeleteException("mismatch writer");
+            throw new UnAuthorizedException("mismatch writer");
         }
 
         question.delete();
-        questionRepository.save(question);
+        return questionRepository.save(question);
     }
 
     public Iterable<Question> findAll() {
@@ -70,13 +70,23 @@ public class QnaService {
         return questionRepository.findAll(pageable).getContent();
     }
 
-    public Answer addAnswer(User loginUser, long questionId, String contents) {
-        // TODO 답변 추가 기능 구현
-        return null;
+    public Answer addAnswer(User loginUser, Long questionId, String contents) {
+        Answer answer = new Answer(loginUser, contents);
+        answer.toQuestion(questionRepository.findById(questionId)
+                .orElseThrow(() -> new RuntimeException("question not found")));
+
+        return answerRepository.save(answer);
     }
 
-    public Answer deleteAnswer(User loginUser, long id) {
-        // TODO 답변 삭제 기능 구현 
-        return null;
+    public Answer deleteAnswer(User loginUser, Long id) {
+        Answer answer = answerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("answer not found"));
+
+        if (!answer.isOwner(loginUser)) {
+            throw new UnAuthorizedException("mismatch writer");
+        }
+
+        answer.delete();
+        return answerRepository.save(answer);
     }
 }

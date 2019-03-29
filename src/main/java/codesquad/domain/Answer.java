@@ -59,6 +59,10 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         this.question = question;
     }
 
+    public void delete() {
+        this.deleted = true;
+    }
+
     public boolean isOwner(User loginUser) {
         return writer.equals(loginUser);
     }
