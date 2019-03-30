@@ -5,6 +5,7 @@ import support.domain.UrlGeneratable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.Objects;
 
 @Entity
 public class Answer extends AbstractEntity implements UrlGeneratable {
@@ -75,5 +76,17 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
     @Override
     public String toString() {
         return "Answer [id=" + getId() + ", writer=" + writer + ", contents=" + contents + "]";
+    }
+
+    public boolean equalsContents(Answer target) {
+        if (Objects.isNull(target)) {
+            return false;
+        }
+
+        return this.contents.equals(target.contents);
+    }
+
+    public void delete() {
+        this.deleted = true;
     }
 }
