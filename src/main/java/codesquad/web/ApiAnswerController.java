@@ -1,9 +1,6 @@
 package codesquad.web;
 
-import codesquad.UnAuthenticationException;
-import codesquad.UnAuthorizedException;
 import codesquad.domain.Answer;
-import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.security.LoginUser;
 import codesquad.service.QnaService;
@@ -33,7 +30,7 @@ public class ApiAnswerController {
 
     @GetMapping("/{id}")
     public Answer show(@PathVariable long id) {
-        return qnaService.findByAnswerId(id);
+        return qnaService.findAnswerById(id);
     }
 
     @PutMapping("/{id}")

@@ -32,17 +32,17 @@ public class QnaService {
         return questionRepository.save(question);
     }
 
-    public Question findById(long id) {
+    public Question findQuestionById(long id) {
         return questionRepository.findById(id).orElseThrow(() -> new NullEntityException());
     }
 
-    public Answer findByAnswerId(long id) {
+    public Answer findAnswerById(long id) {
         return answerRepository.findById(id).orElseThrow(() -> new NullEntityException());
     }
 
     @Transactional
     public Question update(User loginUser, long id, Question updatedQuestion) throws UnAuthorizedException {
-        Question original = findById(id);
+        Question original = findQuestionById(id);
         if (!original.isOwner(loginUser)) {
             throw new UnAuthorizedException();
         }
@@ -52,7 +52,7 @@ public class QnaService {
 
     @Transactional
     public Question delete(User loginUser, long questionId) throws Exception {
-        Question original = findById(questionId);
+        Question original = findQuestionById(questionId);
         if (!original.isOwner(loginUser)) {
             throw new UnAuthorizedException();
         }
@@ -61,7 +61,7 @@ public class QnaService {
     }
 
     public Question ownerCheck(long id, User loginUser) throws Exception {
-        Question question = findById(id);
+        Question question = findQuestionById(id);
         if (!question.isOwner(loginUser)) {
             throw new UnAuthenticationException();
         }
@@ -78,13 +78,13 @@ public class QnaService {
 
     public Answer addAnswer(User loginUser, long questionId, String contents) {
         Answer answer = new Answer(loginUser, contents);
-        answer.toQuestion(findById(questionId));
+        answer.toQuestion(findQuestionById(questionId));
         return answerRepository.save(answer);
     }
 
     @Transactional
     public Answer deleteAnswer(User loginUser, long id) throws Exception {
-        Answer answer = findByAnswerId(id);
+        Answer answer = findAnswerById(id);
         if (!answer.isOwner(loginUser)) {
             throw new UnAuthorizedException();
         }
@@ -94,7 +94,7 @@ public class QnaService {
 
     @Transactional
     public Answer updateAnswer(User loginUser, long id, String updatedContents) throws Exception {
-        Answer answer = findByAnswerId(id);
+        Answer answer = findAnswerById(id);
         if (!answer.isOwner(loginUser)) {
             throw new UnAuthorizedException();
         }
