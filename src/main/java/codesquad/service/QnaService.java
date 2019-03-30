@@ -1,6 +1,7 @@
 package codesquad.service;
 
 import codesquad.domain.*;
+import codesquad.dto.AnswerDTO;
 import codesquad.dto.QuestionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,7 @@ public class QnaService {
         return questionRepository.findAll(pageable).getContent();
     }
 
-    public Answer addAnswer(User loginUser, long questionId, String contents) {
+    public Answer addAnswer(User loginUser, long questionId, AnswerDTO contents) {
         // TODO 답변 추가 기능 구현
         return null;
     }
@@ -74,4 +75,10 @@ public class QnaService {
         return null;
     }
 
+    public Optional<Answer> findAnswerById(long id) {
+        return answerRepository.findById(id);
+    }
+
+    public void updateAnswer(User user, long id, AnswerDTO this_is_update) {
+    }
 }
