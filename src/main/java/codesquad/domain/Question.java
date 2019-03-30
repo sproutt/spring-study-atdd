@@ -93,13 +93,13 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         if (this.deleted == true) {
             throw new AlreadyDeletedException("이미 삭제된 질문");
         }
-        this.deleted = true;
         List<DeleteHistory> histories = new ArrayList<>();
         histories.add(new DeleteHistory(ContentType.QUESTION, getId(), loginUser, LocalDateTime.now()));
 
         answers.stream()
                 .filter(answer -> answer.isOwner(writer))
                 .map(wrapper(answer -> histories.add(answer.delete(loginUser))));
+        this.deleted = true;
         return histories;
     }
 
