@@ -3,6 +3,7 @@ package codesquad.domain;
 import codesquad.CannotDeleteException;
 import codesquad.dto.AnswerDTO;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
@@ -14,6 +15,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Answer extends AbstractEntity implements UrlGeneratable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_writer"))

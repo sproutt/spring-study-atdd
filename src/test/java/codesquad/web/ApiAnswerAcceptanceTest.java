@@ -13,10 +13,10 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void show() {
-        ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d", defaultQuestion().getId()), defaultAnswer(), Answer.class);
+        ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer(), Answer.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        String location = String.format("/api/questions/%d", defaultQuestion().getId());
 
-        String location = response.getHeaders().getLocation().getPath();
         response = basicAuthTemplate().getForEntity(location, Answer.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -33,9 +33,9 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void update() {
-        ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d", defaultQuestion().getId()), defaultAnswer(), Answer.class);
+        ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer(), Answer.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        String location = response.getHeaders().getLocation().getPath();
+        String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 
         Answer updateAnswer = new Answer(defaultUser(), "content");
         response = basicAuthTemplate()
@@ -52,9 +52,9 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void update_another_user() {
-        ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d", defaultQuestion().getId()), defaultAnswer(), Answer.class);
+        ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer(), Answer.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        String location = response.getHeaders().getLocation().getPath();
+        String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 
         Answer updateAnswer = new Answer(defaultUser(), "content");
         response = basicAuthTemplate(newUser("testuser1"))
@@ -64,9 +64,9 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void delete() throws CannotDeleteException {
-        ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d", defaultQuestion().getId()), defaultAnswer(), Answer.class);
+        ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer(), Answer.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        String location = response.getHeaders().getLocation().getPath();
+        String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 
         Answer deleteAnswer = defaultAnswer();
         deleteAnswer.delete(defaultUser());
@@ -78,15 +78,15 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void delete_another_user() throws CannotDeleteException {
-        ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d", defaultQuestion().getId()), defaultAnswer(), Answer.class);
+        ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer(), Answer.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        String location = response.getHeaders().getLocation().getPath();
+        String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 
         Answer deleteAnswer = defaultAnswer();
         deleteAnswer.delete(defaultUser());
 
         response = basicAuthTemplate(newUser("testuser1"))
                 .exchange(location, HttpMethod.DELETE, createHttpEntity(deleteAnswer), Answer.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 }
