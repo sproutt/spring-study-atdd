@@ -1,6 +1,7 @@
 package codesquad.domain;
 
 import codesquad.CannotDeleteException;
+import codesquad.UnAuthorizedException;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
@@ -70,9 +71,9 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
     }
 
 
-    public DeleteHistory delete(User loginUser) throws Exception {
+    public DeleteHistory delete(User loginUser) throws UnAuthorizedException {
         if (!isOwner(loginUser))
-            throw new CannotDeleteException("User not equal");
+            throw new UnAuthorizedException("UnAuthorized User!");
         this.deleted = true;
         return new DeleteHistory(ContentType.ANSWER, this.getId(), loginUser, LocalDateTime.now());
     }
