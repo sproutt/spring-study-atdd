@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service("qnaService")
@@ -72,12 +71,10 @@ public class QnaService {
     }
 
     @Transactional
-    public List<DeleteHistory> delete(User loginUser, Long questionId) {
+    public Question delete(User loginUser, Long questionId) {
         Question question = findById(questionId);
-        List<DeleteHistory> deleteHistories = question.delete(loginUser);
-        questionRepository.save(question);
-        return deleteHistoryService.saveAll(deleteHistories);
-
+        deleteHistoryService.saveAll(question.delete(loginUser));
+        return questionRepository.save(question);
     }
 
     public Answer findAnswerByIdNotDeleted(Long answerId) {

@@ -22,7 +22,6 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     private String contents;
 
     @ManyToOne
-    @Where(clause = "deleted=false")
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_question_writer"))
     private User writer;
 
@@ -87,10 +86,10 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         if (!this.getWriter().equals(loginUser)) {
             throw new UnAuthorizedException();
         }
-        this.deleted = true;
-        List<DeleteHistory> list= this.getAnswers().stream()
+        List<DeleteHistory> list= answers.stream()
                 .map(answer -> answer.delete(loginUser))
                 .collect(Collectors.toList());
+        this.deleted = true;
         list.add(new DeleteHistory(ContentType.QUESTION, this.getId(), loginUser, this.getCreatedAt()));
         return list;
     }
