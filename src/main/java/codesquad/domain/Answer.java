@@ -1,5 +1,9 @@
 package codesquad.domain;
 
+import codesquad.CannotDeleteException;
+import codesquad.dto.AnswerDTO;
+import lombok.Getter;
+import lombok.Setter;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
@@ -8,6 +12,8 @@ import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity
+@Getter
+@Setter
 public class Answer extends AbstractEntity implements UrlGeneratable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_writer"))
@@ -23,7 +29,10 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
 
     private boolean deleted = false;
 
-    public Answer() {
+    public Answer(User loginUser, Question question, AnswerDTO answerDTO) {
+        this.writer = loginUser;
+        this.question = question;
+        this.contents = answerDTO.getContents();
     }
 
     public Answer(User writer, String contents) {
@@ -86,7 +95,10 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         return this.contents.equals(target.contents);
     }
 
-    public void delete() {
+    public void delete(User loginUser) throws CannotDeleteException {
+        if (!isOwner(loginUser)) {
+            throw new CannotDeleteException("delete error");
+        }
         this.deleted = true;
     }
 }

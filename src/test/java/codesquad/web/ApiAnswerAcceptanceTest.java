@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.CannotDeleteException;
 import codesquad.domain.Answer;
 import org.junit.Test;
 import org.springframework.http.*;
@@ -62,13 +63,13 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void delete() {
+    public void delete() throws CannotDeleteException {
         ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d", defaultQuestion().getId()), defaultAnswer(), Answer.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         String location = response.getHeaders().getLocation().getPath();
 
         Answer deleteAnswer = defaultAnswer();
-        deleteAnswer.delete();
+        deleteAnswer.delete(defaultUser());
 
         response = basicAuthTemplate()
                 .exchange(location, HttpMethod.DELETE, createHttpEntity(deleteAnswer), Answer.class);
@@ -76,13 +77,13 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void delete_another_user() {
+    public void delete_another_user() throws CannotDeleteException {
         ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d", defaultQuestion().getId()), defaultAnswer(), Answer.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         String location = response.getHeaders().getLocation().getPath();
 
         Answer deleteAnswer = defaultAnswer();
-        deleteAnswer.delete();
+        deleteAnswer.delete(defaultUser());
 
         response = basicAuthTemplate(newUser("testuser1"))
                 .exchange(location, HttpMethod.DELETE, createHttpEntity(deleteAnswer), Answer.class);

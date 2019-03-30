@@ -91,12 +91,12 @@ public class QnaServiceTest {
     }
 
     @Test
-    public void delete_answer() {
+    public void delete_answer() throws CannotDeleteException {
         qnaService.deleteAnswer(user, answer.getId());
     }
 
     @Test(expected = CannotDeleteException.class)
-    public void delete_answer_failed_when_wrong_user() {
-        qnaService.deleteAnswer(user, answer.getId());
+    public void delete_answer_failed_when_wrong_user() throws Exception {
+        qnaService.deleteAnswer(null, answer.getId());
     }
 }

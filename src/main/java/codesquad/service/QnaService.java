@@ -1,5 +1,7 @@
 package codesquad.service;
 
+import codesquad.CannotDeleteException;
+import codesquad.UnAuthorizedException;
 import codesquad.domain.*;
 import codesquad.dto.AnswerDTO;
 import codesquad.dto.QuestionDTO;
@@ -65,20 +67,36 @@ public class QnaService {
         return questionRepository.findAll(pageable).getContent();
     }
 
-    public Answer addAnswer(User loginUser, long questionId, AnswerDTO contents) {
-        // TODO 답변 추가 기능 구현
-        return null;
+    public Answer addAnswer(User loginUser, long questionId, AnswerDTO answerDTO) {
+        Question question = findById(questionId).get();
+        Answer answer = new Answer(loginUser, question, answerDTO);
+
+        question.addAnswer(answer);
+        questionRepository.save(question);
+
+        return answer;
     }
 
-    public Answer deleteAnswer(User loginUser, long id) {
-        // TODO 답변 삭제 기능 구현
-        return null;
+    public void deleteAnswer(User loginUser, long id) throws CannotDeleteException {
+        Answer answer = answerRepository
+                .findById(id).orElseThrow(NoSuchElementException::new);
+        answer.delete(loginUser);
+        answerRepository.save(answer);
     }
 
     public Optional<Answer> findAnswerById(long id) {
         return answerRepository.findById(id);
     }
 
-    public void updateAnswer(User user, long id, AnswerDTO this_is_update) {
+    public Answer updateAnswer(User loginUser, long id, AnswerDTO answerDTO) {
+        Answer answer = answerRepository.findById(id).orElseThrow(NoSuchElementException::new);
+
+        if (!answer.isOwner(loginUser)) {
+            throw new UnAuthorizedException();
+        }
+
+        answer.setContents(answerDTO.getContents());
+
+        return answerRepository.save(answer);
     }
 }
