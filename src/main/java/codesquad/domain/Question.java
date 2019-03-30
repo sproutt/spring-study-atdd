@@ -112,9 +112,9 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     }
 
     public boolean hasNoAnswers(User user) {
-        if (answers.size() == 0) {
+        if (answers.size() == 0)
             return true;
-        } else
+        else
             return false;
     }
 
