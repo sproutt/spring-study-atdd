@@ -13,8 +13,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void show() {
-        ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer(), Answer.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
         String location = String.format("/api/questions/%d", defaultQuestion().getId());
 
         response = basicAuthTemplate().getForEntity(location, Answer.class);
@@ -23,18 +22,16 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void create() {
-        ResponseEntity<Void> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer(), Void.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-
+        ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
         String location = response.getHeaders().getLocation().getPath();
-        Answer dbAnswer = basicAuthTemplate().getForObject(location, Answer.class);
+
+        Answer dbAnswer = getResource(location, Answer.class, defaultUser());
         assertThat(dbAnswer).isNotNull();
     }
 
     @Test
     public void update() {
-        ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer(), Answer.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
         String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 
         Answer updateAnswer = new Answer(defaultUser(), "content");
@@ -52,8 +49,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void update_another_user() {
-        ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer(), Answer.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
         String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 
         Answer updateAnswer = new Answer(defaultUser(), "content");
@@ -64,8 +60,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void delete() throws CannotDeleteException {
-        ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer(), Answer.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
         String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 
         Answer deleteAnswer = defaultAnswer();
@@ -78,8 +73,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void delete_another_user() throws CannotDeleteException {
-        ResponseEntity<Answer> response = basicAuthTemplate().postForEntity(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer(), Answer.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
         String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 
         Answer deleteAnswer = defaultAnswer();
