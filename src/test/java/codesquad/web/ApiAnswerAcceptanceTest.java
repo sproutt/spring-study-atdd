@@ -19,7 +19,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     @Test
     public void create() throws Exception {
         String testContents = "testContents1";
-        String location = createResource(DEFAULT_ANSWER_URL,testContents);
+        String location = createResourceByDefaultUser(DEFAULT_ANSWER_URL,testContents);
 
         Answer dbAnswer = getResource(location,Answer.class,defaultUser());
         assertThat(dbAnswer).isNotNull();
@@ -28,7 +28,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     @Test
     public void update() throws Exception {
         String testContents = "testContents2";
-        String location = createResource(DEFAULT_ANSWER_URL,testContents);
+        String location = createResourceByDefaultUser(DEFAULT_ANSWER_URL,testContents);
 
         String updateString = "testString";
         ResponseEntity<Answer> responseEntity =
@@ -40,7 +40,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     @Test
     public void update_다른_사람() throws Exception {
         String testContents = "testContents3";
-        String location = createResource(DEFAULT_ANSWER_URL,testContents);
+        String location = createResourceByDefaultUser(DEFAULT_ANSWER_URL,testContents);
 
         String updateString = "testString";
         ResponseEntity<Answer> responseEntity =
@@ -52,7 +52,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     @Test
     public void delete() throws Exception {
         String testContents = "testContents4";
-        String location = createResource(DEFAULT_ANSWER_URL,testContents);
+        String location = createResourceByDefaultUser(DEFAULT_ANSWER_URL,testContents);
 
         basicAuthTemplate(defaultUser()).delete(location);
 
@@ -63,7 +63,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     @Test
     public void delete_다른사람() throws Exception {
         String testContents = "testContents5";
-        String location = createResource(DEFAULT_ANSWER_URL,testContents);
+        String location = createResourceByDefaultUser(DEFAULT_ANSWER_URL,testContents);
 
         basicAuthTemplate(anotherUser()).delete(location);
 
