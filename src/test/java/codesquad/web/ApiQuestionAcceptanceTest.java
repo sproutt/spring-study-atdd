@@ -109,8 +109,6 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         Question newQuestion = new Question("testQuestion6", "testContents");
         String location = createResourceByDefaultUser(DEFAULT_QUESTION_URL,newQuestion);
 
-        basicAuthTemplate(defaultUser()).delete(location);
-
         String testContents = "testAnswer";
         createResourceByAnotherUser(location+"/answers",testContents);
 

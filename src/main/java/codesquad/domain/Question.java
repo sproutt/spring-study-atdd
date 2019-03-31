@@ -110,7 +110,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     }
 
     private int differentWriter(User loginUser){
-        return (int)answers.stream().filter(answer -> answer.isOwner(loginUser)).count();
+        return (int)answers.stream().filter(answer -> !answer.isDeleted()).filter(answer -> !answer.isOwner(loginUser)).count();
     }
 
     private void deleteAllAnswer(){
