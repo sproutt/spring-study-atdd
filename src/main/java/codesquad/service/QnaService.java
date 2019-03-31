@@ -43,20 +43,14 @@ public class QnaService {
     @Transactional
     public Question update(User loginUser, long id, Question updatedQuestion) throws UnAuthorizedException {
         Question original = findQuestionById(id);
-        if (!original.isOwner(loginUser)) {
-            throw new UnAuthorizedException();
-        }
-        original.update(updatedQuestion);
+        original.update(loginUser, updatedQuestion);
         return questionRepository.save(original);
     }
 
     @Transactional
     public Question delete(User loginUser, long questionId) throws Exception {
         Question original = findQuestionById(questionId);
-        if (!original.isOwner(loginUser)) {
-            throw new UnAuthorizedException();
-        }
-        original.delete();
+        original.delete(loginUser);
         return questionRepository.save(original);
     }
 
@@ -85,20 +79,14 @@ public class QnaService {
     @Transactional
     public Answer deleteAnswer(User loginUser, long id) throws Exception {
         Answer answer = findAnswerById(id);
-        if (!answer.isOwner(loginUser)) {
-            throw new UnAuthorizedException();
-        }
-        answer.delete();
+        answer.delete(loginUser);
         return answerRepository.save(answer);
     }
 
     @Transactional
     public Answer updateAnswer(User loginUser, long id, String updatedContents) throws Exception {
         Answer answer = findAnswerById(id);
-        if (!answer.isOwner(loginUser)) {
-            throw new UnAuthorizedException();
-        }
-        answer.setContents(updatedContents);
+        answer.updateContents(loginUser, updatedContents);
         return answerRepository.save(answer);
     }
 }

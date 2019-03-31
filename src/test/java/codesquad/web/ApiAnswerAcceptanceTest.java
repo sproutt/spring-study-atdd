@@ -1,11 +1,7 @@
 package codesquad.web;
 
-import codesquad.NullEntityException;
 import codesquad.domain.Answer;
 import codesquad.domain.QuestionRepository;
-import codesquad.domain.User;
-import codesquad.domain.UserRepository;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
