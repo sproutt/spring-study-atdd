@@ -103,27 +103,27 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         if (!isOwner(loginUser)) {
             throw new UnAuthorizedException();
         }
-        if(isAnswerWrittenByWriter(loginUser)){
+        if (isAnswerWrittenByWriter(loginUser)) {
             this.deleted = true;
             deleteAllAnswer();
         }
         return this;
     }
 
-    private Stream<Answer> unDeletedAnswer(){
+    private Stream<Answer> unDeletedAnswer() {
         return answers.stream().filter(answer -> !answer.isDeleted());
     }
 
-    private int differentWriterNumber(User loginUser){
-        return (int)unDeletedAnswer().filter(answer -> !answer.isOwner(loginUser)).count();
+    private int differentWriterNumber(User loginUser) {
+        return (int) unDeletedAnswer().filter(answer -> !answer.isOwner(loginUser)).count();
     }
 
-    private void deleteAllAnswer(){
+    private void deleteAllAnswer() {
         answers = answers.stream().map(answer -> answer.delete()).collect(Collectors.toList());
     }
 
-    private boolean isAnswerWrittenByWriter(User loginUser){
-        if(differentWriterNumber(loginUser) > 0){
+    private boolean isAnswerWrittenByWriter(User loginUser) {
+        if (differentWriterNumber(loginUser) > 0) {
             return false;
         }
         return true;

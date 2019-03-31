@@ -1,8 +1,6 @@
 package codesquad.service;
 
-import codesquad.NullEntityException;
 import codesquad.UnAuthenticationException;
-import codesquad.UnAuthorizedException;
 import codesquad.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +50,7 @@ public class QnaService {
     public Question delete(User loginUser, long questionId) throws Exception {
         Question original = findQuestionById(questionId);
         original.delete(loginUser);
+        deleteHistoryService.saveDeletedAnswer(questionRepository.save(original),loginUser);
         return questionRepository.save(original);
     }
 
