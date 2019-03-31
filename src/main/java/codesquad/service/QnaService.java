@@ -1,8 +1,8 @@
 package codesquad.service;
 
-import codesquad.CannotDeleteException;
 import codesquad.NullEntityException;
 import codesquad.UnAuthenticationException;
+import codesquad.UnAuthorizedException;
 import codesquad.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Optional;
 
 @Service("qnaService")
 public class QnaService {
@@ -33,34 +32,34 @@ public class QnaService {
         return questionRepository.save(question);
     }
 
-    public Question findById(long id) {
-        return questionRepository.findById(id).orElseThrow(()->new NullEntityException());
+    public Question findQuestionById(long id) {
+        return questionRepository.findById(id).orElseThrow(() -> new NullEntityException());
+    }
+
+    public Answer findAnswerById(long id) {
+        return answerRepository.findById(id).orElseThrow(() -> new NullEntityException());
     }
 
     @Transactional
-    public Question update(User loginUser, long id, Question updatedQuestion) {
-        Question original = findById(id);
-        if(original.isOwner(loginUser)){
-            original.update(updatedQuestion);
-        }
-        return original;
+    public Question update(User loginUser, long id, Question updatedQuestion) throws UnAuthorizedException {
+        Question original = findQuestionById(id);
+        original.update(loginUser, updatedQuestion);
+        return questionRepository.save(original);
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
-        Question original = findById(questionId);
-        if(original.isOwner(loginUser)){
-            original.delete();
-        }
-        throw new CannotDeleteException(original.toString());
+    public Question delete(User loginUser, long questionId) throws Exception {
+        Question original = findQuestionById(questionId);
+        original.delete(loginUser);
+        return questionRepository.save(original);
     }
 
-    public Question ownerCheck(long id, User loginUser) throws UnAuthenticationException {
-        Question question = findById(id);
-        if(question.isOwner(loginUser)){
-            return question;
+    public Question ownerCheck(long id, User loginUser) throws Exception {
+        Question question = findQuestionById(id);
+        if (!question.isOwner(loginUser)) {
+            throw new UnAuthenticationException();
         }
-        throw new UnAuthenticationException();
+        return question;
     }
 
     public Iterable<Question> findAll() {
@@ -72,12 +71,22 @@ public class QnaService {
     }
 
     public Answer addAnswer(User loginUser, long questionId, String contents) {
-        // TODO 답변 추가 기능 구현
-        return null;
+        Answer answer = new Answer(loginUser, contents);
+        answer.toQuestion(findQuestionById(questionId));
+        return answerRepository.save(answer);
     }
 
-    public Answer deleteAnswer(User loginUser, long id) {
-        // TODO 답변 삭제 기능 구현 
-        return null;
+    @Transactional
+    public Answer deleteAnswer(User loginUser, long id) throws Exception {
+        Answer answer = findAnswerById(id);
+        answer.delete(loginUser);
+        return answerRepository.save(answer);
+    }
+
+    @Transactional
+    public Answer updateAnswer(User loginUser, long id, String updatedContents) throws Exception {
+        Answer answer = findAnswerById(id);
+        answer.updateContents(loginUser, updatedContents);
+        return answerRepository.save(answer);
     }
 }
