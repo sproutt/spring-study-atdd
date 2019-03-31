@@ -10,6 +10,7 @@ import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 public class Question extends AbstractEntity implements UrlGeneratable {
@@ -109,8 +110,12 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return this;
     }
 
-    private int differentWriter(User loginUser){
-        return (int)answers.stream().filter(answer -> !answer.isDeleted()).filter(answer -> !answer.isOwner(loginUser)).count();
+    private Stream<Answer> unDeletedAnswer(){
+        return answers.stream().filter(answer -> !answer.isDeleted());
+    }
+
+    private int differentWriterNumber(User loginUser){
+        return (int)unDeletedAnswer().filter(answer -> !answer.isOwner(loginUser)).count();
     }
 
     private void deleteAllAnswer(){
@@ -118,7 +123,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     }
 
     private boolean isAnswerWrittenByWriter(User loginUser){
-        if(differentWriter(loginUser) > 0){
+        if(differentWriterNumber(loginUser) > 0){
             return false;
         }
         return true;
