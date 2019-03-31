@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Question extends AbstractEntity implements UrlGeneratable {
@@ -88,18 +89,38 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return "Question [id=" + getId() + ", title=" + title + ", contents=" + contents + ", writer=" + writer + "]";
     }
 
-    public void update(User loginUser, Question newQuestion) {
+    public Question update(User loginUser, Question newQuestion) {
         if (!isOwner(loginUser)) {
             throw new UnAuthorizedException();
         }
         this.title = newQuestion.getTitle();
         this.contents = newQuestion.getContents();
+        return this;
     }
 
-    public void delete(User loginUser) {
+    public Question delete(User loginUser) {
         if (!isOwner(loginUser)) {
             throw new UnAuthorizedException();
         }
-        this.deleted = true;
+        if(isAnswerWrittenByWriter(loginUser)){
+            this.deleted = true;
+            deleteAllAnswer();
+        }
+        return this;
+    }
+
+    private int differentWriter(User loginUser){
+        return (int)answers.stream().filter(answer -> answer.isOwner(loginUser)).count();
+    }
+
+    private void deleteAllAnswer(){
+        answers = answers.stream().map(answer -> answer.delete()).collect(Collectors.toList());
+    }
+
+    private boolean isAnswerWrittenByWriter(User loginUser){
+        if(differentWriter(loginUser) > 0){
+            return false;
+        }
+        return true;
     }
 }

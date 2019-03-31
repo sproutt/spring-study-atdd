@@ -20,7 +20,7 @@ public class ApiAnswerController {
     private QnaService qnaService;
 
     @PostMapping("")
-    public ResponseEntity<Void> create(@Valid @RequestBody String contents, @LoginUser User loginUser, @PathVariable long questionId) {
+    public ResponseEntity<Void> create(@Valid @RequestBody String contents, @LoginUser User loginUser, @PathVariable long questionId) throws Exception {
         Answer savedAnswer = qnaService.addAnswer(loginUser, questionId, contents);
 
         HttpHeaders headers = new HttpHeaders();

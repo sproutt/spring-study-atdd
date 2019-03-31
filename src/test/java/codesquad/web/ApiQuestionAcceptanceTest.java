@@ -60,10 +60,12 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
-    @Test(expected = NullEntityException.class)
+    @Test
     public void delete_없는질문(){
         String nullQuestionUrl = "/api/questions/100";
-        template().delete(nullQuestionUrl);
+        ResponseEntity<Void> responseEntity =
+                basicAuthTemplate(anotherUser).exchange(nullQuestionUrl, HttpMethod.DELETE,null,void.class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -94,7 +96,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         String location = createResourceByDefaultUser(DEFAULT_QUESTION_URL,newQuestion);
 
         String testContents = "testAnswer";
-        createResourceByDefaultUser(location,testContents);
+        createResourceByDefaultUser(location+"/answers",testContents);
 
         basicAuthTemplate(defaultUser()).delete(location);
 
@@ -110,7 +112,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         basicAuthTemplate(defaultUser()).delete(location);
 
         String testContents = "testAnswer";
-        createResourceByAnotherUser(location,testContents);
+        createResourceByAnotherUser(location+"/answers",testContents);
 
         basicAuthTemplate(defaultUser()).delete(location);
 

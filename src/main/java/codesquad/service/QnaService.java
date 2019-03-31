@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service("qnaService")
@@ -32,16 +33,16 @@ public class QnaService {
         return questionRepository.save(question);
     }
 
-    public Question findQuestionById(long id) {
-        return questionRepository.findById(id).orElseThrow(() -> new NullEntityException());
+    public Question findQuestionById(long id) throws Exception {
+        return questionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
     }
 
     public Answer findAnswerById(long id) {
-        return answerRepository.findById(id).orElseThrow(() -> new NullEntityException());
+        return answerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
     }
 
     @Transactional
-    public Question update(User loginUser, long id, Question updatedQuestion) throws UnAuthorizedException {
+    public Question update(User loginUser, long id, Question updatedQuestion) throws Exception {
         Question original = findQuestionById(id);
         original.update(loginUser, updatedQuestion);
         return questionRepository.save(original);
@@ -70,7 +71,7 @@ public class QnaService {
         return questionRepository.findAll(pageable).getContent();
     }
 
-    public Answer addAnswer(User loginUser, long questionId, String contents) {
+    public Answer addAnswer(User loginUser, long questionId, String contents) throws Exception {
         Answer answer = new Answer(loginUser, contents);
         answer.toQuestion(findQuestionById(questionId));
         return answerRepository.save(answer);
@@ -79,14 +80,12 @@ public class QnaService {
     @Transactional
     public Answer deleteAnswer(User loginUser, long id) throws Exception {
         Answer answer = findAnswerById(id);
-        answer.delete(loginUser);
-        return answerRepository.save(answer);
+        return answerRepository.save(answer.delete(loginUser));
     }
 
     @Transactional
     public Answer updateAnswer(User loginUser, long id, String updatedContents) throws Exception {
         Answer answer = findAnswerById(id);
-        answer.updateContents(loginUser, updatedContents);
-        return answerRepository.save(answer);
+        return answerRepository.save(answer.updateContents(loginUser,updatedContents));
     }
 }

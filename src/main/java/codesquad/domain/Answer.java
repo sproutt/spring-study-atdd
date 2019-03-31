@@ -75,11 +75,17 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         return deleted;
     }
 
-    public void delete(User loginUser) {
+    public Answer delete(User loginUser) {
         if (!isOwner(loginUser)) {
             throw new UnAuthorizedException();
         }
         this.deleted = true;
+        return this;
+    }
+
+    public Answer delete(){
+        this.deleted = true;
+        return this;
     }
 
     @Override
