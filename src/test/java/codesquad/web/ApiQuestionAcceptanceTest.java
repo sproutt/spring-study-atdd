@@ -11,11 +11,12 @@ import static codesquad.domain.UserTest.newUser;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ApiQuestionAcceptanceTest extends AcceptanceTest {
+    private static final String URL = "/api/questions";
     private Logger log = LoggerFactory.getLogger(ApiQuestionAcceptanceTest.class);
 
     @Test
     public void create() {
-        ResponseEntity<Question> response = createQuestionResource("/api/questions", defaultQuestion());
+        ResponseEntity<Question> response = createQuestionResource(URL, defaultQuestion());
         String location = response.getHeaders().getLocation().getPath();
         Question dbQuestion = getResource(location, Question.class, defaultUser());
         assertThat(dbQuestion).isNotNull();
@@ -23,7 +24,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void show() {
-        ResponseEntity<Question> response = createQuestionResource("/api/questions", defaultQuestion());
+        ResponseEntity<Question> response = createQuestionResource(URL, defaultQuestion());
         String location = response.getHeaders().getLocation().getPath();
         response = basicAuthTemplate().getForEntity(location, Question.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -31,7 +32,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void update() {
-        ResponseEntity<Question> response = createQuestionResource("/api/questions", defaultQuestion());
+        ResponseEntity<Question> response = createQuestionResource(URL, defaultQuestion());
         String location = response.getHeaders().getLocation().getPath();
 
         Question updateQuestion = new Question("title", "contents");
@@ -43,7 +44,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void update_another_user() {
-        ResponseEntity<Question> response = createQuestionResource("/api/questions", defaultQuestion());
+        ResponseEntity<Question> response = createQuestionResource(URL, defaultQuestion());
         String location = response.getHeaders().getLocation().getPath();
 
         Question updateQuestion = new Question("title", "contents");

@@ -23,7 +23,7 @@ public class ApiAnswerController {
 
     @GetMapping("")
     public Answer show(@PathVariable long questionId) {
-        return qnaService.findAnswerById(questionId).get();
+        return qnaService.findAnswerById(questionId);
     }
 
     @PostMapping("")
@@ -40,7 +40,7 @@ public class ApiAnswerController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@LoginUser User loginUser, @PathVariable long questionId, @PathVariable long id) throws CannotDeleteException {
-        qnaService.deleteAnswer(loginUser, id);
+    public Answer delete(@LoginUser User loginUser, @PathVariable long questionId, @PathVariable long id) throws CannotDeleteException {
+        return qnaService.deleteAnswer(loginUser, id);
     }
 }

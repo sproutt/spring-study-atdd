@@ -1,7 +1,5 @@
 package codesquad.service;
 
-import codesquad.CannotDeleteException;
-import codesquad.UnAuthorizedException;
 import codesquad.domain.*;
 import codesquad.dto.AnswerDTO;
 import codesquad.dto.QuestionDTO;
@@ -14,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service("qnaService")
 public class QnaService {
@@ -35,8 +32,8 @@ public class QnaService {
         return questionRepository.save(question);
     }
 
-    public Optional<Question> findById(long id) {
-        return questionRepository.findById(id);
+    public Question findById(long id) {
+        return questionRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
     @Transactional
@@ -68,34 +65,30 @@ public class QnaService {
     }
 
     public Answer addAnswer(User loginUser, long questionId, AnswerDTO answerDTO) {
-        Question question = findById(questionId).get();
+        Question question = findById(questionId);
         Answer answer = new Answer(loginUser, question, answerDTO);
 
         question.addAnswer(answer);
+        answerRepository.save(answer);
         questionRepository.save(question);
 
         return answer;
     }
 
-    public void deleteAnswer(User loginUser, long id) throws CannotDeleteException {
-        Answer answer = answerRepository
-                .findById(id).orElseThrow(NoSuchElementException::new);
+    public Answer deleteAnswer(User loginUser, long id) {
+        Answer answer = findAnswerById(id);
         answer.delete(loginUser);
-        answerRepository.save(answer);
+
+        return answerRepository.save(answer);
     }
 
-    public Optional<Answer> findAnswerById(long id) {
-        return answerRepository.findById(id);
+    public Answer findAnswerById(long id) {
+        return answerRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
     public Answer updateAnswer(User loginUser, long id, AnswerDTO answerDTO) {
         Answer answer = answerRepository.findById(id).orElseThrow(NoSuchElementException::new);
-
-        if (!answer.isOwner(loginUser)) {
-            throw new UnAuthorizedException();
-        }
-
-        answer.setContents(answerDTO.getContents());
+        answer.update(loginUser, answerDTO);
 
         return answerRepository.save(answer);
     }

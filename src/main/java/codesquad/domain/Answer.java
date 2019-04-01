@@ -1,6 +1,6 @@
 package codesquad.domain;
 
-import codesquad.CannotDeleteException;
+import codesquad.UnAuthorizedException;
 import codesquad.dto.AnswerDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,6 @@ import support.domain.UrlGeneratable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -89,18 +88,18 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         return "Answer [id=" + getId() + ", writer=" + writer + ", contents=" + contents + "]";
     }
 
-    public boolean equalsContents(Answer target) {
-        if (Objects.isNull(target)) {
-            return false;
-        }
-
-        return this.contents.equals(target.contents);
-    }
-
-    public void delete(User loginUser) throws CannotDeleteException {
+    public void delete(User loginUser) {
         if (!isOwner(loginUser)) {
-            throw new CannotDeleteException("delete error");
+            throw new UnAuthorizedException();
         }
         this.deleted = true;
+    }
+
+    public void update(User loginUser, AnswerDTO answerDTO) {
+        if (!this.isOwner(loginUser)) {
+            throw new UnAuthorizedException();
+        }
+
+        this.contents = answerDTO.getContents();
     }
 }

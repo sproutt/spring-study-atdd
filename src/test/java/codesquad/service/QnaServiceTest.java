@@ -34,7 +34,7 @@ public class QnaServiceTest {
     private Answer answer;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         user = new User("sanjigi", "password", "name", "javajigi@slipp.net");
         question = new Question("title", "this is test");
         question.writeBy(user);
@@ -45,9 +45,9 @@ public class QnaServiceTest {
     }
 
     @Test
-    public void create_question() throws Exception {
+    public void create_question() {
         qnaService.create(question.getWriter(), new QuestionDTO(question.getTitle(), question.getContents()));
-        assertThat(qnaService.findById(question.getId()).get().getContents(), is(question.getContents()));
+        assertThat(qnaService.findById(question.getId()).getContents(), is(question.getContents()));
     }
 
     @Test(expected = UnAuthorizedException.class)
@@ -64,25 +64,25 @@ public class QnaServiceTest {
     @Test
     public void update_question() {
         qnaService.update(user, question.getId(), new QuestionDTO("updateTitle", "this is update"));
-        assertThat(qnaService.findById(question.getId()).get().getContents(), is("this is update"));
+        assertThat(qnaService.findById(question.getId()).getContents(), is("this is update"));
     }
 
     @Test
     public void delete_question() throws Exception {
         qnaService.deleteQuestion(user, question.getId());
-        assertThat(qnaService.findById(question.getId()).get().isDeleted(), is(question.isDeleted()));
+        assertThat(qnaService.findById(question.getId()).isDeleted(), is(question.isDeleted()));
     }
 
     @Test
     public void create_answer() {
         qnaService.addAnswer(user, question.getId(), new AnswerDTO(answer.getContents()));
-        assertThat(qnaService.findAnswerById(answer.getId()).get().getContents(), is(answer.getContents()));
+        assertThat(qnaService.findAnswerById(answer.getId()).getContents(), is(answer.getContents()));
     }
 
     @Test
     public void update_answer() {
         qnaService.updateAnswer(user, question.getId(), new AnswerDTO("this is update"));
-        assertThat(qnaService.findAnswerById(answer.getId()).get().getContents(), is("this is update"));
+        assertThat(qnaService.findAnswerById(answer.getId()).getContents(), is("this is update"));
     }
 
     @Test(expected = UnAuthorizedException.class)
@@ -91,12 +91,12 @@ public class QnaServiceTest {
     }
 
     @Test
-    public void delete_answer() throws CannotDeleteException {
+    public void delete_answer() {
         qnaService.deleteAnswer(user, answer.getId());
     }
 
     @Test(expected = CannotDeleteException.class)
-    public void delete_answer_failed_when_wrong_user() throws Exception {
+    public void delete_answer_failed_when_wrong_user() {
         qnaService.deleteAnswer(null, answer.getId());
     }
 }

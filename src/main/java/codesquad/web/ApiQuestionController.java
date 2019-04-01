@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.net.URI;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/questions")
@@ -22,7 +21,7 @@ public class ApiQuestionController {
 
     @GetMapping("/{id}")
     public Question show(@PathVariable long id) {
-        return qnaService.findById(id).orElseThrow(NoSuchElementException::new);
+        return qnaService.findById(id);
     }
 
     @PostMapping("")

@@ -1,8 +1,10 @@
 package codesquad.web;
 
-import codesquad.CannotDeleteException;
 import codesquad.domain.Answer;
+import codesquad.domain.User;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import support.test.AcceptanceTest;
 
@@ -10,6 +12,8 @@ import static codesquad.domain.UserTest.newUser;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ApiAnswerAcceptanceTest extends AcceptanceTest {
+    private Logger log = LoggerFactory.getLogger(ApiAnswerAcceptanceTest.class);
+    private User anotherUser = newUser("testuser1");
 
     @Test
     public void show() {
@@ -34,11 +38,11 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
         ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
         String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 
-        Answer updateAnswer = new Answer(defaultUser(), "content");
+        Answer updateAnswer = defaultAnswer().setContents("this is update");
         response = basicAuthTemplate()
                 .exchange(location, HttpMethod.PUT, createHttpEntity(updateAnswer), Answer.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(updateAnswer.equalsContents(response.getBody())).isTrue();
+        assertThat(updateAnswer.equals(response.getBody())).isTrue();
     }
 
     private HttpEntity createHttpEntity(Object body) {
@@ -52,14 +56,14 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
         ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
         String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 
-        Answer updateAnswer = new Answer(defaultUser(), "content");
-        response = basicAuthTemplate(newUser("testuser1"))
+        Answer updateAnswer = defaultAnswer().setContents("this is update");
+        response = basicAuthTemplate(anotherUser)
                 .exchange(location, HttpMethod.PUT, createHttpEntity(updateAnswer), Answer.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
-    public void delete() throws CannotDeleteException {
+    public void delete() {
         ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
         String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 
@@ -68,18 +72,20 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
         response = basicAuthTemplate()
                 .exchange(location, HttpMethod.DELETE, createHttpEntity(deleteAnswer), Answer.class);
+        log.info("response.body : ",response.getBody());
+        log.info("response.status :", response.getStatusCode());
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    public void delete_another_user() throws CannotDeleteException {
+    public void delete_another_user() {
         ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
         String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 
         Answer deleteAnswer = defaultAnswer();
         deleteAnswer.delete(defaultUser());
 
-        response = basicAuthTemplate(newUser("testuser1"))
+        response = basicAuthTemplate(anotherUser)
                 .exchange(location, HttpMethod.DELETE, createHttpEntity(deleteAnswer), Answer.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
