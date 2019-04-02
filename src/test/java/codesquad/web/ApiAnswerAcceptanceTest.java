@@ -45,12 +45,6 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
         assertThat(updateAnswer.equals(response.getBody())).isTrue();
     }
 
-    private HttpEntity createHttpEntity(Object body) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new HttpEntity(body, headers);
-    }
-
     @Test
     public void update_another_user() {
         ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());

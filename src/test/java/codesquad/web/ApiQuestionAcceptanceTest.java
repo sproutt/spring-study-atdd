@@ -39,7 +39,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         response = basicAuthTemplate()
                 .exchange(location, HttpMethod.PUT, createHttpEntity(updateQuestion), Question.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(updateQuestion.equalsTitleAndContents(response.getBody())).isTrue();
+        assertThat(updateQuestion.isEqualsTitleAndContents(response.getBody())).isTrue();
     }
 
     @Test
@@ -51,11 +51,5 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         response = basicAuthTemplate(newUser("testuser1"))
                 .exchange(location, HttpMethod.PUT, createHttpEntity(updateQuestion), Question.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-    }
-
-    private HttpEntity createHttpEntity(Object body) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new HttpEntity(body, headers);
     }
 }

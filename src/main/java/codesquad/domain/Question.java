@@ -114,7 +114,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         this.deleted = true;
     }
 
-    public boolean equalsTitleAndContents(Question target) {
+    public boolean isEqualsTitleAndContents(Question target) {
         if (Objects.isNull(target)) {
             return false;
         }
