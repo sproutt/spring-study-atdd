@@ -97,12 +97,12 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     public List<DeleteHistory> delete(User loginUser) {
         List<DeleteHistory> histories = new ArrayList<>();
 
-        for (Answer answer : answers) {
-            histories.add(answer.delete(loginUser));
-        }
-
         if (!isOwner(loginUser)) {
             throw new UnAuthorizedException("mismatch question writer");
+        }
+
+        for (Answer answer : answers) {
+            histories.add(answer.delete(loginUser));
         }
         this.deleted = true;
         histories.add(new DeleteHistory(ContentType.QUESTION, getId(), loginUser, LocalDateTime.now()));

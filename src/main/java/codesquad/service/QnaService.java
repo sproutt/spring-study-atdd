@@ -73,6 +73,7 @@ public class QnaService {
                 .orElseThrow(() -> new EntityNotFoundException("question not found")));
 
         return answerRepository.save(answer);
+
     }
 
     public Answer deleteAnswer(User loginUser, Long id) {
