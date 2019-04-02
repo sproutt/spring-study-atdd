@@ -1,6 +1,7 @@
 package codesquad.service;
 
 import codesquad.domain.*;
+import codesquad.dto.AnswerDTO;
 import codesquad.dto.QuestionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service("qnaService")
 public class QnaService {
@@ -32,8 +32,8 @@ public class QnaService {
         return questionRepository.save(question);
     }
 
-    public Optional<Question> findById(long id) {
-        return questionRepository.findById(id);
+    public Question findById(long id) {
+        return questionRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
     @Transactional
@@ -64,14 +64,32 @@ public class QnaService {
         return questionRepository.findAll(pageable).getContent();
     }
 
-    public Answer addAnswer(User loginUser, long questionId, String contents) {
-        // TODO 답변 추가 기능 구현
-        return null;
+    public Answer addAnswer(User loginUser, long questionId, AnswerDTO answerDTO) {
+        Question question = findById(questionId);
+        Answer answer = new Answer(loginUser, question, answerDTO);
+
+        question.addAnswer(answer);
+        answerRepository.save(answer);
+        questionRepository.save(question);
+
+        return answer;
     }
 
     public Answer deleteAnswer(User loginUser, long id) {
-        // TODO 답변 삭제 기능 구현
-        return null;
+        Answer answer = findAnswerById(id);
+        answer.delete(loginUser);
+
+        return answerRepository.save(answer);
     }
 
+    public Answer findAnswerById(long id) {
+        return answerRepository.findById(id).orElseThrow(NoSuchElementException::new);
+    }
+
+    public Answer updateAnswer(User loginUser, long id, AnswerDTO answerDTO) {
+        Answer answer = answerRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        answer.update(loginUser, answerDTO);
+
+        return answerRepository.save(answer);
+    }
 }

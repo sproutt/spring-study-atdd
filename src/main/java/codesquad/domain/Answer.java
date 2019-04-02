@@ -1,5 +1,10 @@
 package codesquad.domain;
 
+import codesquad.UnAuthorizedException;
+import codesquad.dto.AnswerDTO;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
@@ -7,6 +12,9 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Answer extends AbstractEntity implements UrlGeneratable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_writer"))
@@ -22,7 +30,10 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
 
     private boolean deleted = false;
 
-    public Answer() {
+    public Answer(User loginUser, Question question, AnswerDTO answerDTO) {
+        this.writer = loginUser;
+        this.question = question;
+        this.contents = answerDTO.getContents();
     }
 
     public Answer(User writer, String contents) {
@@ -75,5 +86,20 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
     @Override
     public String toString() {
         return "Answer [id=" + getId() + ", writer=" + writer + ", contents=" + contents + "]";
+    }
+
+    public void delete(User loginUser) {
+        if (!isOwner(loginUser)) {
+            throw new UnAuthorizedException();
+        }
+        this.deleted = true;
+    }
+
+    public void update(User loginUser, AnswerDTO answerDTO) {
+        if (!this.isOwner(loginUser)) {
+            throw new UnAuthorizedException();
+        }
+
+        this.contents = answerDTO.getContents();
     }
 }
