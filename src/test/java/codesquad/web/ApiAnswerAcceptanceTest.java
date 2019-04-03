@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.CannotDeleteException;
 import codesquad.domain.Answer;
 import codesquad.domain.User;
 import org.junit.Test;
@@ -57,7 +58,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void delete() {
+    public void delete() throws CannotDeleteException {
         ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
         String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 
@@ -72,7 +73,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void delete_another_user() {
+    public void delete_another_user() throws CannotDeleteException {
         ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
         String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 
@@ -85,7 +86,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void delete_no_login() {
+    public void delete_no_login() throws CannotDeleteException {
         ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
         String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 

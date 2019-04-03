@@ -1,5 +1,6 @@
 package codesquad.domain;
 
+import codesquad.CannotDeleteException;
 import codesquad.UnAuthorizedException;
 import codesquad.dto.AnswerDTO;
 import lombok.Getter;
@@ -88,15 +89,15 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         return "Answer [id=" + getId() + ", writer=" + writer + ", contents=" + contents + "]";
     }
 
-    public void delete(User loginUser) {
+    public void delete(User loginUser) throws CannotDeleteException {
         if (!isOwner(loginUser)) {
-            throw new UnAuthorizedException();
+            throw new CannotDeleteException("wrong user");
         }
         this.deleted = true;
     }
 
     public void update(User loginUser, AnswerDTO answerDTO) {
-        if (!this.isOwner(loginUser)) {
+        if (!isOwner(loginUser)) {
             throw new UnAuthorizedException();
         }
 

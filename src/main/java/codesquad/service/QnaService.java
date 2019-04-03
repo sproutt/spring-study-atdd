@@ -1,5 +1,6 @@
 package codesquad.service;
 
+import codesquad.CannotDeleteException;
 import codesquad.domain.*;
 import codesquad.dto.AnswerDTO;
 import codesquad.dto.QuestionDTO;
@@ -75,7 +76,7 @@ public class QnaService {
         return answer;
     }
 
-    public Answer deleteAnswer(User loginUser, long id) {
+    public Answer deleteAnswer(User loginUser, long id) throws CannotDeleteException {
         Answer answer = findAnswerById(id);
         answer.delete(loginUser);
 
