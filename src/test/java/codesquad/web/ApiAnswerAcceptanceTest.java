@@ -83,4 +83,17 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
                 .exchange(location, HttpMethod.DELETE, createHttpEntity(deleteAnswer), Answer.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
+
+    @Test
+    public void delete_no_login() {
+        ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
+        String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
+
+        Answer deleteAnswer = defaultAnswer();
+        deleteAnswer.delete(defaultUser());
+
+        response = template()
+                .exchange(location, HttpMethod.DELETE, createHttpEntity(deleteAnswer), Answer.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
 }
