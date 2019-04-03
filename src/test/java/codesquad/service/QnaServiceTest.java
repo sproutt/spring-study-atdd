@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class QnaServiceTest {
+
     @Mock
     private QuestionRepository questionRepository;
 
@@ -30,21 +31,19 @@ public class QnaServiceTest {
     private QnaService qnaService;
 
     private User user;
-    private User newUser;
+    private User anotherUser;
     private Question question;
     private Answer answer;
-    private Answer newAnswer;
 
     @Before
     public void setUp() {
-        user = new User("sanjigi", "password", "name", "javajigi@slipp.net");
-        newUser = new User("bellroute", "1111", "bell", "bell@gmail.com");
+        user = new User(1l, "sanjigi", "password", "name", "javajigi@slipp.net");
+        anotherUser = new User(2l, "bell", "1111", "belll", "bell@gmail.com");
         question = new Question("title", "this is test");
         question.writeBy(user);
         when(questionRepository.findById(question.getId())).thenReturn(Optional.of(question));
 
         answer = new Answer(user, "this is answer");
-        newAnswer = new Answer(newUser, "this is newAnswer");
         when(answerRepository.findById(answer.getId())).thenReturn(Optional.of(answer));
     }
 
@@ -52,6 +51,7 @@ public class QnaServiceTest {
     public void create_question() {
         qnaService.create(question.getWriter(), new QuestionDTO(question.getTitle(), question.getContents()));
         assertThat(qnaService.findById(question.getId()).getContents(), is(question.getContents()));
+
     }
 
 
@@ -70,7 +70,7 @@ public class QnaServiceTest {
     @Test(expected = UnAuthorizedException.class)
     public void update_question_failed_when_wrong_login() {
         QuestionDTO updateQuestion = new QuestionDTO("hihi", "this is update");
-        qnaService.update(newUser, question.getId(), updateQuestion);
+        qnaService.update(anotherUser, question.getId(), updateQuestion);
     }
 
     @Test
@@ -80,19 +80,19 @@ public class QnaServiceTest {
     }
 
     @Test(expected = CannotDeleteException.class)
-    public void delete_question_failed_when_wrong_user() throws Exception {
-        qnaService.deleteQuestion(newUser, question.getId());
+    public void delete_question_failed_when_wrong_user() throws CannotDeleteException {
+        qnaService.deleteQuestion(anotherUser, question.getId());
     }
 
-    @Test(expected = Exception.class)
-    public void delete_question_failed_when_no_login() throws Exception {
+    @Test(expected = CannotDeleteException.class)
+    public void delete_question_failed_when_no_login() throws CannotDeleteException {
         qnaService.deleteQuestion(null, question.getId());
     }
 
 
     @Test(expected = CannotDeleteException.class)
-    public void delete_question_failed_when_others_answers() throws Exception {
-        question.addAnswer(newAnswer);
+    public void delete_question_failed_when_others_answers() throws CannotDeleteException {
+        qnaService.addAnswer(anotherUser, question.getId(), new AnswerDTO("this is others answer"));
         qnaService.deleteQuestion(user, question.getId());
     }
 
@@ -110,7 +110,7 @@ public class QnaServiceTest {
 
     @Test(expected = UnAuthorizedException.class)
     public void update_answer_failed_when_wrong_user() {
-        qnaService.updateAnswer(newUser, question.getId(), new AnswerDTO("this is update"));
+        qnaService.updateAnswer(anotherUser, question.getId(), new AnswerDTO("this is update"));
     }
 
     @Test(expected = UnAuthorizedException.class)
@@ -125,7 +125,7 @@ public class QnaServiceTest {
 
     @Test(expected = CannotDeleteException.class)
     public void delete_answer_failed_when_wrong_user() throws CannotDeleteException {
-        qnaService.deleteAnswer(newUser, answer.getId());
+        qnaService.deleteAnswer(anotherUser, answer.getId());
     }
 
     @Test(expected = CannotDeleteException.class)

@@ -47,10 +47,13 @@ public class QnaService {
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, long questionId) throws Exception {
+    public Question deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
         Question question = questionRepository
                 .findById(questionId).orElseThrow(NoSuchElementException::new);
+
         question.delete(loginUser);
+
+        return question;
     }
 
     public boolean isQuestionWriter(User loginUser, long id) {

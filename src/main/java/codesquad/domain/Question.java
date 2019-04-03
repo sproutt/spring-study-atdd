@@ -111,7 +111,19 @@ public class Question extends AbstractEntity implements UrlGeneratable {
             throw new CannotDeleteException("wrong User");
         }
 
+        if (!hasNotOthersAnswer()) {
+            throw new CannotDeleteException("exist others' answer");
+        }
+
+        if (answers.isEmpty()) {
+            this.deleted = true;
+        }
+
         this.deleted = true;
+    }
+
+    private boolean hasNotOthersAnswer() {
+        return answers.stream().allMatch(answer -> answer.getWriter().equals(writer));
     }
 
     public boolean isEqualsTitleAndContents(Question target) {

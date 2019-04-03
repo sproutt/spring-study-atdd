@@ -16,6 +16,7 @@ public abstract class AcceptanceTest {
     private static final String DEFAULT_LOGIN_USER = "javajigi";
     private static final long DEFAULT_QUESTION_ID = 1;
     private static final long DEFAULT_ANSWER_ID = 1;
+    private static final long DEFAULT_DELETE_QUESTION_ID = 99;
 
     @Autowired
     private TestRestTemplate template;
@@ -43,6 +44,10 @@ public abstract class AcceptanceTest {
 
     protected Question defaultQuestion() {
         return questionRepository.findById(DEFAULT_QUESTION_ID).get();
+    }
+
+    protected Question defaultDeletedQuestion() {
+        return questionRepository.findById(DEFAULT_DELETE_QUESTION_ID).get();
     }
 
     protected User defaultUser() {

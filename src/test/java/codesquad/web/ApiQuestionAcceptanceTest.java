@@ -70,11 +70,8 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         ResponseEntity<Question> response = createQuestionResource(URL, defaultQuestion());
         String location = response.getHeaders().getLocation().getPath();
 
-        Question deletedQuestion = defaultQuestion();
-        deletedQuestion.delete(defaultUser());
-
         response = basicAuthTemplate()
-                .exchange(location, HttpMethod.DELETE, createHttpEntity(deletedQuestion), Question.class);
+                .exchange(location, HttpMethod.DELETE, createHttpEntity(defaultQuestion()), Question.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -84,11 +81,8 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         ResponseEntity<Question> response = createQuestionResource(URL, defaultQuestion());
         String location = response.getHeaders().getLocation().getPath();
 
-        Question deletedQuestion = defaultQuestion();
-        deletedQuestion.delete(defaultUser());
-
         response = basicAuthTemplate(newUser("testuser1"))
-                .exchange(location, HttpMethod.DELETE, createHttpEntity(deletedQuestion), Question.class);
+                .exchange(location, HttpMethod.DELETE, createHttpEntity(defaultQuestion()), Question.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
@@ -98,11 +92,8 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         ResponseEntity<Question> response = createQuestionResource(URL, defaultQuestion());
         String location = response.getHeaders().getLocation().getPath();
 
-        Question deletedQuestion = defaultQuestion();
-        deletedQuestion.delete(defaultUser());
-
         response = template()
-                .exchange(location, HttpMethod.DELETE, createHttpEntity(deletedQuestion), Question.class);
+                .exchange(location, HttpMethod.DELETE, createHttpEntity(defaultQuestion()), Question.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
