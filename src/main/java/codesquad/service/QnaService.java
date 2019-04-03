@@ -51,9 +51,10 @@ public class QnaService {
         Question question = questionRepository
                 .findById(questionId).orElseThrow(NoSuchElementException::new);
 
-        question.delete(loginUser);
+        List<DeleteHistory> histories = question.delete(loginUser);
+        deleteHistoryService.saveAll(histories);
 
-        return question;
+        return questionRepository.save(question);
     }
 
     public boolean isQuestionWriter(User loginUser, long id) {
@@ -81,7 +82,9 @@ public class QnaService {
 
     public Answer deleteAnswer(User loginUser, long id) throws CannotDeleteException {
         Answer answer = findAnswerById(id);
-        answer.delete(loginUser);
+
+        List<DeleteHistory> histories = answer.delete(loginUser);
+        deleteHistoryService.saveAll(histories);
 
         return answerRepository.save(answer);
     }

@@ -11,6 +11,9 @@ import support.domain.UrlGeneratable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -30,6 +33,8 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
     private String contents;
 
     private boolean deleted = false;
+
+    private List<DeleteHistory> histories = new ArrayList<>();
 
     public Answer(User loginUser, Question question, AnswerDTO answerDTO) {
         this.writer = loginUser;
@@ -89,11 +94,15 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         return "Answer [id=" + getId() + ", writer=" + writer + ", contents=" + contents + "]";
     }
 
-    public void delete(User loginUser) throws CannotDeleteException {
+    public List<DeleteHistory> delete(User loginUser) throws CannotDeleteException {
         if (!isOwner(loginUser)) {
             throw new CannotDeleteException("wrong user");
         }
         this.deleted = true;
+
+        histories.add(new DeleteHistory(ContentType.ANSWER, getId(), loginUser, LocalDateTime.now()));
+
+        return histories;
     }
 
     public void update(User loginUser, AnswerDTO answerDTO) {
