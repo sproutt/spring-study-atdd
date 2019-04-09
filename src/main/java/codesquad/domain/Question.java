@@ -35,8 +35,6 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 
     private boolean deleted = false;
 
-    private List<DeleteHistory> histories = new ArrayList<>();
-
     public Question() {
     }
 
@@ -111,20 +109,20 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 
     public List<DeleteHistory> delete(User loginUser) throws CannotDeleteException {
         if (!isOwner(loginUser)) {
-            throw new CannotDeleteException("wrong User");
+            throw new UnAuthorizedException();
         }
 
         if (!hasNotOthersAnswer()) {
             throw new CannotDeleteException("exist others' answer");
         }
 
-        if (answers.isEmpty()) {
-            this.deleted = true;
-        }
-
         this.deleted = true;
-
+        List<DeleteHistory> histories = new ArrayList<>();
         histories.add(new DeleteHistory(ContentType.QUESTION, getId(), loginUser, LocalDateTime.now()));
+
+        answers.stream().map(answer -> answer.delete(loginUser));
+        answers.stream().forEach(answer ->
+                histories.add(new DeleteHistory(ContentType.ANSWER, answer.getId(), loginUser, LocalDateTime.now())));
 
         return histories;
     }
