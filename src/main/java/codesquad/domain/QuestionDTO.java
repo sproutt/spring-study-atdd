@@ -11,8 +11,8 @@ public class QuestionDTO {
     private String content;
 
     public QuestionDTO(String title , String content){
-       this.title = title;
-       this.content= content;
+        this.title = title;
+        this.content= content;
     }
 
     public QuestionDTO(Question question){
