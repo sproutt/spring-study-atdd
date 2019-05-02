@@ -99,24 +99,18 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return this;
     }
 
-    public Question delete(User loginUser) {
-        if (!isOwner(loginUser)) {
-            throw new UnAuthorizedException();
-        }
-        if (isAnswerWrittenByWriter(loginUser)) {
-            this.deleted = true;
-            deleteAllAnswer(loginUser);
-        }
-        return this;
+    public void delete() {
+        this.deleted = true;
+        deleteAllAnswer();
     }
 
-    private void deleteAllAnswer(User loginUser) {
+    private void deleteAllAnswer() {
         for(Answer answer : answers){
-            answer.delete(loginUser);
+            answer.delete();
         }
     }
 
-    private boolean isAnswerWrittenByWriter(User loginUser) {
+    public boolean isAnswerWrittenByWriter(User loginUser) {
         return answers.stream().allMatch(answer -> answer.isOwner(loginUser));
     }
 }

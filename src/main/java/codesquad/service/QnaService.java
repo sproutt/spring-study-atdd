@@ -1,6 +1,7 @@
 package codesquad.service;
 
 import codesquad.UnAuthenticationException;
+import codesquad.UnAuthorizedException;
 import codesquad.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,9 +50,16 @@ public class QnaService {
     @Transactional
     public Question delete(User loginUser, long questionId) throws Exception {
         Question original = findQuestionById(questionId);
-        original.delete(loginUser);
-        deleteHistoryService.saveDeletedAnswer(questionRepository.save(original),loginUser);
-        return questionRepository.save(original);
+
+        if (original.isOwner(loginUser) && original.isAnswerWrittenByWriter(loginUser)) {
+
+            original.delete();
+
+            deleteHistoryService.saveDeletedAnswer(questionRepository.save(original), loginUser);
+            return questionRepository.save(original);
+        }
+
+        throw new UnAuthorizedException();
     }
 
     public Question ownerCheck(long id, User loginUser) throws Exception {
@@ -85,6 +93,6 @@ public class QnaService {
     @Transactional
     public Answer updateAnswer(User loginUser, long id, String updatedContents) throws Exception {
         Answer answer = findAnswerById(id);
-        return answerRepository.save(answer.updateContents(loginUser,updatedContents));
+        return answerRepository.save(answer.updateContents(loginUser, updatedContents));
     }
 }
