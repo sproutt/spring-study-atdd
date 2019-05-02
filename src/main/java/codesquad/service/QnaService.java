@@ -50,15 +50,10 @@ public class QnaService {
     @Transactional
     public Question delete(User loginUser, long questionId) throws Exception {
         Question original = findQuestionById(questionId);
-
         if (original.isOwner(loginUser) && original.isAnswerWrittenByWriter(loginUser)) {
-
             original.delete();
-
-            deleteHistoryService.saveDeletedAnswer(questionRepository.save(original), loginUser);
             return questionRepository.save(original);
         }
-
         throw new UnAuthorizedException();
     }
 

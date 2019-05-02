@@ -2,8 +2,6 @@ package codesquad.service;
 
 import codesquad.domain.DeleteHistory;
 import codesquad.domain.DeleteHistoryRepository;
-import codesquad.domain.Question;
-import codesquad.domain.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +19,5 @@ public class DeleteHistoryService {
         for (DeleteHistory deleteHistory : deleteHistories) {
             deleteHistoryRepository.save(deleteHistory);
         }
-    }
-
-    public DeleteHistory saveDeletedAnswer(Question deletedQuestion, User loginUser) {
-        return deleteHistoryRepository.save(new DeleteHistory(deletedQuestion, loginUser));
     }
 }

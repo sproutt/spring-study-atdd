@@ -3,8 +3,6 @@ package codesquad.domain;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-import static codesquad.domain.ContentType.QUESTION;
-
 @Entity
 public class DeleteHistory {
     @Id
@@ -30,12 +28,6 @@ public class DeleteHistory {
         this.contentId = contentId;
         this.deletedBy = deletedBy;
         this.createDate = createDate;
-    }
-
-    public DeleteHistory(Question question, User loginUser) {
-        this.contentType = QUESTION;
-        this.contentId = question.getId();
-        this.deletedBy = loginUser;
     }
 
     @Override
