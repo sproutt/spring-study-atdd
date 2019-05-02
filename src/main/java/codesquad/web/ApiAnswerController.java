@@ -21,9 +21,6 @@ public class ApiAnswerController {
     @Resource(name = "qnaService")
     private QnaService qnaService;
 
-    @Resource(name = "deleteHistoryService")
-    private DeleteHistoryService deleteHistoryService;
-
     @PostMapping("")
     public ResponseEntity<Void> create(@Valid @RequestBody String contents, @LoginUser User loginUser, @PathVariable long questionId) {
         Answer savedAnswer = qnaService.addAnswer(loginUser, questionId, contents);
