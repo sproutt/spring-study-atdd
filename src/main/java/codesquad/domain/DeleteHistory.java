@@ -36,7 +36,6 @@ public class DeleteHistory {
         this.contentType = QUESTION;
         this.contentId = question.getId();
         this.deletedBy = loginUser;
-        this.createDate = LocalDateTime.now();
     }
 
     @Override

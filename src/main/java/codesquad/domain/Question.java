@@ -110,12 +110,8 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return this;
     }
 
-    private Stream<Answer> unDeletedAnswer() {
-        return answers.stream().filter(answer -> !answer.isDeleted());
-    }
-
     private int differentWriterNumber(User loginUser) {
-        return (int) unDeletedAnswer().filter(answer -> !answer.isOwner(loginUser)).count();
+        return (int) answers.stream().filter(answer -> !answer.isOwner(loginUser)).count();
     }
 
     private void deleteAllAnswer() {
