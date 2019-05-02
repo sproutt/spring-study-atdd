@@ -31,7 +31,7 @@ public class QnaService {
         return questionRepository.save(question);
     }
 
-    public Question findQuestionById(long id) throws Exception {
+    public Question findQuestionById(long id) {
         return questionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
     }
 
@@ -40,14 +40,14 @@ public class QnaService {
     }
 
     @Transactional
-    public Question update(User loginUser, long id, Question updatedQuestion) throws Exception {
+    public Question update(User loginUser, long id, Question updatedQuestion) {
         Question original = findQuestionById(id);
         original.update(loginUser, updatedQuestion);
         return questionRepository.save(original);
     }
 
     @Transactional
-    public Question delete(User loginUser, long questionId) throws Exception {
+    public Question delete(User loginUser, long questionId) {
         Question original = findQuestionById(questionId);
         deleteHistoryService.saveAll(original.delete(loginUser));
         return questionRepository.save(original);
@@ -70,20 +70,20 @@ public class QnaService {
         return questionRepository.findAll(pageable).getContent();
     }
 
-    public Answer addAnswer(User loginUser, long questionId, String contents) throws Exception {
+    public Answer addAnswer(User loginUser, long questionId, String contents) {
         Answer answer = new Answer(loginUser, contents);
         answer.toQuestion(findQuestionById(questionId));
         return answerRepository.save(answer);
     }
 
     @Transactional
-    public Answer deleteAnswer(User loginUser, long id) throws Exception {
+    public Answer deleteAnswer(User loginUser, long id) {
         Answer answer = findAnswerById(id);
         return answerRepository.save(answer.delete(loginUser));
     }
 
     @Transactional
-    public Answer updateAnswer(User loginUser, long id, String updatedContents) throws Exception {
+    public Answer updateAnswer(User loginUser, long id, String updatedContents) {
         Answer answer = findAnswerById(id);
         return answerRepository.save(answer.updateContents(loginUser, updatedContents));
     }

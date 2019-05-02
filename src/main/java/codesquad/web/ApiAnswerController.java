@@ -25,7 +25,7 @@ public class ApiAnswerController {
     private DeleteHistoryService deleteHistoryService;
 
     @PostMapping("")
-    public ResponseEntity<Void> create(@Valid @RequestBody String contents, @LoginUser User loginUser, @PathVariable long questionId) throws Exception {
+    public ResponseEntity<Void> create(@Valid @RequestBody String contents, @LoginUser User loginUser, @PathVariable long questionId) {
         Answer savedAnswer = qnaService.addAnswer(loginUser, questionId, contents);
 
         HttpHeaders headers = new HttpHeaders();
@@ -39,12 +39,12 @@ public class ApiAnswerController {
     }
 
     @PutMapping("/{id}")
-    public Answer update(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody String updatedContents) throws Exception {
+    public Answer update(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody String updatedContents) {
         return qnaService.updateAnswer(loginUser, id, updatedContents);
     }
 
     @DeleteMapping("/{id}")
-    public Answer delete(@LoginUser User loginUser, @PathVariable long id) throws Exception {
+    public Answer delete(@LoginUser User loginUser, @PathVariable long id) {
         Answer deletedAnswer = qnaService.deleteAnswer(loginUser, id);
         return deletedAnswer;
     }
