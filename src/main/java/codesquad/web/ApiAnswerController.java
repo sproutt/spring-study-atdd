@@ -1,8 +1,10 @@
 package codesquad.web;
 
 import codesquad.domain.Answer;
+import codesquad.domain.DeleteHistory;
 import codesquad.domain.User;
 import codesquad.security.LoginUser;
+import codesquad.service.DeleteHistoryService;
 import codesquad.service.QnaService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,9 @@ import java.net.URI;
 public class ApiAnswerController {
     @Resource(name = "qnaService")
     private QnaService qnaService;
+
+    @Resource(name = "deleteHistoryService")
+    private DeleteHistoryService deleteHistoryService;
 
     @PostMapping("")
     public ResponseEntity<Void> create(@Valid @RequestBody String contents, @LoginUser User loginUser, @PathVariable long questionId) throws Exception {
@@ -40,7 +45,8 @@ public class ApiAnswerController {
 
     @DeleteMapping("/{id}")
     public Answer delete(@LoginUser User loginUser, @PathVariable long id) throws Exception {
-        return qnaService.deleteAnswer(loginUser, id);
+        Answer deletedAnswer = qnaService.deleteAnswer(loginUser, id);
+        return deletedAnswer;
     }
 
 }

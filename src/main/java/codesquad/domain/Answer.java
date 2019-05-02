@@ -1,11 +1,13 @@
 package codesquad.domain;
 
 import codesquad.UnAuthorizedException;
+
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 
 @Entity
 public class Answer extends AbstractEntity implements UrlGeneratable {
@@ -22,6 +24,8 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
     private String contents;
 
     private boolean deleted = false;
+
+    private LocalDateTime createDate = LocalDateTime.now();
 
     public Answer() {
     }
@@ -55,6 +59,10 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         return contents;
     }
 
+    public LocalDateTime getCreateDate() {
+        return createDate;
+    }
+
     public Answer updateContents(User loginUser, String contents) {
         if (!isOwner(loginUser)) {
             throw new UnAuthorizedException();
@@ -83,7 +91,7 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         return this;
     }
 
-    public Answer delete(){
+    public Answer delete() {
         this.deleted = true;
         return this;
     }
