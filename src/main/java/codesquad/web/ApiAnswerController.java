@@ -1,8 +1,10 @@
 package codesquad.web;
 
 import codesquad.domain.Answer;
+import codesquad.domain.DeleteHistory;
 import codesquad.domain.User;
 import codesquad.security.LoginUser;
+import codesquad.service.DeleteHistoryService;
 import codesquad.service.QnaService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,13 +36,14 @@ public class ApiAnswerController {
     }
 
     @PutMapping("/{id}")
-    public Answer update(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody String updatedContents) throws Exception {
+    public Answer update(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody String updatedContents) {
         return qnaService.updateAnswer(loginUser, id, updatedContents);
     }
 
     @DeleteMapping("/{id}")
-    public Answer delete(@LoginUser User loginUser, @PathVariable long id) throws Exception {
-        return qnaService.deleteAnswer(loginUser, id);
+    public Answer delete(@LoginUser User loginUser, @PathVariable long id) {
+        Answer deletedAnswer = qnaService.deleteAnswer(loginUser, id);
+        return deletedAnswer;
     }
 
 }

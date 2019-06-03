@@ -7,8 +7,14 @@ import support.domain.UrlGeneratable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static codesquad.domain.ContentType.ANSWER;
+import static codesquad.domain.ContentType.QUESTION;
 
 @Entity
 public class Question extends AbstractEntity implements UrlGeneratable {
@@ -30,6 +36,8 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     private List<Answer> answers = new ArrayList<>();
 
     private boolean deleted = false;
+
+    private LocalDateTime createDate = LocalDateTime.now();
 
     public Question() {
     }
@@ -88,18 +96,36 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return "Question [id=" + getId() + ", title=" + title + ", contents=" + contents + ", writer=" + writer + "]";
     }
 
-    public void update(User loginUser, Question newQuestion) {
+    public Question update(User loginUser, Question newQuestion) {
         if (!isOwner(loginUser)) {
             throw new UnAuthorizedException();
         }
         this.title = newQuestion.getTitle();
         this.contents = newQuestion.getContents();
+        return this;
     }
 
-    public void delete(User loginUser) {
-        if (!isOwner(loginUser)) {
-            throw new UnAuthorizedException();
+    public List<DeleteHistory> delete(User loginUser) {
+        List<DeleteHistory> deleteHistories = new ArrayList<>();
+        if(isOwner(loginUser)&&isAnswerWrittenByWriter(loginUser)) {
+            this.deleted = true;
+            deleteHistories.add(new DeleteHistory(QUESTION,getId(),getWriter(),createDate));
+            deleteHistories.addAll(deleteAllAnswer());
+            return deleteHistories;
         }
-        this.deleted = true;
+        throw new UnAuthorizedException();
+    }
+
+    private List<DeleteHistory> deleteAllAnswer() {
+        List<DeleteHistory> deleteHistories = new ArrayList<>();
+        for(Answer answer : answers){
+            answer.delete();
+            deleteHistories.add(new DeleteHistory(ANSWER,answer.getId(),answer.getWriter(),answer.getCreateDate()));
+        }
+        return deleteHistories;
+    }
+
+    public boolean isAnswerWrittenByWriter(User loginUser) {
+        return answers.stream().allMatch(answer -> answer.isOwner(loginUser));
     }
 }

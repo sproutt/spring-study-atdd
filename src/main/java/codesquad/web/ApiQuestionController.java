@@ -29,7 +29,7 @@ public class ApiQuestionController {
     }
 
     @GetMapping("/{id}")
-    public Question show(@PathVariable long id) {
+    public Question show(@PathVariable long id) throws Exception {
         return qnaService.findQuestionById(id);
     }
 

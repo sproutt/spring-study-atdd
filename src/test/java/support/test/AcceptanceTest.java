@@ -47,8 +47,14 @@ public abstract class AcceptanceTest {
         return userRepository.findByUserId(userId).get();
     }
 
-    protected String createResource(String path, Object bodyPayload) {
+    protected String createResourceByDefaultUser(String path, Object bodyPayload) {
         ResponseEntity<String> response = basicAuthTemplate(defaultUser()).postForEntity(path, bodyPayload, String.class);
+        assertThat(response.getStatusCode().equals(HttpStatus.CREATED));
+        return response.getHeaders().getLocation().getPath();
+    }
+
+    protected String createResourceByAnotherUser(String path, Object bodyPayload) {
+        ResponseEntity<String> response = basicAuthTemplate(anotherUser()).postForEntity(path, bodyPayload, String.class);
         assertThat(response.getStatusCode().equals(HttpStatus.CREATED));
         return response.getHeaders().getLocation().getPath();
     }
