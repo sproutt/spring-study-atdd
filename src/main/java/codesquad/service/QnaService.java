@@ -12,7 +12,6 @@ import javax.annotation.Resource;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service("qnaService")
 public class QnaService {
@@ -46,9 +45,10 @@ public class QnaService {
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
+    public void deleteQuestion(User loginUser, long questionId) throws Exception {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new CannotDeleteException("No Such question"));
-        question.delete(loginUser);
+        deleteHistoryService.saveAll(question.delete(loginUser));
+        questionRepository.save(question);
     }
 
     public List<Question> findAll() {
@@ -70,7 +70,8 @@ public class QnaService {
 
     public void deleteAnswer(User loginUser, long id) throws Exception {
         Answer answer = answerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
-        answer.delete(loginUser);
+        deleteHistoryService.save(answer.delete(loginUser));
         answerRepository.save(answer);
     }
+
 }
