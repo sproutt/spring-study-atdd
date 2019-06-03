@@ -1,10 +1,12 @@
 package codesquad.domain;
 
+import codesquad.UnAuthorizedException;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 
 @Entity
 public class Answer extends AbstractEntity implements UrlGeneratable {
@@ -59,8 +61,12 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         this.question = question;
     }
 
-    public void delete() {
+    public DeleteHistory delete(User loginUser) {
+        if (!isOwner(loginUser)) {
+            throw new UnAuthorizedException("mismatch answer owner");
+        }
         this.deleted = true;
+        return new DeleteHistory(ContentType.ANSWER, getId(), loginUser, LocalDateTime.now());
     }
 
     public boolean isOwner(User loginUser) {

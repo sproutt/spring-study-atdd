@@ -81,7 +81,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void delete() {
+    public void delete_정상삭제() {
         User user = defaultUser();
         Question newQuestion = new Question("title6", "contents6");
         newQuestion.writeBy(user);
@@ -96,15 +96,33 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void delete_다른_사람() {
+    public void delete_삭제불가() {
         User user = newUser("testuser2");
         createResource("/api/users", user);
         Question newQuestion = new Question("title7", "contents7");
         newQuestion.writeBy(user);
+        String location = createResource("/api/questions", newQuestion, user);
 
+        //로그인 유저가 작성자와 다름
         ResponseEntity<Question> responseEntity =
                 basicAuthTemplate(defaultUser())
-                        .exchange(createResource("/api/questions", newQuestion, user), HttpMethod.DELETE,
+                        .exchange(location, HttpMethod.DELETE,
+                                createHttpEntity(null), Question.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+
+        //질문이 존재하지 않음
+        responseEntity =
+                basicAuthTemplate(user).exchange("/api/questions/" + Integer.MAX_VALUE, HttpMethod.DELETE,
+                        createHttpEntity(null), Question.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+        //로그인 유저가 답변의 작성자와 다름
+        createResource(location + "/answers", "contents8", defaultUser());
+        responseEntity =
+                basicAuthTemplate(user)
+                        .exchange(location, HttpMethod.DELETE,
                                 createHttpEntity(null), Question.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);

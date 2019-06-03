@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.net.URI;
 
 @RestController
@@ -31,7 +32,7 @@ public class ApiQuestionController {
     @GetMapping("/{id}")
     public Question show(@PathVariable Long id) {
         return qnaService.findById(id)
-                .orElseThrow(() -> new RuntimeException("question not found"));
+                .orElseThrow(() -> new EntityNotFoundException("question not found"));
     }
 
     @PutMapping("/{id}")

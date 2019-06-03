@@ -1,11 +1,13 @@
 package codesquad.domain;
 
+import codesquad.UnAuthorizedException;
 import org.hibernate.annotations.Where;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,7 +94,19 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         this.contents = updatedQuestion.getContents();
     }
 
-    public void delete() {
+    public List<DeleteHistory> delete(User loginUser) {
+        List<DeleteHistory> histories = new ArrayList<>();
+
+        if (!isOwner(loginUser)) {
+            throw new UnAuthorizedException("mismatch question writer");
+        }
+
+        for (Answer answer : answers) {
+            histories.add(answer.delete(loginUser));
+        }
         this.deleted = true;
+        histories.add(new DeleteHistory(ContentType.QUESTION, getId(), loginUser, LocalDateTime.now()));
+
+        return histories;
     }
 }
