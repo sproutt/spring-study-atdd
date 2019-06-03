@@ -21,7 +21,7 @@ public class ApiAnswerController {
 
     @GetMapping("")
     public Iterable<Answer> list(@PathVariable Long questionId) {
-        return qnaService.findAllAnswerNotDeleted(questionId);
+        return qnaService.findAllAnswer(questionId);
     }
 
 

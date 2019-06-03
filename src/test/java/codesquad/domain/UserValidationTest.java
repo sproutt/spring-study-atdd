@@ -1,5 +1,6 @@
 package codesquad.domain;
 
+import com.oracle.tools.packager.Log;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ public class UserValidationTest {
     @BeforeClass
     public static void setup() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+
         validator = factory.getValidator();
     }
 

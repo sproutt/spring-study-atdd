@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.domain.Answer;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionDTO;
 import org.junit.Test;
@@ -124,6 +125,41 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(template().getForObject(location, Question.class)).isNotNull();
+    }
+
+
+    @Test
+    public void delete_question_with_answer_by_other() {
+        ResponseEntity<Void> response = basicAuthTemplate().exchange(URL_API_QUESTION + "/1", HttpMethod.DELETE, createHttpEntity(null), Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+
+        ResponseEntity<Answer> answerResponse = basicAuthTemplate().getForEntity(URL_API_QUESTION + "/1", Answer.class);
+        assertThat(answerResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(answerResponse.getBody().getContents()).isNotEmpty();
+    }
+
+    @Test
+    public void delete_question_with_only_answer_by_writer() {
+        QuestionDTO newQuestion = new QuestionDTO("new title8", "new context8");
+        String location = createResourceWithAuth(URL_API_QUESTION, newQuestion);
+        String answerLocation = createResourceWithAuth(location + "/answers", "answer contents");
+
+        ResponseEntity<Void> response = basicAuthTemplate().exchange(location, HttpMethod.DELETE, createHttpEntity(null), Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        ResponseEntity<Answer> answerResponse = basicAuthTemplate().getForEntity(answerLocation, Answer.class);
+        assertThat(answerResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void delete_not_found_question() {
+        //given
+        Long notFoundId = 10000L;
+        //when
+        ResponseEntity<Void> response = basicAuthTemplate().exchange(URL_API_QUESTION + "/" + notFoundId, HttpMethod.DELETE, createHttpEntity(null), Void.class);
+        //then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
 }

@@ -1,7 +1,6 @@
 package codesquad.service;
 
 import codesquad.domain.*;
-import codesquad.exception.QuestionNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -32,18 +31,9 @@ public class QnaService {
         return questionRepository.save(question);
     }
 
-    public Question findById(Long id) {
-        return questionRepository.findById(id).orElseThrow(QuestionNotFoundException::new);
-    }
-
     @Transactional
     public Question update(User loginUser, QuestionDTO updatedQuestionDTO, long id) {
         return questionRepository.save(findById(id).update(loginUser, updatedQuestionDTO));
-    }
-
-    @Transactional
-    public void delete(User loginUser, long questionId) {
-        questionRepository.save(findById(questionId).delete(loginUser));
     }
 
     public Iterable<Question> findAll() {
@@ -54,26 +44,26 @@ public class QnaService {
         return questionRepository.findAll(pageable).getContent();
     }
 
-    public Iterable<Answer> findAllAnswerNotDeleted(Long questionId) {
-        return findByIdNotDeleted(questionId).getAnswers();
+    public Iterable<Answer> findAllAnswer(Long questionId) {
+        return findById(questionId).getAnswers();
     }
 
     public Answer addAnswer(User loginUser, long questionId, String contents) {
         Answer answer = new Answer(loginUser, contents);
-        answer.toQuestion(findByIdNotDeleted(questionId));
+        answer.toQuestion(findById(questionId));
         return answerRepository.save(answer);
     }
 
     public Answer deleteAnswer(User loginUser, long id) {
-        Answer answer = findAnswerByIdNotDeleted(id);
+        Answer answer = answerRepository.findByIdAndDeleted(id, false).orElseThrow(EntityNotFoundException::new);
         answer.delete();
         DeleteHistory deleteHistory = new DeleteHistory(ContentType.ANSWER, id, loginUser, answer.getCreatedAt());
         deleteHistoryService.save(deleteHistory);
         return answerRepository.save(answer);
     }
 
-    public Question findByIdNotDeleted(Long id) {
-        return questionRepository.findById(id).filter(question -> !question.isDeleted()).orElseThrow(EntityNotFoundException::new);
+    public Question findById(Long id) {
+        return questionRepository.findByIdAndDeleted(id, false).orElseThrow(EntityNotFoundException::new);
     }
 
     public List<Question> findAllNotDeleted() {
@@ -81,17 +71,9 @@ public class QnaService {
     }
 
     @Transactional
-    public Question deleteQuestionWithAnswer(User loginUser, long id) {
-        Question question = findByIdNotDeleted(id);
-
-        List<DeleteHistory> deleteHistories = question.getAnswers().stream().map(answer -> {
-            answer.delete();
-            return new DeleteHistory(ContentType.ANSWER, answer.getId(), loginUser, answer.getCreatedAt());
-        }).collect(Collectors.toList());
-
-        question.delete(loginUser);
-        deleteHistories.add(new DeleteHistory(ContentType.QUESTION, id, loginUser, question.getCreatedAt()));
-        deleteHistoryService.saveAll(deleteHistories);
+    public Question delete(User loginUser, Long questionId) {
+        Question question = findById(questionId);
+        deleteHistoryService.saveAll(question.delete(loginUser));
         return questionRepository.save(question);
     }
 

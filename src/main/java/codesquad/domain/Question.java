@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Question extends AbstractEntity implements UrlGeneratable {
@@ -81,12 +82,16 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return deleted;
     }
 
-    public Question delete(User loginUser) {
+    public List<DeleteHistory> delete(User loginUser) {
         if (!this.getWriter().equals(loginUser)) {
             throw new UnAuthorizedException();
         }
+        List<DeleteHistory> list= answers.stream()
+                .map(answer -> answer.delete(loginUser))
+                .collect(Collectors.toList());
         this.deleted = true;
-        return this;
+        list.add(new DeleteHistory(ContentType.QUESTION, this.getId(), loginUser, this.getCreatedAt()));
+        return list;
     }
 
     @Override
