@@ -9,6 +9,7 @@ import support.domain.UrlGeneratable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -106,15 +107,31 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         this.contents = updatedQuestionDTO.getContents();
     }
 
-    public void delete(User loginUser) throws CannotDeleteException {
+    public List<DeleteHistory> delete(User loginUser) throws CannotDeleteException {
         if (!isOwner(loginUser)) {
-            throw new CannotDeleteException("wrong User");
+            throw new UnAuthorizedException();
+        }
+
+        if (!hasNotOthersAnswer()) {
+            throw new CannotDeleteException("exist others' answer");
         }
 
         this.deleted = true;
+        List<DeleteHistory> histories = new ArrayList<>();
+        histories.add(new DeleteHistory(ContentType.QUESTION, getId(), loginUser, LocalDateTime.now()));
+
+        answers.stream().map(answer -> answer.delete(loginUser));
+        answers.stream().forEach(answer ->
+                histories.add(new DeleteHistory(ContentType.ANSWER, answer.getId(), loginUser, LocalDateTime.now())));
+
+        return histories;
     }
 
-    public boolean equalsTitleAndContents(Question target) {
+    private boolean hasNotOthersAnswer() {
+        return answers.stream().allMatch(answer -> answer.getWriter().equals(writer));
+    }
+
+    public boolean isEqualsTitleAndContents(Question target) {
         if (Objects.isNull(target)) {
             return false;
         }

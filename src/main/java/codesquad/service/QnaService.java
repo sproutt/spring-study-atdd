@@ -1,5 +1,6 @@
 package codesquad.service;
 
+import codesquad.CannotDeleteException;
 import codesquad.domain.*;
 import codesquad.dto.AnswerDTO;
 import codesquad.dto.QuestionDTO;
@@ -46,10 +47,13 @@ public class QnaService {
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, long questionId) throws Exception {
+    public Question deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
         Question question = questionRepository
                 .findById(questionId).orElseThrow(NoSuchElementException::new);
-        question.delete(loginUser);
+
+        deleteHistoryService.saveAll(question.delete(loginUser));
+
+        return questionRepository.save(question);
     }
 
     public boolean isQuestionWriter(User loginUser, long id) {
@@ -77,7 +81,8 @@ public class QnaService {
 
     public Answer deleteAnswer(User loginUser, long id) {
         Answer answer = findAnswerById(id);
-        answer.delete(loginUser);
+
+        deleteHistoryService.save(answer.delete(loginUser));
 
         return answerRepository.save(answer);
     }

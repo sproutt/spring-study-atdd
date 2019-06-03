@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
@@ -17,6 +16,7 @@ public abstract class AcceptanceTest {
     private static final String DEFAULT_LOGIN_USER = "javajigi";
     private static final long DEFAULT_QUESTION_ID = 1;
     private static final long DEFAULT_ANSWER_ID = 1;
+    private static final long DEFAULT_DELETE_QUESTION_ID = 99;
 
     @Autowired
     private TestRestTemplate template;
@@ -46,6 +46,10 @@ public abstract class AcceptanceTest {
         return questionRepository.findById(DEFAULT_QUESTION_ID).get();
     }
 
+    protected Question defaultDeletedQuestion() {
+        return questionRepository.findById(DEFAULT_DELETE_QUESTION_ID).get();
+    }
+
     protected User defaultUser() {
         return findByUserId(DEFAULT_LOGIN_USER);
     }
@@ -72,5 +76,11 @@ public abstract class AcceptanceTest {
 
     protected <T> T getResource(String location, Class<T> responseType, User loginUser) {
         return basicAuthTemplate(loginUser).getForObject(location, responseType);
+    }
+
+    public HttpEntity createHttpEntity(Object body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new HttpEntity(body, headers);
     }
 }

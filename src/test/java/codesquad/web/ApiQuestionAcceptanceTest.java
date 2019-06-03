@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.CannotDeleteException;
 import codesquad.domain.Question;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         response = basicAuthTemplate()
                 .exchange(location, HttpMethod.PUT, createHttpEntity(updateQuestion), Question.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(updateQuestion.equalsTitleAndContents(response.getBody())).isTrue();
+        assertThat(updateQuestion.isEqualsTitleAndContents(response.getBody())).isTrue();
     }
 
     @Test
@@ -53,9 +54,47 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
-    private HttpEntity createHttpEntity(Object body) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new HttpEntity(body, headers);
+    @Test
+    public void update_no_login() {
+        ResponseEntity<Question> response = createQuestionResource(URL, defaultQuestion());
+        String location = response.getHeaders().getLocation().getPath();
+
+        Question updateQuestion = new Question("title", "contents");
+        response = template()
+                .exchange(location, HttpMethod.PUT, createHttpEntity(updateQuestion), Question.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    public void delete() throws CannotDeleteException {
+        ResponseEntity<Question> response = createQuestionResource(URL, defaultQuestion());
+        String location = response.getHeaders().getLocation().getPath();
+
+        response = basicAuthTemplate()
+                .exchange(location, HttpMethod.DELETE, createHttpEntity(defaultQuestion()), Question.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void delete_another_user() throws CannotDeleteException {
+        ResponseEntity<Question> response = createQuestionResource(URL, defaultQuestion());
+        String location = response.getHeaders().getLocation().getPath();
+
+        response = basicAuthTemplate(newUser("testuser1"))
+                .exchange(location, HttpMethod.DELETE, createHttpEntity(defaultQuestion()), Question.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    public void delete_no_login() throws CannotDeleteException {
+        ResponseEntity<Question> response = createQuestionResource(URL, defaultQuestion());
+        String location = response.getHeaders().getLocation().getPath();
+
+        response = template()
+                .exchange(location, HttpMethod.DELETE, createHttpEntity(defaultQuestion()), Question.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 }

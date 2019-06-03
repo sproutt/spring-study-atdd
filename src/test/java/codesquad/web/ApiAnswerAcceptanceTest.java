@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.CannotDeleteException;
 import codesquad.domain.Answer;
 import codesquad.domain.User;
 import org.junit.Test;
@@ -45,12 +46,6 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
         assertThat(updateAnswer.equals(response.getBody())).isTrue();
     }
 
-    private HttpEntity createHttpEntity(Object body) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new HttpEntity(body, headers);
-    }
-
     @Test
     public void update_another_user() {
         ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
@@ -63,7 +58,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void delete() {
+    public void delete() throws CannotDeleteException {
         ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
         String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 
@@ -78,7 +73,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void delete_another_user() {
+    public void delete_another_user() throws CannotDeleteException {
         ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
         String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
 
@@ -86,6 +81,19 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
         deleteAnswer.delete(defaultUser());
 
         response = basicAuthTemplate(anotherUser)
+                .exchange(location, HttpMethod.DELETE, createHttpEntity(deleteAnswer), Answer.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    public void delete_no_login() throws CannotDeleteException {
+        ResponseEntity<Answer> response = createAnswerResource(String.format("/api/questions/%d/answers", defaultQuestion().getId()), defaultAnswer());
+        String location = String.format("/api/questions/%d/answers/%d", defaultQuestion().getId(), defaultAnswer().getId());
+
+        Answer deleteAnswer = defaultAnswer();
+        deleteAnswer.delete(defaultUser());
+
+        response = template()
                 .exchange(location, HttpMethod.DELETE, createHttpEntity(deleteAnswer), Answer.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
