@@ -12,32 +12,35 @@ import java.util.List;
 
 @Service("userService")
 public class UserService {
-    @Resource(name = "userRepository")
-    private UserRepository userRepository;
 
-    public User add(User user) {
-        return userRepository.save(user);
-    }
+  @Resource(name = "userRepository")
+  private UserRepository userRepository;
 
-    @Transactional
-    public User update(User loginUser, long id, User updatedUser) {
-        User original = findById(loginUser, id);
-        original.update(loginUser, updatedUser);
-        return original;
-    }
+  public User add(User user) {
+    return userRepository.save(user);
+  }
 
-    public User findById(User loginUser, long id) {
-        return userRepository.findById(id)
-                .filter(user -> user.equals(loginUser))
-                .orElseThrow(UnAuthorizedException::new);
-    }
+  @Transactional
+  public User update(User loginUser, long id, User updatedUser) {
+    User original = findById(loginUser, id);
+    original.update(loginUser, updatedUser);
+    return original;
+  }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
-    }
+  public User findById(User loginUser, long id) {
+    return userRepository.findById(id)
+        .filter(user -> user.equals(loginUser))
+        .orElseThrow(UnAuthorizedException::new);
+  }
 
-    public User login(String userId, String password) throws UnAuthenticationException {
-        // TODO 로그인 기능 구현
-        return null;
-    }
+  public List<User> findAll() {
+    return userRepository.findAll();
+  }
+
+  public User login(String userId, String password) throws UnAuthenticationException {
+
+    return userRepository.findByUserId(userId)
+        .filter(user -> user.matchPassword(password))
+        .orElseThrow(UnAuthenticationException::new);
+  }
 }

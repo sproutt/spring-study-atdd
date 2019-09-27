@@ -31,9 +31,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void create() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
 
         String userId = "testuser";
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
@@ -41,7 +39,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
         params.add("password", "password");
         params.add("name", "자바지기");
         params.add("email", "javajigi@slipp.net");
-        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(params, headers);
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(params, htmlFormDataBuilder.getHeaders());
 
         ResponseEntity<String> response = template().postForEntity("/users", request, String.class);
 

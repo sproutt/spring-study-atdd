@@ -7,6 +7,7 @@ import codesquad.domain.UserRepository;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,18 +19,15 @@ public class LoginAcceptanceTest extends AcceptanceTest {
 
   private static final Logger log = LoggerFactory.getLogger(LoginAcceptanceTest.class);
 
-  private final UserRepository userRepository;
-
-  public LoginAcceptanceTest(UserRepository userRepository){
-    this.userRepository =userRepository;
-  }
+  @Autowired
+  private UserRepository userRepository;
 
   @Test
   public void login() throws Exception{
     HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
 
-    String userId = "testuser";
-    String userPassword = "password";
+    String userId = "javajigi";
+    String userPassword = "test";
 
     MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
     params.add("userId", userId);
@@ -42,7 +40,7 @@ public class LoginAcceptanceTest extends AcceptanceTest {
     assertThat(userRepository.findByUserId(userId).isPresent()).isTrue();
     assertThat(userRepository.findByUserId(userId).orElseThrow(IllegalAccessError::new).matchPassword(userPassword)).isTrue();
 
-    assertThat(response.getHeaders().getLocation().getPath()).startsWith("/users");
+    assertThat(response.getHeaders().getLocation().getPath()).startsWith("/");
   }
 
   @Test
