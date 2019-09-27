@@ -6,8 +6,12 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 import support.domain.AbstractEntity;
 
+@Getter
+@Setter
 @Entity
 public class User extends AbstractEntity {
 
@@ -41,42 +45,6 @@ public class User extends AbstractEntity {
     this.password = password;
     this.name = name;
     this.email = email;
-  }
-
-  public String getUserId() {
-    return userId;
-  }
-
-  public User setUserId(String userId) {
-    this.userId = userId;
-    return this;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public User setPassword(String password) {
-    this.password = password;
-    return this;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public User setName(String name) {
-    this.name = name;
-    return this;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public User setEmail(String email) {
-    this.email = email;
-    return this;
   }
 
   public void update(User loginUser, User target) {

@@ -30,20 +30,23 @@ public class LoginAcceptanceTest extends AcceptanceTest {
 
     String userId = "testuser";
     String userPassword = "password";
+
     MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
     params.add("userId", userId);
     params.add("password", userPassword);
     HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(params, htmlFormDataBuilder.getHeaders());
 
-    ResponseEntity<String> response = template().postForEntity("/login", request, String.class);
+    ResponseEntity<String> response = template().postForEntity("/users/login", request, String.class);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+    assertThat(userRepository.findByUserId(userId).isPresent()).isTrue();
+    assertThat(userRepository.findByUserId(userId).orElseThrow(IllegalAccessError::new).matchPassword(userPassword)).isTrue();
 
-    User user = userRepository.findByUserId(userId).get();
-    assertThat(user.getUserId()).isEqualTo(userId);
-    assertThat(user.getPassword()).isEqualTo(userPassword);
+    assertThat(response.getHeaders().getLocation().getPath()).startsWith("/users");
+  }
 
-    assertThat(response.getHeaders().getLocation().getPath()).startsWith("/");
+  @Test
+  public void login_fail() throws Exception{
 
   }
 
