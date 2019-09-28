@@ -1,4 +1,4 @@
-package codesquad.web;
+package codesquad;
 
 import java.util.Arrays;
 import lombok.Getter;

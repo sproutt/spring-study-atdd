@@ -7,11 +7,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import support.domain.AbstractEntity;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 public class User extends AbstractEntity {
 
@@ -31,9 +33,6 @@ public class User extends AbstractEntity {
 
   @Size(max = 50)
   private String email;
-
-  public User() {
-  }
 
   public User(String userId, String password, String name, String email) {
     this(0L, userId, password, name, email);

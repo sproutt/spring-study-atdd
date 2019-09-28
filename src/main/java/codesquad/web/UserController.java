@@ -45,11 +45,15 @@ public class UserController {
   }
 
   @PostMapping("login")
-  public String login(UserDTO userDTO, HttpSession session)
-      throws UnAuthenticationException {
+  public String login(UserDTO userDTO, HttpSession session) throws UnAuthenticationException {
     User user = userService.login(userDTO.getUserId(), userDTO.getPassword());
     session.setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
     return "redirect:/";
+  }
+
+  @GetMapping("/login/form")
+  public String loginForm(){
+    return "/user/login";
   }
 
   @GetMapping("/{id}/form")

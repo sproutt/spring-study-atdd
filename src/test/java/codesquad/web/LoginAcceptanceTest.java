@@ -2,7 +2,7 @@ package codesquad.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.domain.User;
+import codesquad.HtmlFormDataBuilder;
 import codesquad.domain.UserRepository;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import support.test.AcceptanceTest;
 
@@ -23,29 +22,25 @@ public class LoginAcceptanceTest extends AcceptanceTest {
   private UserRepository userRepository;
 
   @Test
-  public void login() throws Exception{
-    HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
+  public void login() throws Exception {
 
     String userId = "javajigi";
     String userPassword = "test";
 
-    MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-    params.add("userId", userId);
-    params.add("password", userPassword);
-    HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(params, htmlFormDataBuilder.getHeaders());
+    HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
+        .addParameter("userId", userId)
+        .addParameter("password", userPassword)
+        .build();
 
-    ResponseEntity<String> response = template().postForEntity("/users/login", request, String.class);
+    ResponseEntity<String> response = template()
+        .postForEntity("/users/login", request, String.class);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
     assertThat(userRepository.findByUserId(userId).isPresent()).isTrue();
-    assertThat(userRepository.findByUserId(userId).orElseThrow(IllegalAccessError::new).matchPassword(userPassword)).isTrue();
+    assertThat(userRepository.findByUserId(userId).orElseThrow(IllegalAccessError::new)
+        .matchPassword(userPassword)).isTrue();
 
     assertThat(response.getHeaders().getLocation().getPath()).startsWith("/");
-  }
-
-  @Test
-  public void login_fail() throws Exception{
-
   }
 
 }
