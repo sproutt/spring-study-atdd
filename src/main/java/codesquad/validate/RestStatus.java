@@ -1,11 +1,11 @@
 package codesquad.validate;
 
-public class RestStatus {
-    private boolean status;
+import lombok.AllArgsConstructor;
 
-    public RestStatus(boolean status) {
-        this.status = status;
-    }
+@AllArgsConstructor
+public class RestStatus {
+
+    private boolean status;
 
     public boolean isStatus() {
         return status;

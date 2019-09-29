@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 public class QnaApplication {
+
     public static void main(String[] args) {
         SpringApplication.run(QnaApplication.class, args);
     }

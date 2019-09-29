@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class AbstractEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -66,24 +67,28 @@ public class AbstractEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
-        if (getClass() != obj.getClass())
-            return false;
+        }
+
         AbstractEntity other = (AbstractEntity) obj;
-        if (id != other.id)
+        if (id != other.id) {
             return false;
+        }
         return true;
     }
+
 
     @Override
     public String toString() {
         return "AbstractEntity{" +
-                "id=" + id +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
+            "id=" + id +
+            ", createdAt=" + createdAt +
+            ", updatedAt=" + updatedAt +
+            '}';
     }
 }

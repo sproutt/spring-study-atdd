@@ -1,46 +1,49 @@
 package codesquad.service;
 
-import codesquad.UnAuthenticationException;
-import codesquad.UnAuthorizedException;
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
+import codesquad.exception.UnAuthenticationException;
+import java.util.List;
+import javax.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.util.List;
-
-@Service("userService")
+@Service
 public class UserService {
 
-  @Resource(name = "userRepository")
-  private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-  public User add(User user) {
-    return userRepository.save(user);
-  }
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-  @Transactional
-  public User update(User loginUser, long id, User updatedUser) {
-    User original = findById(loginUser, id);
-    original.update(loginUser, updatedUser);
-    return original;
-  }
+    public User add(User user) {
+        return userRepository.save(user);
+    }
 
-  public User findById(User loginUser, long id) {
-    return userRepository.findById(id)
-        .filter(user -> user.equals(loginUser))
-        .orElseThrow(UnAuthorizedException::new);
-  }
+    @Transactional
+    public User update(User loginUser, long id, User updatedUser) {
+        User originalUser = findById(loginUser, id);
+        return originalUser.update(loginUser, updatedUser);
+    }
 
-  public List<User> findAll() {
-    return userRepository.findAll();
-  }
+    public User findById(User loginUser, long id) {
+        return userRepository.findById(id)
+            .filter(user -> user.equals(loginUser))
+            .orElseThrow(EntityNotFoundException::new);
+    }
 
-  public User login(String userId, String password) throws UnAuthenticationException {
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
 
-    return userRepository.findByUserId(userId)
-        .filter(user -> user.matchPassword(password))
-        .orElseThrow(UnAuthenticationException::new);
-  }
+    public User login(String userId, String password) throws Exception {
+        User user = userRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+
+        if (!user.matchPassword(password)) {
+            throw new UnAuthenticationException("비밀번호가 틀립니다.");
+        }
+
+        return user;
+    }
 }

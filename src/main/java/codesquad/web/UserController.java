@@ -1,6 +1,6 @@
 package codesquad.web;
 
-import codesquad.UnAuthenticationException;
+import codesquad.exception.UnAuthenticationException;
 import codesquad.domain.User;
 import codesquad.dto.UserDTO;
 import codesquad.security.HttpSessionUtils;
@@ -13,59 +13,61 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 @Controller
 @RequestMapping("/users")
 public class UserController {
 
-  private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
-  @Resource(name = "userService")
-  private UserService userService;
+    private UserService userService;
 
-  @GetMapping("/form")
-  public String form() {
-    return "/user/form";
-  }
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
-  @PostMapping("")
-  public String create(User user) {
-    userService.add(user);
-    return "redirect:/users";
-  }
+    @GetMapping("/form")
+    public String form() {
+        return "/user/form";
+    }
 
-  @GetMapping("")
-  public String list(Model model) {
-    List<User> users = userService.findAll();
-    log.debug("user size : {}", users.size());
-    model.addAttribute("users", users);
-    return "/user/list";
-  }
+    @PostMapping("")
+    public String create(User user) {
+        userService.add(user);
+        return "redirect:/users";
+    }
 
-  @PostMapping("login")
-  public String login(UserDTO userDTO, HttpSession session) throws UnAuthenticationException {
-    User user = userService.login(userDTO.getUserId(), userDTO.getPassword());
-    session.setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
-    return "redirect:/";
-  }
+    @GetMapping("")
+    public String list(Model model) {
+        List<User> users = userService.findAll();
+        log.debug("user size : {}", users.size());
+        model.addAttribute("users", users);
+        return "/user/list";
+    }
 
-  @GetMapping("/login/form")
-  public String loginForm(){
-    return "/user/login";
-  }
+    @PostMapping("login")
+    public String login(UserDTO userDTO, HttpSession session) throws Exception {
+        User user = userService.login(userDTO.getUserId(), userDTO.getPassword());
+        session.setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
+        return "redirect:/";
+    }
 
-  @GetMapping("/{id}/form")
-  public String updateForm(@LoginUser User loginUser, @PathVariable long id, Model model) {
-    model.addAttribute("user", userService.findById(loginUser, id));
-    return "/user/updateForm";
-  }
+    @GetMapping("/login/form")
+    public String loginForm() {
+        return "/user/login";
+    }
 
-  @PutMapping("/{id}")
-  public String update(@LoginUser User loginUser, @PathVariable long id, User target) {
-    userService.update(loginUser, id, target);
-    return "redirect:/users";
-  }
+    @GetMapping("/{id}/form")
+    public String updateForm(@LoginUser User loginUser, @PathVariable long id, Model model) {
+        model.addAttribute("user", userService.findById(loginUser, id));
+        return "/user/updateForm";
+    }
+
+    @PutMapping("/{id}")
+    public String update(@LoginUser User loginUser, @PathVariable long id, User target) {
+        userService.update(loginUser, id, target);
+        return "redirect:/users";
+    }
 
 }

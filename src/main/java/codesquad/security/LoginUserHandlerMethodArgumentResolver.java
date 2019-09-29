@@ -1,6 +1,6 @@
 package codesquad.security;
 
-import codesquad.UnAuthorizedException;
+import codesquad.exception.UnAuthorizedException;
 import codesquad.domain.User;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -9,6 +9,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class LoginUserHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
+
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(LoginUser.class);
@@ -16,7 +17,7 @@ public class LoginUserHandlerMethodArgumentResolver implements HandlerMethodArgu
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         User user = HttpSessionUtils.getUserFromSession(webRequest);
         if (!user.isGuestUser()) {
             return user;

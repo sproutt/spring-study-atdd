@@ -1,11 +1,19 @@
 package codesquad.domain;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 @Entity
 public class Answer extends AbstractEntity implements UrlGeneratable {
     @ManyToOne
@@ -22,9 +30,6 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
 
     private boolean deleted = false;
 
-    public Answer() {
-    }
-
     public Answer(User writer, String contents) {
         this.writer = writer;
         this.contents = contents;
@@ -36,23 +41,6 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         this.question = question;
         this.contents = contents;
         this.deleted = false;
-    }
-
-    public User getWriter() {
-        return writer;
-    }
-
-    public Question getQuestion() {
-        return question;
-    }
-
-    public String getContents() {
-        return contents;
-    }
-
-    public Answer setContents(String contents) {
-        this.contents = contents;
-        return this;
     }
 
     public void toQuestion(Question question) {
@@ -70,10 +58,5 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
     @Override
     public String generateUrl() {
         return String.format("%s/answers/%d", question.generateUrl(), getId());
-    }
-
-    @Override
-    public String toString() {
-        return "Answer [id=" + getId() + ", writer=" + writer + ", contents=" + contents + "]";
     }
 }

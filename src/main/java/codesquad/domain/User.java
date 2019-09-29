@@ -1,6 +1,6 @@
 package codesquad.domain;
 
-import codesquad.UnAuthorizedException;
+import codesquad.exception.UnAuthorizedException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -9,11 +9,13 @@ import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import support.domain.AbstractEntity;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 @Entity
 public class User extends AbstractEntity {
 
@@ -46,17 +48,15 @@ public class User extends AbstractEntity {
     this.email = email;
   }
 
-  public void update(User loginUser, User target) {
-    if (!matchUserId(loginUser.getUserId())) {
-      throw new UnAuthorizedException();
-    }
-
-    if (!matchPassword(target.getPassword())) {
+  public User update(User loginUser, User target) {
+    if (!matchUserId(loginUser.getUserId()) || !matchPassword(target.getPassword())) {
       throw new UnAuthorizedException();
     }
 
     this.name = target.name;
     this.email = target.email;
+
+    return this;
   }
 
   private boolean matchUserId(String userId) {
@@ -89,9 +89,4 @@ public class User extends AbstractEntity {
     }
   }
 
-  @Override
-  public String toString() {
-    return "User [userId=" + userId + ", password=" + password + ", name=" + name + ", email="
-        + email + "]";
-  }
 }

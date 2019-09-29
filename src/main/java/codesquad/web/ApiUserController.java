@@ -15,8 +15,12 @@ import java.net.URI;
 @RestController
 @RequestMapping("/api/users")
 public class ApiUserController {
-    @Resource(name = "userService")
-    private UserService userService;
+
+    private final UserService userService;
+
+    public ApiUserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping("")
     public ResponseEntity<Void> create(@Valid @RequestBody User user) {
@@ -33,7 +37,8 @@ public class ApiUserController {
     }
 
     @PutMapping("{id}")
-    public User update(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody User updatedUser) {
+    public User update(@LoginUser User loginUser, @PathVariable long id,
+        @Valid @RequestBody User updatedUser) {
         return userService.update(loginUser, id, updatedUser);
     }
 }
