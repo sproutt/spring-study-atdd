@@ -32,13 +32,13 @@ public class ApiUserController {
     }
 
     @GetMapping("{id}")
-    public User show(@LoginUser User loginUser, @PathVariable long id) {
+    public User show(@LoginUser User loginUser, @PathVariable long id) throws Exception {
         return userService.findById(loginUser, id);
     }
 
     @PutMapping("{id}")
-    public User update(@LoginUser User loginUser, @PathVariable long id,
-        @Valid @RequestBody User updatedUser) {
+    public User update(@LoginUser User loginUser, @PathVariable long id, @Valid @RequestBody User updatedUser)
+        throws Exception {
         return userService.update(loginUser, id, updatedUser);
     }
 }

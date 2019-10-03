@@ -18,7 +18,7 @@ import java.util.Optional;
 public class ValidationExceptionControllerAdvice {
 
     private static final Logger log = LoggerFactory
-        .getLogger(ValidationExceptionControllerAdvice.class);
+                                          .getLogger(ValidationExceptionControllerAdvice.class);
 
     private MessageSourceAccessor messageSourceAccessor;
 
@@ -48,7 +48,7 @@ public class ValidationExceptionControllerAdvice {
         }
 
         String errorMessage = messageSourceAccessor
-            .getMessage(code.get(), fieldError.getArguments(), fieldError.getDefaultMessage());
+                                  .getMessage(code.get(), fieldError.getArguments(), fieldError.getDefaultMessage());
         log.info("error message: {}", errorMessage);
         return errorMessage;
     }

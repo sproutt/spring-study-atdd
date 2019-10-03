@@ -29,7 +29,7 @@ public class ApiUserAcceptanceTest extends AcceptanceTest {
         String location = response.getHeaders().getLocation().getPath();
 
         response = basicAuthTemplate(defaultUser()).getForEntity(location, Void.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
@@ -62,7 +62,7 @@ public class ApiUserAcceptanceTest extends AcceptanceTest {
 
         ResponseEntity<Void> responseEntity =
                 basicAuthTemplate(defaultUser()).exchange(location, HttpMethod.PUT, createHttpEntity(updateUser), Void.class);
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     private HttpEntity createHttpEntity(Object body) {

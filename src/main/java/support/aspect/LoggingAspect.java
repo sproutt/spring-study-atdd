@@ -34,8 +34,7 @@ public class LoggingAspect {
     }
 
     private boolean isUtilMethod(String name) {
-        return name.startsWith("get") || name.startsWith("set") || name.equals("toString") || name
-            .equals("equals")
-            || name.equals("hashCode");
+        return name.startsWith("get") || name.startsWith("set") || name.equals("toString") || name.equals("equals")
+                   || name.equals("hashCode");
     }
 }

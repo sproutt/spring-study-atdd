@@ -22,15 +22,18 @@ public class UserService {
     }
 
     @Transactional
-    public User update(User loginUser, long id, User updatedUser) {
+    public User update(User loginUser, long id, User updatedUser) throws Exception {
         User originalUser = findById(loginUser, id);
         return originalUser.update(loginUser, updatedUser);
     }
 
-    public User findById(User loginUser, long id) {
-        return userRepository.findById(id)
-            .filter(user -> user.equals(loginUser))
-            .orElseThrow(EntityNotFoundException::new);
+    public User findById(User loginUser, long id) throws Exception {
+        User user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+        if (!user.equals(loginUser)) {
+            throw new UnAuthenticationException();
+        }
+        return user;
     }
 
     public List<User> findAll() {
