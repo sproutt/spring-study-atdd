@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Aspect
 public class LoggingAspect {
+
     @Pointcut("within(codesquad.web..*) || within(codesquad.service..*)")
     public void loggingPointcut() {
     }
@@ -34,6 +35,6 @@ public class LoggingAspect {
 
     private boolean isUtilMethod(String name) {
         return name.startsWith("get") || name.startsWith("set") || name.equals("toString") || name.equals("equals")
-                || name.equals("hashCode");
+                   || name.equals("hashCode");
     }
 }

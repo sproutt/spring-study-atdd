@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RestResponse extends RestStatus {
+
     private Map<String, Object> result;
 
     public RestResponse() {
@@ -18,4 +19,5 @@ public class RestResponse extends RestStatus {
     public Map<String, Object> getResult() {
         return result;
     }
+
 }

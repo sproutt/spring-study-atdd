@@ -1,5 +1,9 @@
 package codesquad.domain;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.Where;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
@@ -9,81 +13,57 @@ import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
 @Entity
 public class Question extends AbstractEntity implements UrlGeneratable {
-    @Size(min = 3, max = 100)
-    @Column(length = 100, nullable = false)
-    private String title;
 
-    @Size(min = 3)
-    @Lob
-    private String contents;
+  @Size(min = 3, max = 100)
+  @Column(length = 100, nullable = false)
+  private String title;
 
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_question_writer"))
-    private User writer;
+  @Size(min = 3)
+  @Lob
+  private String contents;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-    @Where(clause = "deleted = false")
-    @OrderBy("id ASC")
-    private List<Answer> answers = new ArrayList<>();
+  @ManyToOne
+  @JoinColumn(foreignKey = @ForeignKey(name = "fk_question_writer"))
+  private User writer;
 
-    private boolean deleted = false;
+  @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+  @Where(clause = "deleted = false")
+  @OrderBy("id ASC")
+  private List<Answer> answers = new ArrayList<>();
 
-    public Question() {
-    }
+  private boolean deleted = false;
 
-    public Question(String title, String contents) {
-        this.title = title;
-        this.contents = contents;
-    }
+  public Question(String title, String contents) {
+    this.title = title;
+    this.contents = contents;
+  }
 
-    public String getTitle() {
-        return title;
-    }
+  public void writeBy(User loginUser) {
+    this.writer = loginUser;
+  }
 
-    public Question setTitle(String title) {
-        this.title = title;
-        return this;
-    }
+  public void addAnswer(Answer answer) {
+    answer.toQuestion(this);
+    answers.add(answer);
+  }
 
-    public String getContents() {
-        return contents;
-    }
+  public boolean isOwner(User loginUser) {
+    return writer.equals(loginUser);
+  }
 
-    public Question setContents(String contents) {
-        this.contents = contents;
-        return this;
-    }
+  public boolean isDeleted() {
+    return deleted;
+  }
 
-    public User getWriter() {
-        return writer;
-    }
+  @Override
+  public String generateUrl() {
+    return String.format("/questions/%d", getId());
+  }
 
-    public void writeBy(User loginUser) {
-        this.writer = loginUser;
-    }
-
-    public void addAnswer(Answer answer) {
-        answer.toQuestion(this);
-        answers.add(answer);
-    }
-
-    public boolean isOwner(User loginUser) {
-        return writer.equals(loginUser);
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    @Override
-    public String generateUrl() {
-        return String.format("/questions/%d", getId());
-    }
-
-    @Override
-    public String toString() {
-        return "Question [id=" + getId() + ", title=" + title + ", contents=" + contents + ", writer=" + writer + "]";
-    }
 }

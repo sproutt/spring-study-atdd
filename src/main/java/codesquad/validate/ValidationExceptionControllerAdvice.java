@@ -11,26 +11,32 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
 
 @RestControllerAdvice
 public class ValidationExceptionControllerAdvice {
-    private static final Logger log = LoggerFactory.getLogger(ValidationExceptionControllerAdvice.class);
 
-    @Resource(name = "messageSourceAccessor")
-    private MessageSourceAccessor msa;
+    private static final Logger log = LoggerFactory
+                                          .getLogger(ValidationExceptionControllerAdvice.class);
+
+    private MessageSourceAccessor messageSourceAccessor;
+
+    public ValidationExceptionControllerAdvice(MessageSourceAccessor messageSourceAccessor) {
+        this.messageSourceAccessor = messageSourceAccessor;
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ValidationErrorsResponse handleValidationException(MethodArgumentNotValidException exception) {
+    public ValidationErrorsResponse handleValidationException(
+        MethodArgumentNotValidException exception) {
         List<ObjectError> errors = exception.getBindingResult().getAllErrors();
         ValidationErrorsResponse response = new ValidationErrorsResponse();
         for (ObjectError objectError : errors) {
             log.debug("object error : {}", objectError);
             FieldError fieldError = (FieldError) objectError;
-            response.addValidationError(new ValidationError(fieldError.getField(), getErrorMessage(fieldError)));
+            response.addValidationError(
+                new ValidationError(fieldError.getField(), getErrorMessage(fieldError)));
         }
         return response;
     }
@@ -41,7 +47,8 @@ public class ValidationExceptionControllerAdvice {
             return null;
         }
 
-        String errorMessage = msa.getMessage(code.get(), fieldError.getArguments(), fieldError.getDefaultMessage());
+        String errorMessage = messageSourceAccessor
+                                  .getMessage(code.get(), fieldError.getArguments(), fieldError.getDefaultMessage());
         log.info("error message: {}", errorMessage);
         return errorMessage;
     }

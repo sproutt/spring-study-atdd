@@ -2,7 +2,13 @@ package codesquad.domain;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 @Entity
 public class DeleteHistory {
     @Id
@@ -19,20 +25,4 @@ public class DeleteHistory {
     private User deletedBy;
 
     private LocalDateTime createDate = LocalDateTime.now();
-
-    public DeleteHistory() {
-    }
-
-    public DeleteHistory(ContentType contentType, Long contentId, User deletedBy, LocalDateTime createDate) {
-        this.contentType = contentType;
-        this.contentId = contentId;
-        this.deletedBy = deletedBy;
-        this.createDate = createDate;
-    }
-
-    @Override
-    public String toString() {
-        return "DeleteHistory [id=" + id + ", contentType=" + contentType + ", contentId=" + contentId + ", deletedBy="
-                + deletedBy + ", createDate=" + createDate + "]";
-    }
 }

@@ -1,6 +1,6 @@
 package codesquad.security;
 
-import codesquad.UnAuthenticationException;
+import codesquad.exception.UnAuthenticationException;
 import codesquad.domain.User;
 import codesquad.service.UserService;
 import org.slf4j.Logger;
@@ -14,14 +14,23 @@ import java.nio.charset.Charset;
 import java.util.Base64;
 
 public class BasicAuthInterceptor extends HandlerInterceptorAdapter {
+
     private static final Logger log = LoggerFactory.getLogger(BasicAuthInterceptor.class);
 
     @Autowired
     private UserService userService;
 
+    public BasicAuthInterceptor() {
+    }
+
+    public BasicAuthInterceptor(UserService userService) {
+        this.userService = userService;
+    }
+
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+        Object handler)
+        throws Exception {
         String authorization = request.getHeader("Authorization");
         log.debug("Authorization : {}", authorization);
         if (authorization == null || !authorization.startsWith("Basic")) {
@@ -29,7 +38,8 @@ public class BasicAuthInterceptor extends HandlerInterceptorAdapter {
         }
 
         String base64Credentials = authorization.substring("Basic".length()).trim();
-        String credentials = new String(Base64.getDecoder().decode(base64Credentials), Charset.forName("UTF-8"));
+        String credentials = new String(Base64.getDecoder().decode(base64Credentials),
+            Charset.forName("UTF-8"));
         final String[] values = credentials.split(":", 2);
         log.debug("username : {}", values[0]);
         log.debug("password : {}", values[1]);

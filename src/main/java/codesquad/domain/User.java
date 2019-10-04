@@ -1,16 +1,25 @@
 package codesquad.domain;
 
-import codesquad.UnAuthorizedException;
+import codesquad.exception.UnAuthorizedException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import support.domain.AbstractEntity;
-
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.Size;
-import java.util.Objects;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import support.domain.AbstractEntity;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
 @Entity
 public class User extends AbstractEntity {
+
     public static final GuestUser GUEST_USER = new GuestUser();
 
     @Size(min = 3, max = 20)
@@ -28,9 +37,6 @@ public class User extends AbstractEntity {
     @Size(max = 50)
     private String email;
 
-    public User() {
-    }
-
     public User(String userId, String password, String name, String email) {
         this(0L, userId, password, name, email);
     }
@@ -43,53 +49,19 @@ public class User extends AbstractEntity {
         this.email = email;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public User setUserId(String userId) {
-        this.userId = userId;
-        return this;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public User setPassword(String password) {
-        this.password = password;
-        return this;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public User setName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public User setEmail(String email) {
-        this.email = email;
-        return this;
-    }
-
-    public void update(User loginUser, User target) {
-        if (!matchUserId(loginUser.getUserId())) {
-            throw new UnAuthorizedException();
+    public User update(User loginUser, User target) {
+        if (Objects.isNull(target)) {
+            throw new EntityNotFoundException();
         }
 
-        if (!matchPassword(target.getPassword())) {
+        if (!matchUserId(loginUser.userId) || !matchPassword(target.password)) {
             throw new UnAuthorizedException();
         }
 
         this.name = target.name;
         this.email = target.email;
+
+        return this;
     }
 
     private boolean matchUserId(String userId) {
@@ -105,8 +77,24 @@ public class User extends AbstractEntity {
             return false;
         }
 
-        return name.equals(target.name) &&
-                email.equals(target.email);
+        return matchNameAndEmail(target.name, target.email);
+    }
+
+    public boolean equals(User target) {
+        if (!super.equals(target) || !matchInfo(target)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean matchInfo(User target) {
+        return matchUserId(target.userId) && matchPassword(target.password) && matchNameAndEmail(target.name,
+                                                                                                 target.email);
+    }
+
+    private boolean matchNameAndEmail(String name, String email) {
+        return this.name.equals(name) && this.email.equals(email);
     }
 
     @JsonIgnore
@@ -115,14 +103,11 @@ public class User extends AbstractEntity {
     }
 
     private static class GuestUser extends User {
+
         @Override
         public boolean isGuestUser() {
             return true;
         }
     }
 
-    @Override
-    public String toString() {
-        return "User [userId=" + userId + ", password=" + password + ", name=" + name + ", email=" + email + "]";
-    }
 }
