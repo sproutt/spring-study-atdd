@@ -3,6 +3,7 @@ package codesquad.service;
 import codesquad.exception.UnAuthenticationException;
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
+import javax.persistence.EntityNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -32,7 +33,7 @@ public class UserServiceTest {
         assertThat(loginUser, is(user));
     }
 
-    @Test(expected = UnAuthenticationException.class)
+    @Test(expected = EntityNotFoundException.class)
     public void login_failed_when_user_not_found() throws Exception {
         when(userRepository.findByUserId("sanjigi")).thenReturn(Optional.empty());
 

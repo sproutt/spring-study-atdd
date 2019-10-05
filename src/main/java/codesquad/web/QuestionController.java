@@ -24,8 +24,7 @@ public class QuestionController {
     }
 
     @GetMapping("/form")
-    public String showForm(@LoginUser User loginUser) {
-
+    public String showForm() {
         return "qna/form";
     }
 

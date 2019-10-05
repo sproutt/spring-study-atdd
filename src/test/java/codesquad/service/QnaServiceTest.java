@@ -12,6 +12,7 @@ import codesquad.domain.QuestionTest;
 import codesquad.domain.User;
 import codesquad.domain.UserTest;
 import codesquad.exception.UnAuthenticationException;
+import codesquad.exception.UnAuthorizedException;
 import java.util.Optional;
 import javax.persistence.EntityNotFoundException;
 import org.junit.Before;
@@ -56,7 +57,7 @@ public class QnaServiceTest {
         qnaService.update(originUser, ERROR_ID, targetQuestion);
     }
 
-    @Test(expected = UnAuthenticationException.class)
+    @Test(expected = UnAuthorizedException.class)
     public void updateQuestion_failed_when_no_login() throws Exception {
         Question question = QuestionTest.newQuestion(originUser, QUESTION_ID);
         when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
@@ -65,7 +66,7 @@ public class QnaServiceTest {
         qnaService.update(null, QUESTION_ID, targetQuestion);
     }
 
-    @Test(expected = UnAuthenticationException.class)
+    @Test(expected = UnAuthorizedException.class)
     public void updateQuestion_failed_when_other_user() throws Exception {
         Question question = QuestionTest.newQuestion(originUser, QUESTION_ID);
         when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
@@ -88,7 +89,7 @@ public class QnaServiceTest {
         qnaService.deleteQuestion(originUser, ERROR_ID);
     }
 
-    @Test(expected = UnAuthenticationException.class)
+    @Test(expected = UnAuthorizedException.class)
     public void deleteQuestion_failed_when_other_user() throws Exception {
         Question question = QuestionTest.newQuestion(originUser, QUESTION_ID);
         when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
@@ -123,7 +124,7 @@ public class QnaServiceTest {
     }
 
 
-    @Test(expected = UnAuthenticationException.class)
+    @Test(expected = UnAuthorizedException.class)
     public void deleteAnswer_failed_when_other_user() throws Exception {
         Question question = QuestionTest.newQuestion(originUser, QUESTION_ID);
         Answer answer = new Answer(ANSWER_ID, originUser, question, "test_댓글");

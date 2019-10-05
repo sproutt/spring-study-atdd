@@ -3,7 +3,6 @@ package codesquad.web;
 import codesquad.security.HttpSessionUtils;
 import codesquad.service.QnaService;
 import javax.servlet.http.HttpSession;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

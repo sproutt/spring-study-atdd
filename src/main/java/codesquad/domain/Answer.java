@@ -1,15 +1,18 @@
 package codesquad.domain;
 
-import codesquad.exception.UnAuthenticationException;
+import codesquad.exception.UnAuthorizedException;
+import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
-
-import javax.persistence.*;
-import javax.validation.constraints.Size;
 
 @Getter
 @Setter
@@ -49,9 +52,9 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         this.question = question;
     }
 
-    public void isOwner(User loginUser) throws Exception {
+    public void isOwner(User loginUser) throws UnAuthorizedException {
         if(!writer.equals(loginUser)){
-            throw new UnAuthenticationException();
+            throw new UnAuthorizedException();
         }
     }
 

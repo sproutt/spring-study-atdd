@@ -106,10 +106,8 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         return template.postForEntity(String.format("/questions/%d", defaultUser().getId()), request, String.class);
     }
 
-
     @Test
     public void delete_no_login() throws Exception {
-        User loginUser = defaultUser();
         ResponseEntity<String> responseEntity = delete(template());
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }

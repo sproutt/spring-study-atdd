@@ -90,7 +90,7 @@ public class User extends AbstractEntity {
 
     private boolean matchInfo(User target) {
         return matchUserId(target.userId) && matchPassword(target.password) && matchNameAndEmail(target.name,
-            target.email);
+                                                                                                 target.email);
     }
 
     private boolean matchNameAndEmail(String name, String email) {

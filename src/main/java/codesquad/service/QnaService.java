@@ -1,18 +1,17 @@
 package codesquad.service;
 
-import codesquad.exception.CannotDeleteException;
-import codesquad.domain.*;
-import codesquad.exception.UnAuthenticationException;
-import javax.naming.AuthenticationException;
+import codesquad.domain.Answer;
+import codesquad.domain.AnswerRepository;
+import codesquad.domain.Question;
+import codesquad.domain.QuestionRepository;
+import codesquad.domain.User;
+import java.util.List;
 import javax.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class QnaService {
