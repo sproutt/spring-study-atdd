@@ -68,8 +68,8 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         ResponseEntity<String> responseEntity = updateForm(basicAuthTemplate(loginUser));
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).contains(defaultUser().getEmail());
-        assertThat(responseEntity.getBody()).contains(defaultUser().getName());
+        assertThat(responseEntity.getBody()).contains(defaultQuestion().getTitle());
+        assertThat(responseEntity.getBody()).contains(defaultQuestion().getContents());
     }
 
     @Test
@@ -92,7 +92,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void update_login() throws Exception {
         User loginUser = defaultUser();
-        ResponseEntity<String> responseEntity = update(basicAuthTemplate());
+        ResponseEntity<String> responseEntity = update(basicAuthTemplate(loginUser));
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(responseEntity.getHeaders().getLocation().getPath()).startsWith("/");
     }
@@ -111,15 +111,16 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void delete_no_login() throws Exception {
         User loginUser = defaultUser();
-        ResponseEntity<String> responseEntity = delete(basicAuthTemplate(loginUser));
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-        assertThat(defaultQuestion()).isEqualTo(Optional.empty());
+        ResponseEntity<String> responseEntity = delete(template());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
     public void delete_login() throws Exception {
-        ResponseEntity<String> responseEntity = delete(template());
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        User loginUser = defaultUser();
+        ResponseEntity<String> responseEntity = delete(basicAuthTemplate(loginUser));
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+        assertThat(responseEntity.getHeaders().getLocation().getPath()).startsWith("/");
     }
 
     private ResponseEntity<String> delete(TestRestTemplate template) throws Exception {
