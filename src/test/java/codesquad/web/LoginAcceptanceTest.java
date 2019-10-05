@@ -16,31 +16,31 @@ import support.test.AcceptanceTest;
 
 public class LoginAcceptanceTest extends AcceptanceTest {
 
-  private static final Logger log = LoggerFactory.getLogger(LoginAcceptanceTest.class);
+    private static final Logger log = LoggerFactory.getLogger(LoginAcceptanceTest.class);
 
-  @Autowired
-  private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-  @Test
-  public void login() throws Exception {
+    @Test
+    public void login() throws Exception {
 
-    String userId = "javajigi";
-    String userPassword = "test";
+        String userId = "javajigi";
+        String userPassword = "test";
 
-    HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
-        .addParameter("userId", userId)
-        .addParameter("password", userPassword)
-        .build();
+        HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
+                                                                .addParameter("userId", userId)
+                                                                .addParameter("password", userPassword)
+                                                                .build();
 
-    ResponseEntity<String> response = template()
-        .postForEntity("/users/login", request, String.class);
+        ResponseEntity<String> response = template()
+                                              .postForEntity("/users/login", request, String.class);
 
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-    assertThat(userRepository.findByUserId(userId).isPresent()).isTrue();
-    assertThat(userRepository.findByUserId(userId).orElseThrow(IllegalAccessError::new)
-        .matchPassword(userPassword)).isTrue();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+        assertThat(userRepository.findByUserId(userId).isPresent()).isTrue();
+        assertThat(userRepository.findByUserId(userId).orElseThrow(IllegalAccessError::new)
+                       .matchPassword(userPassword)).isTrue();
 
-    assertThat(response.getHeaders().getLocation().getPath()).startsWith("/");
-  }
+        assertThat(response.getHeaders().getLocation().getPath()).startsWith("/");
+    }
 
 }
