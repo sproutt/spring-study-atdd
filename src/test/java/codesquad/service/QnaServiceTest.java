@@ -12,6 +12,7 @@ import codesquad.domain.User;
 import codesquad.domain.UserTest;
 import codesquad.exception.UnAuthenticationException;
 import java.util.Optional;
+import javax.persistence.EntityNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -43,7 +44,18 @@ public class QnaServiceTest {
         Question resultQuestion = qnaService.update(loginUser, QUESTION_ID, targetQuestion);
         assertThat(resultQuestion.getContents(), is(targetQuestion.getContents()));
         assertThat(resultQuestion.getTitle(), is(targetQuestion.getTitle()));
+    }
 
+    @Test(expected = EntityNotFoundException.class)
+    public void updateQuestion_not_found() throws Exception {
+        User loginUser = new User("sanjigi", "password", "name", "javajigi@slipp.net");
+        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
+        question.writeBy(loginUser);
+        when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
+
+        Question targetQuestion = new Question("update_title", "update_contents");
+
+        qnaService.update(loginUser, QUESTION_ID+11, targetQuestion);
     }
 
     @Test(expected = UnAuthenticationException.class)
@@ -79,6 +91,16 @@ public class QnaServiceTest {
 
         qnaService.deleteQuestion(loginUser, QUESTION_ID);
         assertThat(questionRepository.findById(QUESTION_ID),is(Optional.empty()));
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void deleteQuestion_not_found() throws Exception {
+        User loginUser = UserTest.JAVAJIGI;
+        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
+        question.writeBy(loginUser);
+        when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
+
+        qnaService.deleteQuestion(loginUser, QUESTION_ID+11);
     }
 
     @Test(expected = UnAuthenticationException.class)
@@ -150,9 +172,21 @@ public class QnaServiceTest {
 
         when(answerRepository.findById(ANSWER_ID)).thenReturn(Optional.of(answer));
 
-        qnaService.deleteQuestion(originUser, QUESTION_ID);
+        qnaService.deleteAnswer(originUser, ANSWER_ID);
 
         assertThat(answerRepository.findById(ANSWER_ID), is(Optional.empty()));
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void deleteAnswer_not_found() throws Exception {
+        User originUser = UserTest.JAVAJIGI;
+        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
+        question.writeBy(originUser);
+        Answer answer = new Answer(ANSWER_ID, originUser, question,"test_댓글");
+
+        when(answerRepository.findById(ANSWER_ID)).thenReturn(Optional.of(answer));
+
+        qnaService.deleteAnswer(originUser, QUESTION_ID+11);
     }
 
     @Test(expected = UnAuthenticationException.class)
@@ -165,7 +199,7 @@ public class QnaServiceTest {
         when(answerRepository.findById(ANSWER_ID)).thenReturn(Optional.of(answer));
 
 
-        qnaService.deleteQuestion(null, 1L);
+        qnaService.deleteAnswer(null, ANSWER_ID);
     }
 
     @Test(expected = UnAuthenticationException.class)
