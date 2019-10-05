@@ -130,4 +130,12 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
         return template.postForEntity(String.format("/questions/%d", defaultQuestion().getId()), request, String.class);
     }
+
+    @Test
+    public void show() throws Exception{
+        ResponseEntity<String> responseEntity = template().getForEntity(String.format("/questions/%d", defaultQuestion().getId()), String.class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).contains(defaultQuestion().getContents());
+        assertThat(responseEntity.getBody()).contains(defaultQuestion().getTitle());
+    }
 }
