@@ -37,11 +37,9 @@ public class UserAcceptanceTest extends AcceptanceTest {
 
         HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
                                                                 .addParameter("userId", userId)
-                                                                .addParameter("password",
-                                                                    "password")
+                                                                .addParameter("password", "password")
                                                                 .addParameter("name", "자바지기")
-                                                                .addParameter("email",
-                                                                    "javajigi@slipp.net")
+                                                                .addParameter("email", "javajigi@slipp.net")
                                                                 .build();
 
         ResponseEntity<String> response = template().postForEntity("/users", request, String.class);
@@ -61,10 +59,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void updateForm_no_login() throws Exception {
-        ResponseEntity<String> response = template()
-                                              .getForEntity(String.format("/users/%d/form",
-                                                  defaultUser().getId()),
-                                                  String.class);
+        ResponseEntity<String> response = template().getForEntity(String.format("/users/%d/form", defaultUser().getId()), String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
