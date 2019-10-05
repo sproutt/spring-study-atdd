@@ -1,5 +1,6 @@
 package codesquad.domain;
 
+import codesquad.exception.UnAuthenticationException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Entity
 public class Answer extends AbstractEntity implements UrlGeneratable {
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_writer"))
     private User writer;
@@ -47,8 +49,10 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         this.question = question;
     }
 
-    public boolean isOwner(User loginUser) {
-        return writer.equals(loginUser);
+    public void isOwner(User loginUser) throws Exception {
+        if(!writer.equals(loginUser)){
+            throw new UnAuthenticationException();
+        }
     }
 
     public boolean isDeleted() {
@@ -60,7 +64,8 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         return String.format("%s/answers/%d", question.generateUrl(), getId());
     }
 
-    public void delete() {
+    public void delete(User loginUser) throws Exception{
+        this.isOwner(loginUser);
         deleted = true;
     }
 }

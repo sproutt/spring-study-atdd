@@ -11,6 +11,7 @@ import lombok.ToString;
 @ToString
 @Entity
 public class DeleteHistory {
+
     @Id
     @GeneratedValue
     private Long id;

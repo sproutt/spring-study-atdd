@@ -72,7 +72,6 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 
     public Question update(User loginUser, Question updatedQuestion) throws Exception {
         this.isOwner(loginUser);
-
         this.title = updatedQuestion.title;
         this.contents = updatedQuestion.contents;
 

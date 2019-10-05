@@ -38,7 +38,7 @@ public class QnaService {
     }
 
     @Transactional
-    public Question update(User loginUser, long questionId, Question updatedQuestion) throws Exception{
+    public Question update(User loginUser, long questionId, Question updatedQuestion) throws Exception {
         Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
 
         question.update(loginUser, updatedQuestion);
@@ -67,24 +67,17 @@ public class QnaService {
 
     public Answer addAnswer(User loginUser, long questionId, String contents) throws Exception {
         Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
-
         Answer answer = new Answer(loginUser, contents);
-        if(!answer.isOwner(loginUser)){
-            throw new UnAuthenticationException();
-        }
 
         question.addAnswer(answer);
         questionRepository.save(question);
         return answer;
     }
 
-    public Answer deleteAnswer(User loginUser, long id) throws Exception{
+    public Answer deleteAnswer(User loginUser, long id) throws Exception {
         Answer answer = answerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
-        if(!answer.isOwner(loginUser)){
-            throw new UnAuthenticationException();
-        }
-        answer.delete();
+        answer.delete(loginUser);
         answerRepository.save(answer);
 
         return answer;
