@@ -41,11 +41,7 @@ public class QnaService {
     public Question update(User loginUser, long questionId, Question updatedQuestion) throws Exception{
         Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
 
-        if(!question.isOwner(loginUser)){
-            throw new UnAuthenticationException();
-        }
-
-        question.update(updatedQuestion);
+        question.update(loginUser, updatedQuestion);
         questionRepository.save(question);
 
         return question;
@@ -55,11 +51,7 @@ public class QnaService {
     public Question deleteQuestion(User loginUser, long questionId) throws Exception {
         Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
 
-        if(!question.isOwner(loginUser)){
-            throw new UnAuthenticationException();
-        }
-
-        question.delete();
+        question.delete(loginUser);
         questionRepository.save(question);
 
         return question;

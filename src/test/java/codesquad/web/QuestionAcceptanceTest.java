@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import codesquad.HtmlFormDataBuilder;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
-import java.util.Optional;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

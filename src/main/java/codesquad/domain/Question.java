@@ -1,5 +1,7 @@
 package codesquad.domain;
 
+import codesquad.exception.UnAuthenticationException;
+import javax.naming.AuthenticationException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,66 +22,71 @@ import java.util.List;
 @Entity
 public class Question extends AbstractEntity implements UrlGeneratable {
 
-  @Size(min = 3, max = 100)
-  @Column(length = 100, nullable = false)
-  private String title;
+    @Size(min = 3, max = 100)
+    @Column(length = 100, nullable = false)
+    private String title;
 
-  @Size(min = 3)
-  @Lob
-  private String contents;
+    @Size(min = 3)
+    @Lob
+    private String contents;
 
-  @ManyToOne
-  @JoinColumn(foreignKey = @ForeignKey(name = "fk_question_writer"))
-  private User writer;
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_question_writer"))
+    private User writer;
 
-  @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-  @Where(clause = "deleted = false")
-  @OrderBy("id ASC")
-  private List<Answer> answers = new ArrayList<>();
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    @Where(clause = "deleted = false")
+    @OrderBy("id ASC")
+    private List<Answer> answers = new ArrayList<>();
 
-  private boolean deleted = false;
+    private boolean deleted = false;
 
-  public Question(String title, String contents) {
-    this(0L, title, contents);
-  }
+    public Question(String title, String contents) {
+        this(0L, title, contents);
+    }
 
-  public Question(Long id, String title, String contents) {
-    super(id);
-    this.title = title;
-    this.contents = contents;
-  }
+    public Question(Long id, String title, String contents) {
+        super(id);
+        this.title = title;
+        this.contents = contents;
+    }
 
-  public void writeBy(User loginUser) {
-    this.writer = loginUser;
-  }
+    public void writeBy(User loginUser) {
+        this.writer = loginUser;
+    }
 
-  public void addAnswer(Answer answer) {
-    answer.toQuestion(this);
-    answers.add(answer);
-  }
+    public void addAnswer(Answer answer) {
+        answer.toQuestion(this);
+        answers.add(answer);
+    }
 
-  public boolean isOwner(User loginUser) {
-    return writer.equals(loginUser);
-  }
+    private void isOwner(User loginUser) throws Exception {
+        if (!writer.equals(loginUser)) {
+            throw new UnAuthenticationException();
+        }
+    }
 
-  public boolean isDeleted() {
-    return deleted;
-  }
+    public boolean isDeleted() {
+        return deleted;
+    }
 
-  public Question update(Question updatedQuestion){
-    this.title = updatedQuestion.title;
-    this.contents = updatedQuestion.contents;
+    public Question update(User loginUser, Question updatedQuestion) throws Exception {
+        this.isOwner(loginUser);
 
-    return this;
-  }
+        this.title = updatedQuestion.title;
+        this.contents = updatedQuestion.contents;
 
-  public void delete(){
-    deleted = true;
-  }
+        return this;
+    }
 
-  @Override
-  public String generateUrl() {
-    return String.format("/questions/%d", getId());
-  }
+    public void delete(User loginUser) throws Exception {
+        this.isOwner(loginUser);
+        deleted = true;
+    }
+
+    @Override
+    public String generateUrl() {
+        return String.format("/questions/%d", getId());
+    }
 
 }
