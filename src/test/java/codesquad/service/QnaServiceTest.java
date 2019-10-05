@@ -21,6 +21,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class QnaServiceTest {
+
     @Mock
     private QuestionRepository questionRepository;
     @Mock
@@ -55,7 +56,7 @@ public class QnaServiceTest {
 
         Question targetQuestion = new Question("update_title", "update_contents");
 
-        qnaService.update(loginUser, QUESTION_ID+11, targetQuestion);
+        qnaService.update(loginUser, QUESTION_ID + 11, targetQuestion);
     }
 
     @Test(expected = UnAuthenticationException.class)
@@ -89,8 +90,8 @@ public class QnaServiceTest {
         question.writeBy(loginUser);
         when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
 
-        qnaService.deleteQuestion(loginUser, QUESTION_ID);
-        assertThat(questionRepository.findById(QUESTION_ID),is(Optional.empty()));
+        Question deletedQuestion = qnaService.deleteQuestion(loginUser, QUESTION_ID);
+        assertThat(deletedQuestion.isDeleted(), is(true));
     }
 
     @Test(expected = EntityNotFoundException.class)
@@ -100,17 +101,7 @@ public class QnaServiceTest {
         question.writeBy(loginUser);
         when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
 
-        qnaService.deleteQuestion(loginUser, QUESTION_ID+11);
-    }
-
-    @Test(expected = UnAuthenticationException.class)
-    public void deleteQuestion_failed_when_no_login() throws Exception {
-        User originUser = UserTest.JAVAJIGI;
-        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
-        question.writeBy(originUser);
-        when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
-
-        qnaService.deleteQuestion(null, QUESTION_ID);
+        qnaService.deleteQuestion(loginUser, QUESTION_ID + 11);
     }
 
     @Test(expected = UnAuthenticationException.class)
@@ -135,11 +126,10 @@ public class QnaServiceTest {
         Answer answer = qnaService.addAnswer(originUser, QUESTION_ID, "test_댓글");
         assertThat(answer.getContents(), is("test_댓글"));
         assertThat(answer.getQuestion(), is(question));
-
     }
 
     @Test
-    public void addAnswer_failed_when_other_user() throws Exception {
+    public void addAnswer_when_other_user() throws Exception {
         User originUser = UserTest.JAVAJIGI;
         User otherUser = UserTest.SANJIGI;
         Question question = new Question(QUESTION_ID, "test_title", "test_contents");
@@ -152,55 +142,19 @@ public class QnaServiceTest {
         assertThat(answer.getQuestion(), is(question));
     }
 
-    @Test(expected = UnAuthenticationException.class)
-    public void addAnswer_failed_when_no_login() throws Exception {
-        User originUser = UserTest.JAVAJIGI;
-        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
-        question.writeBy(originUser);
-
-        when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
-
-        qnaService.addAnswer(null, QUESTION_ID, "test_댓글");
-    }
-
-    @Test
-    public void deleteAnswer_success() throws Exception {
-        User originUser = UserTest.JAVAJIGI;
-        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
-        question.writeBy(originUser);
-        Answer answer = new Answer(ANSWER_ID, originUser, question,"test_댓글");
-
-        when(answerRepository.findById(ANSWER_ID)).thenReturn(Optional.of(answer));
-
-        qnaService.deleteAnswer(originUser, ANSWER_ID);
-
-        assertThat(answerRepository.findById(ANSWER_ID), is(Optional.empty()));
-    }
 
     @Test(expected = EntityNotFoundException.class)
     public void deleteAnswer_not_found() throws Exception {
         User originUser = UserTest.JAVAJIGI;
         Question question = new Question(QUESTION_ID, "test_title", "test_contents");
         question.writeBy(originUser);
-        Answer answer = new Answer(ANSWER_ID, originUser, question,"test_댓글");
+        Answer answer = new Answer(ANSWER_ID, originUser, question, "test_댓글");
 
         when(answerRepository.findById(ANSWER_ID)).thenReturn(Optional.of(answer));
 
-        qnaService.deleteAnswer(originUser, QUESTION_ID+11);
+        qnaService.deleteAnswer(originUser, QUESTION_ID + 11);
     }
 
-    @Test(expected = UnAuthenticationException.class)
-    public void deleteAnswer_failed_when_no_login() throws Exception {
-        User originUser = UserTest.JAVAJIGI;
-        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
-        question.writeBy(originUser);
-        Answer answer = new Answer(ANSWER_ID, originUser, question,"test_댓글");
-
-        when(answerRepository.findById(ANSWER_ID)).thenReturn(Optional.of(answer));
-
-
-        qnaService.deleteAnswer(null, ANSWER_ID);
-    }
 
     @Test(expected = UnAuthenticationException.class)
     public void deleteAnswer_failed_when_other_user() throws Exception {
@@ -208,10 +162,25 @@ public class QnaServiceTest {
         User otherUser = UserTest.SANJIGI;
         Question question = new Question(QUESTION_ID, "test_title", "test_contents");
         question.writeBy(originUser);
-        Answer answer = new Answer(ANSWER_ID, originUser, question,"test_댓글");
+        Answer answer = new Answer(ANSWER_ID, originUser, question, "test_댓글");
 
         when(answerRepository.findById(ANSWER_ID)).thenReturn(Optional.of(answer));
 
-        qnaService.deleteQuestion(otherUser, ANSWER_ID);
+        qnaService.deleteAnswer(otherUser, ANSWER_ID);
+    }
+
+    @Test
+    public void deleteAnswer_success() throws Exception {
+        User originUser = UserTest.JAVAJIGI;
+        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
+        question.writeBy(originUser);
+        System.out.println(originUser.toString());
+        Answer answer = new Answer(ANSWER_ID, originUser, question, "test_댓글");
+
+        when(answerRepository.findById(ANSWER_ID)).thenReturn(Optional.of(answer));
+
+        Answer deletedAnswer =  qnaService.deleteAnswer(originUser, ANSWER_ID);
+
+        assertThat(deletedAnswer.isDeleted(), is(true));
     }
 }

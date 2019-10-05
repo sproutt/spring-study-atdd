@@ -2,6 +2,8 @@ package codesquad.service;
 
 import codesquad.exception.CannotDeleteException;
 import codesquad.domain.*;
+import codesquad.exception.UnAuthenticationException;
+import javax.naming.AuthenticationException;
 import javax.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +20,11 @@ public class QnaService {
     private static final Logger log = LoggerFactory.getLogger(QnaService.class);
 
     private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
 
-    public QnaService(QuestionRepository questionRepository) {
+    public QnaService(QuestionRepository questionRepository, AnswerRepository answerRepository) {
         this.questionRepository = questionRepository;
+        this.answerRepository = answerRepository;
     }
 
     public Question create(User loginUser, Question question) {
@@ -34,14 +38,31 @@ public class QnaService {
     }
 
     @Transactional
-    public Question update(User loginUser, long id, Question updatedQuestion) {
-        // TODO 수정 기능 구현
-        return null;
+    public Question update(User loginUser, long questionId, Question updatedQuestion) throws Exception{
+        Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
+
+        if(!question.isOwner(loginUser)){
+            throw new UnAuthenticationException();
+        }
+
+        question.update(updatedQuestion);
+        questionRepository.save(question);
+
+        return question;
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
-        // TODO 삭제 기능 구현
+    public Question deleteQuestion(User loginUser, long questionId) throws Exception {
+        Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
+
+        if(!question.isOwner(loginUser)){
+            throw new UnAuthenticationException();
+        }
+
+        question.delete();
+        questionRepository.save(question);
+
+        return question;
     }
 
     public Iterable<Question> findAll() {
@@ -52,13 +73,28 @@ public class QnaService {
         return questionRepository.findAll(pageable).getContent();
     }
 
-    public Answer addAnswer(User loginUser, long questionId, String contents) {
-        // TODO 답변 추가 기능 구현
-        return null;
+    public Answer addAnswer(User loginUser, long questionId, String contents) throws Exception {
+        Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
+
+        Answer answer = new Answer(loginUser, contents);
+        if(!answer.isOwner(loginUser)){
+            throw new UnAuthenticationException();
+        }
+
+        question.addAnswer(answer);
+        questionRepository.save(question);
+        return answer;
     }
 
-    public Answer deleteAnswer(User loginUser, long id) {
-        // TODO 답변 삭제 기능 구현 
-        return null;
+    public Answer deleteAnswer(User loginUser, long id) throws Exception{
+        Answer answer = answerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+        if(!answer.isOwner(loginUser)){
+            throw new UnAuthenticationException();
+        }
+        answer.delete();
+        answerRepository.save(answer);
+
+        return answer;
     }
 }

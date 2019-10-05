@@ -59,4 +59,8 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
     public String generateUrl() {
         return String.format("%s/answers/%d", question.generateUrl(), getId());
     }
+
+    public void delete() {
+        deleted = true;
+    }
 }
