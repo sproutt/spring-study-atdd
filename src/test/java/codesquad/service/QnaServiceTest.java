@@ -8,11 +8,13 @@ import codesquad.domain.Answer;
 import codesquad.domain.AnswerRepository;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
+import codesquad.domain.QuestionTest;
 import codesquad.domain.User;
 import codesquad.domain.UserTest;
 import codesquad.exception.UnAuthenticationException;
 import java.util.Optional;
 import javax.persistence.EntityNotFoundException;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -30,114 +32,97 @@ public class QnaServiceTest {
     private final Long QUESTION_ID = 1L;
     private final Long ANSWER_ID = 1L;
 
+    private User firstUser;
+    private User secondUser;
+
     @InjectMocks
     private QnaService qnaService;
 
+    @Before
+    public void setUp(){
+        firstUser = UserTest.JAVAJIGI;
+        secondUser = UserTest.SANJIGI;
+    }
+
     @Test
-    public void updateQuestion_sucess() throws Exception {
-        User loginUser = new User("sanjigi", "password", "name", "javajigi@slipp.net");
-        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
-        question.writeBy(loginUser);
+    public void updateQuestion_success() throws Exception {
+        Question question = QuestionTest.newQuestion(firstUser, QUESTION_ID);
         when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
 
         Question targetQuestion = new Question("update_title", "update_contents");
-
-        Question resultQuestion = qnaService.update(loginUser, QUESTION_ID, targetQuestion);
+        Question resultQuestion = qnaService.update(firstUser, QUESTION_ID, targetQuestion);
         assertThat(resultQuestion.getContents(), is(targetQuestion.getContents()));
         assertThat(resultQuestion.getTitle(), is(targetQuestion.getTitle()));
     }
 
     @Test(expected = EntityNotFoundException.class)
     public void updateQuestion_not_found() throws Exception {
-        User loginUser = new User("sanjigi", "password", "name", "javajigi@slipp.net");
-        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
-        question.writeBy(loginUser);
+        Question question = QuestionTest.newQuestion(firstUser, QUESTION_ID);
         when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
 
         Question targetQuestion = new Question("update_title", "update_contents");
-
-        qnaService.update(loginUser, QUESTION_ID + 11, targetQuestion);
+        qnaService.update(firstUser, QUESTION_ID + 11, targetQuestion);
     }
 
     @Test(expected = UnAuthenticationException.class)
     public void updateQuestion_failed_when_no_login() throws Exception {
-        User originUser = UserTest.JAVAJIGI;
-        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
-        question.writeBy(originUser);
+        Question question = QuestionTest.newQuestion(firstUser, QUESTION_ID);
         when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
 
         Question targetQuestion = new Question("update_title", "update_contents");
-
         qnaService.update(null, QUESTION_ID, targetQuestion);
     }
 
     @Test(expected = UnAuthenticationException.class)
     public void updateQuestion_failed_when_other_user() throws Exception {
-        User originUser = UserTest.JAVAJIGI;
-        User otherUser = UserTest.SANJIGI;
-        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
-        question.writeBy(originUser);
+        Question question = QuestionTest.newQuestion(firstUser, QUESTION_ID);
         when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
 
         Question targetQuestion = new Question("update_title", "update_contents");
-        qnaService.update(otherUser, QUESTION_ID, targetQuestion);
+        qnaService.update(secondUser, QUESTION_ID, targetQuestion);
     }
 
     @Test
     public void deleteQuestion_success() throws Exception {
-        User loginUser = UserTest.JAVAJIGI;
-        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
-        question.writeBy(loginUser);
+        Question question = QuestionTest.newQuestion(firstUser, QUESTION_ID);
         when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
 
-        Question deletedQuestion = qnaService.deleteQuestion(loginUser, QUESTION_ID);
+        Question deletedQuestion = qnaService.deleteQuestion(firstUser, QUESTION_ID);
         assertThat(deletedQuestion.isDeleted(), is(true));
     }
 
     @Test(expected = EntityNotFoundException.class)
     public void deleteQuestion_not_found() throws Exception {
-        User loginUser = UserTest.JAVAJIGI;
-        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
-        question.writeBy(loginUser);
+        Question question = QuestionTest.newQuestion(firstUser, QUESTION_ID);
         when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
 
-        qnaService.deleteQuestion(loginUser, QUESTION_ID + 11);
+        qnaService.deleteQuestion(firstUser, QUESTION_ID + 11);
     }
 
     @Test(expected = UnAuthenticationException.class)
     public void deleteQuestion_failed_when_other_user() throws Exception {
-        User originUser = UserTest.JAVAJIGI;
-        User otherUser = UserTest.SANJIGI;
-        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
-        question.writeBy(originUser);
+        Question question = QuestionTest.newQuestion(firstUser, QUESTION_ID);
         when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
 
-        qnaService.deleteQuestion(otherUser, QUESTION_ID);
+        qnaService.deleteQuestion(secondUser, QUESTION_ID);
     }
 
     @Test
     public void addAnswer_success() throws Exception {
-        User originUser = UserTest.JAVAJIGI;
-        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
-        question.writeBy(originUser);
-
+        Question question = QuestionTest.newQuestion(firstUser, QUESTION_ID);
         when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
 
-        Answer answer = qnaService.addAnswer(originUser, QUESTION_ID, "test_댓글");
+        Answer answer = qnaService.addAnswer(firstUser, QUESTION_ID, "test_댓글");
         assertThat(answer.getContents(), is("test_댓글"));
         assertThat(answer.getQuestion(), is(question));
     }
 
     @Test
     public void addAnswer_when_other_user() throws Exception {
-        User originUser = UserTest.JAVAJIGI;
-        User otherUser = UserTest.SANJIGI;
-        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
-        question.writeBy(originUser);
-
+        Question question = QuestionTest.newQuestion(firstUser, QUESTION_ID);
         when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
 
-        Answer answer = qnaService.addAnswer(otherUser, QUESTION_ID, "test_댓글");
+        Answer answer = qnaService.addAnswer(secondUser, QUESTION_ID, "test_댓글");
         assertThat(answer.getContents(), is("test_댓글"));
         assertThat(answer.getQuestion(), is(question));
     }
@@ -145,42 +130,30 @@ public class QnaServiceTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void deleteAnswer_not_found() throws Exception {
-        User originUser = UserTest.JAVAJIGI;
-        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
-        question.writeBy(originUser);
-        Answer answer = new Answer(ANSWER_ID, originUser, question, "test_댓글");
-
+        Question question = QuestionTest.newQuestion(firstUser, QUESTION_ID);
+        Answer answer = new Answer(ANSWER_ID, firstUser, question, "test_댓글");
         when(answerRepository.findById(ANSWER_ID)).thenReturn(Optional.of(answer));
 
-        qnaService.deleteAnswer(originUser, QUESTION_ID + 11);
+        qnaService.deleteAnswer(secondUser, QUESTION_ID + 11);
     }
 
 
     @Test(expected = UnAuthenticationException.class)
     public void deleteAnswer_failed_when_other_user() throws Exception {
-        User originUser = UserTest.JAVAJIGI;
-        User otherUser = UserTest.SANJIGI;
-        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
-        question.writeBy(originUser);
-        Answer answer = new Answer(ANSWER_ID, originUser, question, "test_댓글");
-
+        Question question = QuestionTest.newQuestion(firstUser, QUESTION_ID);
+        Answer answer = new Answer(ANSWER_ID, firstUser, question, "test_댓글");
         when(answerRepository.findById(ANSWER_ID)).thenReturn(Optional.of(answer));
 
-        qnaService.deleteAnswer(otherUser, ANSWER_ID);
+        qnaService.deleteAnswer(secondUser, ANSWER_ID);
     }
 
     @Test
     public void deleteAnswer_success() throws Exception {
-        User originUser = UserTest.JAVAJIGI;
-        Question question = new Question(QUESTION_ID, "test_title", "test_contents");
-        question.writeBy(originUser);
-        System.out.println(originUser.toString());
-        Answer answer = new Answer(ANSWER_ID, originUser, question, "test_댓글");
-
+        Question question = QuestionTest.newQuestion(firstUser, QUESTION_ID);
+        Answer answer = new Answer(ANSWER_ID, firstUser, question, "test_댓글");
         when(answerRepository.findById(ANSWER_ID)).thenReturn(Optional.of(answer));
 
-        Answer deletedAnswer =  qnaService.deleteAnswer(originUser, ANSWER_ID);
-
+        Answer deletedAnswer =  qnaService.deleteAnswer(firstUser, ANSWER_ID);
         assertThat(deletedAnswer.isDeleted(), is(true));
     }
 }
