@@ -38,7 +38,7 @@ public class LoginAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(userRepository.findByUserId(userId).isPresent()).isTrue();
         assertThat(userRepository.findByUserId(userId).orElseThrow(IllegalAccessError::new)
-                       .matchPassword(userPassword)).isTrue();
+                       .checkPassword(userPassword)).isTrue();
 
         assertThat(response.getHeaders().getLocation().getPath()).startsWith("/");
     }

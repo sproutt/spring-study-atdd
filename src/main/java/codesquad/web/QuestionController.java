@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/questions")
 public class QuestionController {
 
-    private QnaService qnaService;
+    private final QnaService qnaService;
 
     public QuestionController(QnaService qnaService) {
         this.qnaService = qnaService;
     }
 
     @GetMapping("/form")
-    public String showForm() {
+    public String showForm(@LoginUser User loginUser) {
         return "qna/form";
     }
 

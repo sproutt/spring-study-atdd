@@ -40,20 +40,18 @@ public class QnaService {
     public Question update(User loginUser, long questionId, Question updatedQuestion) throws Exception {
         Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
 
-        question.update(loginUser, updatedQuestion);
-        questionRepository.save(question);
+        updatedQuestion = updatedQuestion.update(loginUser, question);
 
-        return question;
+        return questionRepository.save(updatedQuestion);
     }
 
     @Transactional
     public Question deleteQuestion(User loginUser, long questionId) throws Exception {
         Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
 
-        question.delete(loginUser);
-        questionRepository.save(question);
+        Question deletedQuestion = question.delete(loginUser);
 
-        return question;
+        return questionRepository.save(deletedQuestion);
     }
 
     public Iterable<Question> findAll() {
@@ -68,17 +66,16 @@ public class QnaService {
         Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
         Answer answer = new Answer(loginUser, contents);
 
-        question.addAnswer(answer);
-        questionRepository.save(question);
-        return answer;
+        answer.toQuestion(question);
+
+        return answerRepository.save(answer);
     }
 
     public Answer deleteAnswer(User loginUser, long id) throws Exception {
         Answer answer = answerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
         answer.delete(loginUser);
-        answerRepository.save(answer);
 
-        return answer;
+        return answerRepository.save(answer);
     }
 }

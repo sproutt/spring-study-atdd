@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import codesquad.HtmlFormDataBuilder;
 import codesquad.domain.QuestionRepository;
-import codesquad.domain.User;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,20 +24,19 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void createForm_login() throws Exception{
-        User loginUser = defaultUser();
-        ResponseEntity<String> response = basicAuthTemplate(loginUser).getForEntity(String.format("/questions/%d/form", defaultQuestion().getId()), String.class);
+        ResponseEntity<String> response = basicAuthTemplate().getForEntity(String.format("/questions/form"), String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     public void createForm_no_login() throws Exception {
-        ResponseEntity<String> response = template().getForEntity(String.format("/questions/%d/form", defaultQuestion().getId()), String.class);
+        ResponseEntity<String> response = template().getForEntity(String.format("/questions/form"), String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
     public void create_login() throws Exception {
-        ResponseEntity<String> responseEntity = create(basicAuthTemplate(defaultUser()));
+        ResponseEntity<String> responseEntity = create(basicAuthTemplate());
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(questionRepository.findAll().size()).isNotZero();
@@ -63,8 +61,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void updateForm_login() throws Exception {
-        User loginUser = defaultUser();
-        ResponseEntity<String> responseEntity = updateForm(basicAuthTemplate(loginUser));
+        ResponseEntity<String> responseEntity = updateForm(basicAuthTemplate());
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).contains(defaultQuestion().getTitle());
@@ -90,8 +87,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void update_login() throws Exception {
-        User loginUser = defaultUser();
-        ResponseEntity<String> responseEntity = update(basicAuthTemplate(loginUser));
+        ResponseEntity<String> responseEntity = update(basicAuthTemplate());
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(responseEntity.getHeaders().getLocation().getPath()).startsWith("/");
     }
@@ -114,8 +110,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void delete_login() throws Exception {
-        User loginUser = defaultUser();
-        ResponseEntity<String> responseEntity = delete(basicAuthTemplate(loginUser));
+        ResponseEntity<String> responseEntity = delete(basicAuthTemplate());
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(responseEntity.getHeaders().getLocation().getPath()).startsWith("/");
     }

@@ -1,8 +1,6 @@
 package codesquad.domain;
 
-import codesquad.exception.UnAuthenticationException;
 import codesquad.exception.UnAuthorizedException;
-import javax.naming.AuthenticationException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -61,7 +59,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         answers.add(answer);
     }
 
-    private void isOwner(User loginUser) throws UnAuthorizedException {
+    private void checkOwner(User loginUser) throws UnAuthorizedException {
         if (!writer.equals(loginUser)) {
             throw new UnAuthorizedException();
         }
@@ -72,16 +70,18 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     }
 
     public Question update(User loginUser, Question updatedQuestion) throws Exception {
-        this.isOwner(loginUser);
+        this.checkOwner(loginUser);
         this.title = updatedQuestion.title;
         this.contents = updatedQuestion.contents;
 
         return this;
     }
 
-    public void delete(User loginUser) throws Exception {
-        this.isOwner(loginUser);
+    public Question delete(User loginUser) throws Exception {
+        this.checkOwner(loginUser);
         deleted = true;
+
+        return this;
     }
 
     @Override

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    private QnaService qnaService;
+    private final QnaService qnaService;
 
     public HomeController(QnaService qnaService){
         this.qnaService = qnaService;
