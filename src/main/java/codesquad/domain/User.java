@@ -1,5 +1,6 @@
 package codesquad.domain;
 
+import codesquad.exception.UnAuthenticationException;
 import codesquad.exception.UnAuthorizedException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Objects;
@@ -54,7 +55,7 @@ public class User extends AbstractEntity {
             throw new EntityNotFoundException();
         }
 
-        if (!matchUserId(loginUser.userId) || !matchPassword(target.password)) {
+        if (!matchUserId(loginUser.userId) || !password.equals(loginUser.password)) {
             throw new UnAuthorizedException();
         }
 
@@ -68,8 +69,11 @@ public class User extends AbstractEntity {
         return this.userId.equals(userId);
     }
 
-    public boolean matchPassword(String targetPassword) {
-        return password.equals(targetPassword);
+    public User checkPassword(String targetPassword) throws UnAuthenticationException{
+        if(!password.equals(targetPassword)){
+            throw new UnAuthenticationException("비밀번호가 틀립니다.");
+        }
+        return this;
     }
 
     public boolean equalsNameAndEmail(User target) {
@@ -88,8 +92,16 @@ public class User extends AbstractEntity {
         return true;
     }
 
+    public User checkSameUser(User target) throws UnAuthenticationException{
+        if (!this.equals(target)) {
+            throw new UnAuthenticationException();
+        }
+
+        return this;
+    }
+
     private boolean matchInfo(User target) {
-        return matchUserId(target.userId) && matchPassword(target.password) && matchNameAndEmail(target.name,
+        return matchUserId(target.userId) && password.equals(target.password) && matchNameAndEmail(target.name,
                                                                                                  target.email);
     }
 

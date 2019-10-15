@@ -1,5 +1,12 @@
 package codesquad.domain;
 
+import codesquad.exception.UnAuthorizedException;
+import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,15 +14,13 @@ import lombok.ToString;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
-import javax.persistence.*;
-import javax.validation.constraints.Size;
-
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @Entity
 public class Answer extends AbstractEntity implements UrlGeneratable {
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_writer"))
     private User writer;
@@ -47,8 +52,10 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         this.question = question;
     }
 
-    public boolean isOwner(User loginUser) {
-        return writer.equals(loginUser);
+    public void isOwner(User loginUser) throws UnAuthorizedException {
+        if(!writer.equals(loginUser)){
+            throw new UnAuthorizedException();
+        }
     }
 
     public boolean isDeleted() {
@@ -58,5 +65,10 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
     @Override
     public String generateUrl() {
         return String.format("%s/answers/%d", question.generateUrl(), getId());
+    }
+
+    public void delete(User loginUser) throws Exception{
+        this.isOwner(loginUser);
+        deleted = true;
     }
 }
