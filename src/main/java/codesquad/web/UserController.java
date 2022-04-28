@@ -39,6 +39,11 @@ public class UserController {
         return "/user/list";
     }
 
+    @GetMapping("/login/form")
+    public String loginForm(){
+        return "/user/login";
+    }
+
     @GetMapping("/{id}/form")
     public String updateForm(@LoginUser User loginUser, @PathVariable long id, Model model) {
         model.addAttribute("user", userService.findById(loginUser, id));
