@@ -39,7 +39,7 @@ public class LoginAcceptanceTest extends AcceptanceTest{
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(userRepository.findByUserId(userId).isPresent()).isTrue();
-		assertThat(response.getHeaders().getLocation().getPath()).startsWith("/users");
+		assertThat(response.getHeaders().getLocation().getPath()).startsWith("/");
 	}
 
 }
