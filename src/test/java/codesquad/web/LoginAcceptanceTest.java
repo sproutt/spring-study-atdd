@@ -18,9 +18,6 @@ public class LoginAcceptanceTest extends AcceptanceTest {
 
     private static final Logger log = LoggerFactory.getLogger(LoginAcceptanceTest.class);
 
-    @Autowired
-    private UserRepository userRepository;
-
     @Test
     public void login_success() throws Exception {
         //given
