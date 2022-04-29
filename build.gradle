@@ -31,4 +31,6 @@ dependencies {
     runtime('net.rakugakibox.spring.boot:logback-access-spring-boot-starter:2.7.1')
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('org.assertj:assertj-core:3.10.0')
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.7.0")
+    testImplementation('org.junit.jupiter:junit-jupiter:5.7.0')
 }
