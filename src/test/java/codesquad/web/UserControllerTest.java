@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.domain.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -15,6 +16,9 @@ public class UserControllerTest {
     @Mock
     private UserController userController;
 
+    @Mock
+    private UserRepository userRepository;
+
     @Test
     public void loginForm() {
         String expected = LOGIN_FORM_URI;
@@ -23,5 +27,16 @@ public class UserControllerTest {
         String actual = userController.loginForm();
 
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void login() {
+        // 로그인 로직은 서비스 레이어에 위임
+        // 컨트롤러에서 무엇을 테스트할 것인가?
+        // 컨트롤러에서는 login 메서드에 대한 테스트 커버리지만 달성하면 된다.
+        // 무엇을 테스트할 것인가?
+        // 컨트롤러에서는 로그인 로직을 서비스 레이어에 위임한 채
+        // 로그인 성공 시 "redirect:/users"를
+        // 로그인 실패 시 "template/user 디렉토리의 login_failed.html을 응답"
     }
 }
