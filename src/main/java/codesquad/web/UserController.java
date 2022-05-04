@@ -43,8 +43,7 @@ public class UserController {
         return "/user/list";
     }
 
-    @GetMapping("/lo"
-            + "gin/form")
+    @GetMapping("/login/form")
     public String loginForm(){
         return "/user/login";
     }
