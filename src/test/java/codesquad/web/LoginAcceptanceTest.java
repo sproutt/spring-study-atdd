@@ -68,7 +68,7 @@ public class LoginAcceptanceTest extends AcceptanceTest{
 		ResponseEntity<String> response = template().postForEntity("/users/login", request, String.class);
 
 		assertThat(userRepository.findByUserId(userId).isPresent()).isFalse();
-		assertThat(HttpStatus.UNAUTHORIZED.equals(response.getStatusCode()));
+		assertThat(HttpStatus.UNAUTHORIZED).isEqualTo(response.getStatusCode());
 	}
 
 }
