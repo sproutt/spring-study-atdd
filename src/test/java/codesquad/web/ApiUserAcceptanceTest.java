@@ -1,7 +1,7 @@
 package codesquad.web;
 
 import codesquad.domain.User;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.*;
 import support.test.AcceptanceTest;
 
@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ApiUserAcceptanceTest extends AcceptanceTest {
 
     @Test
-    public void create() throws Exception {
+    void create() throws Exception {
         User newUser = newUser("testuser1");
         ResponseEntity<Void> response = template().postForEntity("/api/users", newUser, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -22,7 +22,7 @@ public class ApiUserAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void show_다른_사람() throws Exception {
+    void show_다른_사람() throws Exception {
         User newUser = newUser("testuser2");
         ResponseEntity<Void> response = template().postForEntity("/api/users", newUser, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -33,7 +33,7 @@ public class ApiUserAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void update() throws Exception {
+    void update() throws Exception {
         User newUser = newUser("testuser3");
         ResponseEntity<Void> response = template().postForEntity("/api/users", newUser, Void.class);
         String location = response.getHeaders().getLocation().getPath();
@@ -52,7 +52,7 @@ public class ApiUserAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void update_다른_사람() throws Exception {
+    void update_다른_사람() throws Exception {
         User newUser = newUser("testuser4");
         ResponseEntity<Void> response = template().postForEntity("/api/users", newUser, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);

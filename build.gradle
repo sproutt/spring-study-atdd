@@ -31,5 +31,9 @@ dependencies {
     runtime('net.rakugakibox.spring.boot:logback-access-spring-boot-starter:2.7.1')
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testRuntimeOnly('org.junit.platform:junit-platform-launcher:1.8.2')
-    testImplementation('org.junit.jupiter:junit-jupiter:5.8.2')
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.8.2')
+    testCompile('org.mockito:mockito-junit-jupiter:2.21.0')
+    compile group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
+    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.8.2')
+    compileOnly 'org.projectlombok:lombok'
 }
