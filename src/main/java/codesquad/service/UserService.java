@@ -43,13 +43,13 @@ public class UserService {
         // TODO 로그인 기능 구현
         Optional<User> savedUser = userRepository.findByUserId(userId);
 
-        if(savedUser == null){
-            return null;
+        if(!savedUser.isPresent()){
+            throw new UnAuthenticationException();
         }
+        if(!savedUser.get().matchPassword(password)) {
+            throw new UnAuthenticationException();
+        }
+        return savedUser.get();
 
-        if(savedUser.get().matchPassword(password)){
-            return savedUser.get();
-        }
-        return null;
     }
 }
