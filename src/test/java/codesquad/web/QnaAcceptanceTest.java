@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,17 +18,8 @@ import static org.assertj.core.api.Assertions.*;
 public class QnaAcceptanceTest extends AcceptanceTest {
 	private static final Logger log = LoggerFactory.getLogger(UserAcceptanceTest.class);
 
-	private ResponseEntity<String> create(TestRestTemplate template) throws Exception {
-		HtmlFormDataBuilder builder = HtmlFormDataBuilder.urlEncodeForm();
-
-		builder.addParameter("title", "test title");
-		builder.addParameter("contents", "test content");
-		HttpEntity<MultiValueMap<String, Object>> request = builder.build();
-
-		return template.postForEntity("/questions", request, String.class);
-	}
-
 	@Test
+	@Order(1)
 	public void create() throws Exception {
 		ResponseEntity<String> response = create(basicAuthTemplate());
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
@@ -37,7 +29,48 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 	@Test
 	public void create_no_login() throws Exception {
 		ResponseEntity<String> response = create(template());
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
+
+	@Test
+	@Order(2)
+	public void show_questions() {
+		ResponseEntity<String> response = template().getForEntity("/", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		log.debug("questions list body : {}", response.getBody());
+		assertThat(response.getBody()).isNotEmpty();
+	}
+
+	@Test
+	public void show_exist_question() {
+		ResponseEntity<String> response = template().getForEntity("/questions/1", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		log.debug("body : {}", response.getBody());
+	}
+
+	@Test
+	public void show_non_exist_question() {
+		ResponseEntity<String> response = template().getForEntity("/question/100", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+
+
+	private ResponseEntity<String> create(TestRestTemplate template) {
+		HtmlFormDataBuilder builder = HtmlFormDataBuilder.urlEncodeForm();
+
+		builder.addParameter("title", "test title");
+		builder.addParameter("contents", "test content");
+		HttpEntity<MultiValueMap<String, Object>> request = builder.build();
+
+		return template.postForEntity("/questions", request, String.class);
+	}
+
+	// @Test
+	// public void question_update_with_authorized_writer() throws Exception {
+	//
+	//
+	// 	return template().put("/questions/", request);
+	// }
 
 }
