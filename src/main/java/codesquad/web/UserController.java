@@ -1,8 +1,11 @@
 package codesquad.web;
 
+import codesquad.UnAuthenticationException;
+import codesquad.UnAuthorizedException;
 import codesquad.domain.User;
 import codesquad.security.LoginUser;
 import codesquad.service.UserService;
+import codesquad.web.dto.LoginUserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -51,4 +54,16 @@ public class UserController {
         return "redirect:/users";
     }
 
+    @PostMapping("/login")
+    public String login(LoginUserDto loginUserDto) {
+        log.info("login userId = {}", loginUserDto.getUserId());
+        log.info("login password = {}", loginUserDto.getPassword());
+
+        try {
+            User savedUser = userService.login(loginUserDto.getUserId(), loginUserDto.getPassword());
+            return "redirect:/users";
+        } catch (UnAuthenticationException e) {
+            return "/user/login_failed";
+        }
+    }
 }
