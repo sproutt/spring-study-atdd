@@ -39,8 +39,6 @@ public class LoginAcceptanceTest extends AcceptanceTest {
         HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodeForm();
         htmlFormDataBuilder.addParameter("userId", userId);
         htmlFormDataBuilder.addParameter("password", password);
-        htmlFormDataBuilder.addParameter("name", name);
-        htmlFormDataBuilder.addParameter("email", email);
 
         HttpEntity<MultiValueMap<String, Object>> request = htmlFormDataBuilder.build();
 
@@ -49,5 +47,24 @@ public class LoginAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(userRepository.findByUserId(userId).isPresent()).isTrue();
         assertThat(response.getHeaders().getLocation().getPath()).startsWith("/users");
+    }
+
+    @Test
+    public void login_fail() {
+        String userId = "javajigi";
+        String password = "test";
+        String name = "자바지기";
+        String email = "javajigi@slipp.net";
+        User user = new User(userId, password, name, email);
+
+        HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodeForm();
+        htmlFormDataBuilder.addParameter("userId", userId);
+        htmlFormDataBuilder.addParameter("password", password + "1");
+
+        HttpEntity<MultiValueMap<String, Object>> request = htmlFormDataBuilder.build();
+
+        ResponseEntity<String> response = basicAuthTemplate(user).postForEntity("/users/login", request, String.class);
+
+        assertThat(response.getBody()).contains("아이디 또는 비밀번호가 틀립니다. 다시 로그인 해주세요.");
     }
 }
