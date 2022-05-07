@@ -19,6 +19,10 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     @Lob
     private String contents;
 
+    public void setWriter(User writer) {
+        this.writer = writer;
+    }
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_question_writer"))
     private User writer;
@@ -73,8 +77,19 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return writer.equals(loginUser);
     }
 
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     public boolean isDeleted() {
         return deleted;
+    }
+
+    public Question update(Question question) {
+        this.title = question.getTitle();
+        this.contents = question.getContents();
+
+        return this;
     }
 
     @Override
