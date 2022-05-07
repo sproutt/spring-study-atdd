@@ -3,20 +3,16 @@ package codesquad.service;
 import codesquad.UnAuthenticationException;
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 
@@ -53,7 +49,7 @@ public class UserServiceTest {
         when(userRepository.findByUserId(user.getUserId())).thenReturn(Optional.of(user));
 
         assertThrows(
-                UnAuthenticationException.class, () ->         userService.login(user.getUserId(), user.getPassword() + "2")
+                UnAuthenticationException.class, () -> userService.login(user.getUserId(), user.getPassword() + "2")
         );
     }
 }
