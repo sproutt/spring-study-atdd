@@ -36,6 +36,14 @@ public abstract class AcceptanceTest {
         return findByUserId(DEFAULT_LOGIN_USER);
     }
 
+    protected User save(User user) {
+        return userRepository.save(user);
+    }
+
+    protected void deleteAll() {
+        userRepository.deleteAll();
+    }
+
     protected User findByUserId(String userId) {
         return userRepository.findByUserId(userId).get();
     }
