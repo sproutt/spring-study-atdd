@@ -1,10 +1,13 @@
 package codesquad.web;
 
+import codesquad.HtmlFormDataBuilder;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import support.test.AcceptanceTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,5 +20,19 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         ResponseEntity<String> response = basicAuthTemplate(defaultUser()).getForEntity("/questions/form", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         log.debug("body : {}", response.getBody());
+    }
+
+    @Test
+    public void create_with_login() {
+        HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodeForm();
+        htmlFormDataBuilder.addParameter("title", "오늘의 미션은?");
+        htmlFormDataBuilder.addParameter("contents", "자동차 경주 게임");
+
+        HttpEntity<MultiValueMap<String, Object>> request = htmlFormDataBuilder.build();
+
+        ResponseEntity<String> response = basicAuthTemplate(defaultUser()).postForEntity("/questions", request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+        assertThat(response.getHeaders().getLocation().getPath()).startsWith("/questions");
     }
 }
