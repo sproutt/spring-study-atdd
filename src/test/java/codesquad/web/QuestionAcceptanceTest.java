@@ -48,4 +48,13 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
+
+    @Test
+    public void show() {
+        ResponseEntity<String> response = basicAuthTemplate(defaultUser()).getForEntity(String.format("/questions/%d", defaultQuestion().getId()), String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).contains(defaultQuestion().getTitle());
+        assertThat(response.getBody()).contains(defaultQuestion().getContents());
+    }
 }
