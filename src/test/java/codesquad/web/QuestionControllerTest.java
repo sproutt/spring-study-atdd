@@ -19,6 +19,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -108,6 +109,25 @@ class QuestionControllerTest {
         mockMvc.perform(get(question.generateUrl())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(view().name("/qna/show"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("질문 수정 폼 요청")
+    void update_form() throws Exception {
+        //given
+        Question question = createQuestion();
+        question.setId(1L);
+
+        //when
+        when(qnaService.findById(1L)).thenReturn(Optional.of(question));
+
+        //then
+        mockMvc.perform(get(question.generateUrl() + "/updateForm")
+                        .param("id", String.valueOf(question.getId())))
+                .andExpect(status().isOk())
+                .andExpect(view().name("/qna/updateForm"))
+                .andExpect(model().attributeExists("question"))
                 .andDo(print());
     }
 

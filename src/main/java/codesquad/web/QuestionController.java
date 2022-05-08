@@ -44,4 +44,10 @@ public class QuestionController {
         model.addAttribute("question", qnaService.findById(id).get());
         return "/qna/show";
     }
+
+    @GetMapping("/questions/{id}/updateForm")
+    public String updateForm(Model model, @PathVariable long id) {
+        model.addAttribute("question", qnaService.findById(id).get());
+        return "/qna/updateForm";
+    }
 }

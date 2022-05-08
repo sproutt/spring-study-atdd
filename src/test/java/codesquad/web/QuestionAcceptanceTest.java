@@ -88,7 +88,28 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         //then
         assertAll(
                 () -> assertEquals(response.getStatusCode(), HttpStatus.OK),
-                () -> assertThat(response.getBody()).contains("국내에서 Ruby on Rails와 Play가 활성화되기 힘든 이유는 뭘까?")
+                () -> assertThat(response.getBody()).contains(savedQuestion.getContents()),
+                () -> assertThat(response.getBody()).contains(savedQuestion.getTitle())
+        );
+    }
+
+    @Test
+    @DisplayName("질문 수정 폼 요청")
+    void update_form() throws Exception {
+        //given
+        Question savedQuestion = questionRepository.findById(1L).get();
+
+        //when
+        ResponseEntity<String> response = template().getForEntity(
+                savedQuestion.generateUrl() + "/updateForm", String.class);
+
+        log.info("body = {}", response.getBody());
+
+        //then
+        assertAll(
+                () -> assertThat(response.getStatusCode()).isEqualTo(OK),
+                () -> assertThat(response.getBody()).contains(savedQuestion.getContents()),
+                () -> assertThat(response.getBody()).contains(savedQuestion.getTitle())
         );
     }
 }
