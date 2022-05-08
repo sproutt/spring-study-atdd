@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import support.helper.HtmlFormDataBuilder;
 import support.test.AcceptanceTest;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -70,6 +73,22 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
                 () -> assertEquals(response.getStatusCode(), HttpStatus.OK),
                 () -> assertThat(response.getBody()).contains("국내에서 Ruby on Rails와 Play가 활성화되기 힘든 이유는 뭘까?"),
                 () -> assertThat(response.getBody()).contains("runtime 에 reflect 발동 주체 객체가 뭔지 알 방법이 있을까요?")
+        );
+    }
+
+    @Test
+    @DisplayName("질문 단건 조회")
+    void show_question() throws Exception {
+        //given
+        Question savedQuestion = questionRepository.findById(1L).get();
+
+        //when
+        ResponseEntity<String> response = template().getForEntity(savedQuestion.generateUrl(), String.class);
+
+        //then
+        assertAll(
+                () -> assertEquals(response.getStatusCode(), HttpStatus.OK),
+                () -> assertThat(response.getBody()).contains("국내에서 Ruby on Rails와 Play가 활성화되기 힘든 이유는 뭘까?")
         );
     }
 }

@@ -20,6 +20,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -90,6 +91,23 @@ class QuestionControllerTest {
         mockMvc.perform(get("/")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(view().name("/home"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("질문 단건 조회")
+    void show_question() throws Exception {
+        //given
+        Question question = new Question("국내에서 Ruby on Rails와 Play가 활성화되기 힘든 이유는 뭘까?", "aaa");
+        question.setId(1L);
+
+        //when
+        when(qnaService.findById(1L)).thenReturn(Optional.of(question));
+
+        //then
+        mockMvc.perform(get(question.generateUrl())
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(view().name("/qna/show"))
                 .andDo(print());
     }
 

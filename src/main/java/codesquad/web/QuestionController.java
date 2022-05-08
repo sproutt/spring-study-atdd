@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
@@ -36,5 +37,11 @@ public class QuestionController {
     public String list(Model model) {
         model.addAttribute("questions", qnaService.findAll());
         return "/home";
+    }
+
+    @GetMapping("/questions/{id}")
+    public String showQuestion(Model model, @PathVariable long id) {
+        model.addAttribute("question", qnaService.findById(id).get());
+        return "/qna/show";
     }
 }

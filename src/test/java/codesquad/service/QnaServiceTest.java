@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -58,6 +59,22 @@ class QnaServiceTest {
                 () -> assertThat(savedQuestion.get(0).getTitle()).isEqualTo(questions.get(0).getTitle()),
                 () -> assertThat(savedQuestion.get(1).getTitle()).isEqualTo(questions.get(1).getTitle())
         );
+    }
+
+    @Test
+    @DisplayName("질문 단건 조회")
+    void show_question() throws Exception {
+        //given
+        Question question = createQuestion(1);
+        question.setId(1L);
+
+        //when
+        when(questionRepository.findById(question.getId())).thenReturn(Optional.of(question));
+
+        //then
+        Question savedQuestion = qnaService.findById(question.getId()).get();
+
+        assertThat(question.getId()).isEqualTo(savedQuestion.getId());
     }
 
     private User createUser(int id) {
