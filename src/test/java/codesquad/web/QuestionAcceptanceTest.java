@@ -35,4 +35,17 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(response.getHeaders().getLocation().getPath()).startsWith("/questions");
     }
+
+    @Test
+    public void create_no_login() {
+        HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodeForm();
+        htmlFormDataBuilder.addParameter("title", "오늘의 미션은?");
+        htmlFormDataBuilder.addParameter("contents", "자동차 경주 게임");
+
+        HttpEntity<MultiValueMap<String, Object>> request = htmlFormDataBuilder.build();
+
+        ResponseEntity<String> response = template().postForEntity("/questions", request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
 }
