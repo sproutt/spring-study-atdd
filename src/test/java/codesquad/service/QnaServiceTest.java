@@ -1,5 +1,6 @@
 package codesquad.service;
 
+import codesquad.UnAuthenticationException;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,6 +77,29 @@ class QnaServiceTest {
         Question savedQuestion = qnaService.findById(question.getId()).get();
 
         assertThat(question.getId()).isEqualTo(savedQuestion.getId());
+    }
+
+    @Test
+    @DisplayName("질문 작성자가 아닌 유저가 수정할 경우 UnAuthenticationException 발생")
+    void update_fail_not_match_user() throws Exception {
+        //given
+        Question question = createQuestion(1);
+        Question updatedQuestion = createQuestion(2);
+        updatedQuestion.setContents("contents");
+        question.setId(1L);
+        User user1 = createUser(1);
+        user1.setId(1L);
+
+        User user2 = createUser(2);
+        user2.setId(2L);
+
+        question.writeBy(user1);
+        updatedQuestion.writeBy(user1);
+
+        //then
+        assertThrows(
+                UnAuthenticationException.class, () -> qnaService.update(user2, question.getId(), updatedQuestion)
+        );
     }
 
     private User createUser(int id) {

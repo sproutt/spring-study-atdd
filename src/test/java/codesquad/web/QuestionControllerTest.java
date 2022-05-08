@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.UnAuthenticationException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.service.QnaService;
@@ -23,9 +24,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -131,6 +132,18 @@ class QuestionControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("질문 수정 요청 시 UnAuthenticationException이 발생하면 홈으로 리다이렉트 시킨다")
+    void update_fail() throws Exception {
+        //when
+        when(qnaService.update(anyObject(), anyLong(), anyObject())).thenThrow(UnAuthenticationException.class);
+
+        //then
+        mockMvc.perform(put("/questions/1"))
+                .andExpect(redirectedUrl("/"))
+                .andDo(print());
+    }
+
     private User createUser() {
         return new User("a", "a", "a", "a");
     }
@@ -138,4 +151,6 @@ class QuestionControllerTest {
     private Question createQuestion() {
         return new Question("title", "contents");
     }
+
+
 }

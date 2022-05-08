@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.UnAuthenticationException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.security.LoginUser;
@@ -11,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @Controller
 @RequiredArgsConstructor
@@ -49,5 +51,15 @@ public class QuestionController {
     public String updateForm(Model model, @PathVariable long id) {
         model.addAttribute("question", qnaService.findById(id).get());
         return "/qna/updateForm";
+    }
+
+    @PutMapping("/questions/{id}")
+    public String update(@LoginUser User loginUser, @PathVariable long id, Question updatedQuestion) {
+        try {
+            qnaService.update(loginUser, id, updatedQuestion);
+            return "redirect:" + updatedQuestion.generateUrl();
+        } catch (UnAuthenticationException e) {
+            return "redirect:/";
+        }
     }
 }

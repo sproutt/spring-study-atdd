@@ -112,4 +112,24 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.getBody()).contains(savedQuestion.getTitle())
         );
     }
+
+    @Test
+    @DisplayName("질문 작성자가 아니거나 로그인을 하지 않을 경우 질문 수정하지 못한다")
+    void update_fail() throws Exception {
+        //given
+        HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
+        htmlFormDataBuilder.addParameter("userId", defaultUser().getUserId());
+        htmlFormDataBuilder.addParameter("password", defaultUser().getUserId());
+
+        Question savedQuestion = questionRepository.findById(2L).get();
+        htmlFormDataBuilder.addParameter("title", "title");
+        htmlFormDataBuilder.addParameter("contents", "aaaa");
+        htmlFormDataBuilder.addParameter("_method", "put");
+
+        //when
+        ResponseEntity<String> response = template().postForEntity(savedQuestion.generateUrl(), htmlFormDataBuilder.build(), String.class);
+
+        //then
+        assertEquals(response.getStatusCode(), FORBIDDEN);
+    }
 }
