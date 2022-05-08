@@ -8,6 +8,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -16,6 +18,9 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class QnaServiceTest {
+
+    private static final Logger log = LoggerFactory.getLogger(QnaServiceTest.class);
+
     @Mock
     private QuestionRepository questionRepository;
 
@@ -27,12 +32,9 @@ public class QnaServiceTest {
         User loginUser = new User("javajigi", "test", "자바지기", "javajigi@slipp.net");
         Question question = new Question("오늘의 미션은?", "자동차 경주 게임");
         question.writeBy(loginUser);
-        when(questionRepository.findById(question.getId())).thenReturn(Optional.of(question));
-        when(questionRepository.save(question)).thenReturn(question);
+        when(qnaService.create(loginUser, question)).thenReturn(question);
 
-        Question savedQuestion = qnaService.create(loginUser, question);
-
-        assertThat(qnaService.findById(savedQuestion.getId()).get().getContents()).isEqualTo(question.getContents());
+        assertThat(qnaService.create(loginUser, question).getContents()).isEqualTo(question.getContents());
     }
 
     @Test
@@ -40,12 +42,8 @@ public class QnaServiceTest {
         User loginUser = new User("javajigi", "test", "자바지기", "javajigi@slipp.net");
         Question question = new Question("오늘의 미션은?", "자동차 경주 게임");
         question.writeBy(loginUser);
-        when(questionRepository.findById(question.getId())).thenReturn(Optional.of(question));
-        when(questionRepository.save(question)).thenReturn(question);
+        when(qnaService.findById(question.getId())).thenReturn(Optional.of(question));
 
-        Question savedQuestion = qnaService.create(loginUser, question);
-        Question findQuestion = qnaService.findById(savedQuestion.getId()).get();
-
-        assertThat(findQuestion).isEqualTo(savedQuestion);
+        assertThat(qnaService.findById(question.getId()).get()).isEqualTo(question);
     }
 }
