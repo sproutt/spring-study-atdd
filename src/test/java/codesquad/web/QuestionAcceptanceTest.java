@@ -58,4 +58,18 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(questionRepository.findById(3L).isPresent())
         );
     }
+
+    @Test
+    @DisplayName("질문 목록 조회")
+    void list() throws Exception {
+        //given
+        ResponseEntity<String> response = template().getForEntity("/", String.class);
+
+        //then
+        assertAll(
+                () -> assertEquals(response.getStatusCode(), HttpStatus.OK),
+                () -> assertThat(response.getBody()).contains("국내에서 Ruby on Rails와 Play가 활성화되기 힘든 이유는 뭘까?"),
+                () -> assertThat(response.getBody()).contains("runtime 에 reflect 발동 주체 객체가 뭔지 알 방법이 있을까요?")
+        );
+    }
 }

@@ -7,6 +7,7 @@ import codesquad.service.QnaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -29,5 +30,11 @@ public class QuestionController {
 
         qnaService.create(loginUser, question);
         return "redirect:/";
+    }
+
+    @GetMapping("/")
+    public String list(Model model) {
+        model.addAttribute("questions", qnaService.findAll());
+        return "/home";
     }
 }

@@ -18,9 +18,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(QuestionController.class)
@@ -71,6 +75,22 @@ class QuestionControllerTest {
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .params(map))
                 .andExpect(redirectedUrl("/"));
+    }
+
+    @Test
+    @DisplayName("질문 목록 조회")
+    void list() throws Exception {
+        //when
+        when(qnaService.findAll()).thenReturn(
+                Arrays.asList(
+                        new Question("국내에서 Ruby on Rails와 Play가 활성화되기 힘든 이유는 뭘까?", "aaa"),
+                        new Question("runtime 에 reflect 발동 주체 객체가 뭔지 알 방법이 있을까요?", "aaa")));
+
+        //then
+        mockMvc.perform(get("/")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(view().name("/home"))
+                .andDo(print());
     }
 
     private User createUser() {
