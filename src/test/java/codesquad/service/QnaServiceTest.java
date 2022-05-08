@@ -34,4 +34,18 @@ public class QnaServiceTest {
 
         assertThat(qnaService.findById(savedQuestion.getId()).get().getContents()).isEqualTo(question.getContents());
     }
+
+    @Test
+    public void findById_success() {
+        User loginUser = new User("javajigi", "test", "자바지기", "javajigi@slipp.net");
+        Question question = new Question("오늘의 미션은?", "자동차 경주 게임");
+        question.writeBy(loginUser);
+        when(questionRepository.findById(question.getId())).thenReturn(Optional.of(question));
+        when(questionRepository.save(question)).thenReturn(question);
+
+        Question savedQuestion = qnaService.create(loginUser, question);
+        Question findQuestion = qnaService.findById(savedQuestion.getId()).get();
+
+        assertThat(findQuestion).isEqualTo(savedQuestion);
+    }
 }
