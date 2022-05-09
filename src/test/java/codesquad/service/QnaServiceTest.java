@@ -6,6 +6,7 @@ import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
 import codesquad.web.dto.QuestionDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,18 +31,27 @@ class QnaServiceTest {
     @InjectMocks
     private QnaService qnaService;
 
+    private User dummyUser;
+    private Question dummyQuestion;
+
+    @BeforeEach
+    void init() {
+        dummyUser = createUser(1L);
+        dummyQuestion = createQuestion(1L);
+    }
+
     @Test
     @DisplayName("로그인 한 유저가 질문 생성 요청 시 생성된 질문 반환")
     void create() throws Exception {
-        Question question = createQuestion(1);
+        //when
+        when(questionRepository.save(dummyQuestion)).thenReturn(dummyQuestion);
 
-        when(questionRepository.save(question)).thenReturn(question);
+        Question savedQuestion = qnaService.create(createUser(1), dummyQuestion);
 
-        Question savedQuestion = qnaService.create(createUser(1), question);
-
+        //then
         assertAll(
-                () -> assertThat(question).isEqualTo(savedQuestion),
-                () -> assertThat(savedQuestion.getContents()).isEqualTo("aaaa")
+                () -> assertThat(dummyQuestion).isEqualTo(savedQuestion),
+                () -> assertThat(savedQuestion.getContents()).isEqualTo(dummyQuestion.getContents())
         );
     }
 
@@ -49,7 +59,7 @@ class QnaServiceTest {
     @DisplayName("질문 목록을 요청할 시 모든 질문 목록을 반환")
     void list() throws Exception {
         //given
-        List<Question> questions = Arrays.asList(createQuestion(1), createQuestion(2));
+        List<Question> questions = Arrays.asList(dummyQuestion, createQuestion(2L));
 
         //when
         when(questionRepository.findByDeleted(false)).thenReturn(questions);
@@ -60,51 +70,44 @@ class QnaServiceTest {
         assertAll(
                 () -> assertThat(savedQuestion.size()).isEqualTo(2),
                 () -> assertThat(savedQuestion.get(0).getTitle()).isEqualTo(questions.get(0).getTitle()),
-                () -> assertThat(savedQuestion.get(1).getTitle()).isEqualTo(questions.get(1).getTitle())
+                () -> assertThat(savedQuestion.get(1).getContents()).isEqualTo(questions.get(1).getContents())
         );
     }
 
     @Test
     @DisplayName("질문 단건 조회 요청 시 id를 통해 해당 질문 반환")
     void show_question() throws Exception {
-        //given
-        Question question = createQuestion(1);
-        question.setId(1L);
-
         //when
-        when(questionRepository.findById(question.getId())).thenReturn(Optional.of(question));
+        when(questionRepository.findById(dummyQuestion.getId())).thenReturn(Optional.of(dummyQuestion));
 
         //then
-        Question savedQuestion = qnaService.findById(question.getId()).get();
+        Question savedQuestion = qnaService.findById(dummyQuestion.getId()).get();
 
-        assertThat(question.getId()).isEqualTo(savedQuestion.getId());
+        assertThat(dummyQuestion.getId()).isEqualTo(savedQuestion.getId());
     }
 
     @Test
     @DisplayName("질문 작성자가 아닌 유저가 수정할 경우 UnAuthenticationException 발생")
     void update_fail_not_match_user() throws Exception {
         //given
-        Question question = createQuestion(1);
-        Question updatedQuestion = createQuestion(2);
+        Question updatedQuestion = createQuestion(2L);
         updatedQuestion.setContents("contents");
-        question.setId(1L);
-        User user1 = createUser(1);
-        user1.setId(1L);
 
-        User user2 = createUser(2);
-        user2.setId(2L);
+        User user = createUser(2L);
+        user.setId(2L);
 
-        question.writeBy(user1);
-        updatedQuestion.writeBy(user1);
+        dummyQuestion.writeBy(dummyUser);
+        updatedQuestion.writeBy(dummyUser);
 
         QuestionDto updatedQuestionDto = updatedQuestion.toDto();
 
-        when(questionRepository.findById(question.getId()))
-                .thenReturn(Optional.of(question));
+        //when
+        when(questionRepository.findById(dummyQuestion.getId()))
+                .thenReturn(Optional.of(dummyQuestion));
 
         //then
         assertThrows(
-                UnAuthenticationException.class, () -> qnaService.update(user2, question.getId(), updatedQuestionDto)
+                UnAuthenticationException.class, () -> qnaService.update(user, dummyQuestion.getId(), updatedQuestionDto)
         );
     }
 
@@ -112,31 +115,25 @@ class QnaServiceTest {
     @DisplayName("질문 작성자가 질문을 수정할 경우 수정된 질문을 반환한다")
     void update_success() throws Exception{
         //given
-        Question question = createQuestion(1);
-        Question updatedQuestion = createQuestion(2);
+        Question updatedQuestion = createQuestion(1L);
         updatedQuestion.setContents("contents");
-        question.setId(1L);
-        updatedQuestion.setId(1L);
+        updatedQuestion.setTitle("title");
 
-        User user1 = createUser(1);
-        user1.setId(1L);
-
-        question.writeBy(user1);
-        updatedQuestion.writeBy(user1);
+        dummyQuestion.writeBy(dummyUser);
+        updatedQuestion.writeBy(dummyUser);
 
         QuestionDto updatedQuestionDto = updatedQuestion.toDto();
-
 
         //when
         when(questionRepository.findById(1L)).thenReturn(Optional.of(updatedQuestion));
 
-        Question savedQuestion = qnaService.update(user1, question.getId(), updatedQuestionDto);
+        Question savedQuestion = qnaService.update(dummyUser, dummyQuestion.getId(), updatedQuestionDto);
 
         //then
         assertAll(
-                () -> assertThat(savedQuestion.getContents()).isNotEqualTo(question.getContents()),
-                () -> assertThat(savedQuestion.getTitle()).isNotEqualTo(question.getTitle()),
-                () -> assertThat(savedQuestion.getId()).isEqualTo(question.getId())
+                () -> assertThat(savedQuestion.getContents()).isNotEqualTo(dummyQuestion.getContents()),
+                () -> assertThat(savedQuestion.getTitle()).isNotEqualTo(dummyQuestion.getTitle()),
+                () -> assertThat(savedQuestion.getId()).isEqualTo(dummyQuestion.getId())
         );
     }
 
@@ -144,22 +141,16 @@ class QnaServiceTest {
     @DisplayName("질문 작성자가 아닌 유저가 삭제할 경우 UnAuthenticationException 발생")
     void delete_fail() throws Exception{
         //given
-        Question question = createQuestion(1);
-        question.setId(1L);
-        User user1 = createUser(1);
-        user1.setId(1L);
+        User user = createUser(2L);
 
-        User user2 = createUser(2);
-        user2.setId(2L);
-
-        question.writeBy(user1);
+        dummyQuestion.writeBy(dummyUser);
 
         //when
-        when(questionRepository.findById(1L)).thenReturn(Optional.of(question));
+        when(questionRepository.findById(1L)).thenReturn(Optional.of(dummyQuestion));
 
         //then
         assertThrows(
-                CannotDeleteException.class, () -> qnaService.deleteQuestion(user2, question.getId())
+                CannotDeleteException.class, () -> qnaService.deleteQuestion(user, dummyQuestion.getId())
         );
     }
 
@@ -167,27 +158,26 @@ class QnaServiceTest {
     @DisplayName("질문 작성자가 질문을 삭제할 경우 삭제상태를 true로 변경")
     void delete_success() throws Exception{
         //given
-        Question question = createQuestion(1);
-        question.setId(1L);
-        User user1 = createUser(1);
-        user1.setId(1L);
-
-        question.writeBy(user1);
+        dummyQuestion.writeBy(dummyUser);
 
         //when
-        when(questionRepository.findById(1L)).thenReturn(Optional.of(question));
+        when(questionRepository.findById(1L)).thenReturn(Optional.of(dummyQuestion));
 
         //then
-        qnaService.deleteQuestion(user1, question.getId());
+        qnaService.deleteQuestion(dummyUser, dummyQuestion.getId());
 
-        assertTrue(question.isDeleted());
+        assertTrue(dummyQuestion.isDeleted());
     }
 
-    private User createUser(int id) {
-        return new User("userId" + id, "password", "name", "email");
+    private User createUser(long id) {
+        User user = new User("userId" + id, "password", "name", "email");
+        user.setId(id);
+        return user;
     }
 
-    private Question createQuestion(int id) {
-        return new Question("title" + id, "aaaa");
+    private Question createQuestion(long id) {
+        Question question = new Question("title" + id, "aaaa" + id);
+        question.setId(id);
+        return question;
     }
 }
