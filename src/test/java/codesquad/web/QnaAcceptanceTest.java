@@ -73,12 +73,14 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 	}
 
+	@Test
 	@Order(3)
 	public void question_update_with_no_login() {
 		ResponseEntity<String> response = update(template());
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
+	@Test
 	@Order(3)
 	public void question_update_with_unauthorized_writer() {
 		ResponseEntity<String> response = update(basicAuthTemplate(findByUserId("sanjigi")));
@@ -92,7 +94,7 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 		builder.addParameter("content", "update content");
 
 		HttpEntity<MultiValueMap<String, Object>> request = builder.build();
-		return template.postForEntity("/question/1", request, String.class);
+		return template.postForEntity("/questions/1", request, String.class);
 	}
 
 }
