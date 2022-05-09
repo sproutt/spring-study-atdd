@@ -1,5 +1,7 @@
 package codesquad.web;
 
+import javax.xml.ws.Response;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,8 +56,6 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
-
-
 	private ResponseEntity<String> create(TestRestTemplate template) {
 		HtmlFormDataBuilder builder = HtmlFormDataBuilder.urlEncodeForm();
 
@@ -66,11 +66,31 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 		return template.postForEntity("/questions", request, String.class);
 	}
 
-	// @Test
-	// public void question_update_with_authorized_writer() throws Exception {
-	//
-	//
-	// 	return template().put("/questions/", request);
-	// }
+	@Test
+	public void question_update_with_authorized_writer() {
+		ResponseEntity<String> response = update(basicAuthTemplate());
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+	}
+
+	public void question_update_with_no_login() {
+		ResponseEntity<String> response = update(template());
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+	}
+
+	public void question_update_with_unauthorized_writer() {
+		ResponseEntity<String> response = update(basicAuthTemplate(findByUserId("sanjigi")));
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+	}
+
+	private ResponseEntity<String> update(TestRestTemplate template) {
+		HtmlFormDataBuilder builder = HtmlFormDataBuilder.urlEncodeForm();
+		builder.addParameter("_method", "put");
+		builder.addParameter("title", "update title");
+		builder.addParameter("content", "update content");
+
+		HttpEntity<MultiValueMap<String, Object>> request = builder.build();
+		return template.postForEntity("/question/1", request, String.class);
+
+	}
 
 }
