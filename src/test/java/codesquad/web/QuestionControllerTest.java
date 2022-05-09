@@ -51,7 +51,7 @@ class QuestionControllerTest {
     }
 
     @Test
-    @DisplayName("질문 생성 폼 요청")
+    @DisplayName("질문 생성 폼 요청을 할 경우 생성 폼으로 이동한다")
     void create_form() throws Exception {
         mockMvc.perform(get("/questions/form"))
                 .andExpect(status().isOk())
@@ -59,7 +59,7 @@ class QuestionControllerTest {
     }
 
     @Test
-    @DisplayName("질문 생성")
+    @DisplayName("질문 생성 요청이 성공하면 홈으로 리다이렉트한다")
     void create() throws Exception {
         //given
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
@@ -83,7 +83,7 @@ class QuestionControllerTest {
     }
 
     @Test
-    @DisplayName("질문 목록 조회")
+    @DisplayName("모든 질문 목록 조회 요청이 성공하면 홈으로 이동한다")
     void list() throws Exception {
         //when
         when(qnaService.findAll()).thenReturn(
@@ -99,7 +99,7 @@ class QuestionControllerTest {
     }
 
     @Test
-    @DisplayName("질문 단건 조회")
+    @DisplayName("질문 단건 조회 요청이 성공하면 질문 상세보기 폼으로 이동한다")
     void show_question() throws Exception {
         //given
         Question question = new Question("국내에서 Ruby on Rails와 Play가 활성화되기 힘든 이유는 뭘까?", "aaa");
@@ -116,7 +116,7 @@ class QuestionControllerTest {
     }
 
     @Test
-    @DisplayName("질문 수정 폼 요청")
+    @DisplayName("질문 수정 폼 요청이 성공하면 수정 전의 정보들이 담긴 수정 폼으로 이동한다")
     void update_form() throws Exception {
         //given
         Question question = createQuestion();

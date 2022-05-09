@@ -2,7 +2,6 @@ package codesquad.web;
 
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -12,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import support.helper.HtmlFormDataBuilder;
 import support.test.AcceptanceTest;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -27,6 +24,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     private QuestionRepository questionRepository;
 
     @Test
+    @DisplayName("로그인 한 유저는 질문 생성 폼을 요청할 수 있다")
     void create_form() throws Exception{
         //when
         ResponseEntity<String> response = template().getForEntity("/questions/form", String.class);
@@ -38,7 +36,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("질문 생성")
+    @DisplayName("로그인 한 유저는 새로운 질문을 생성할 수 있다")
     void create() throws Exception {
         //given
         HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
@@ -63,7 +61,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("질문 목록 조회")
+    @DisplayName("누구든지 모든 질문 목록을 조회할 수 있다")
     void list() throws Exception {
         //given
         ResponseEntity<String> response = template().getForEntity("/", String.class);
@@ -77,7 +75,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("질문 단건 조회")
+    @DisplayName("누구든지 질문 단건 조회할 수 있다")
     void show_question() throws Exception {
         //given
         Question savedQuestion = questionRepository.findById(1L).get();
@@ -94,7 +92,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("질문 수정 폼 요청")
+    @DisplayName("질문 작성자일 경우 질문을 수정할 폼을 요청할 수 있다")
     void update_form() throws Exception {
         //given
         Question savedQuestion = questionRepository.findById(1L).get();

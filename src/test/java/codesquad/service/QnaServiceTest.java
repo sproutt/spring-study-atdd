@@ -31,7 +31,7 @@ class QnaServiceTest {
     private QnaService qnaService;
 
     @Test
-    @DisplayName("service 질문 생성 테스트")
+    @DisplayName("로그인 한 유저가 질문 생성 요청 시 생성된 질문 반환")
     void create() throws Exception {
         Question question = createQuestion(1);
 
@@ -46,7 +46,7 @@ class QnaServiceTest {
     }
 
     @Test
-    @DisplayName("service 질문 목록 조회 테스트")
+    @DisplayName("질문 목록을 요청할 시 모든 질문 목록을 반환")
     void list() throws Exception {
         //given
         List<Question> questions = Arrays.asList(createQuestion(1), createQuestion(2));
@@ -65,7 +65,7 @@ class QnaServiceTest {
     }
 
     @Test
-    @DisplayName("질문 단건 조회")
+    @DisplayName("질문 단건 조회 요청 시 id를 통해 해당 질문 반환")
     void show_question() throws Exception {
         //given
         Question question = createQuestion(1);
@@ -98,6 +98,9 @@ class QnaServiceTest {
         updatedQuestion.writeBy(user1);
 
         QuestionDto updatedQuestionDto = updatedQuestion.toDto();
+
+        when(questionRepository.findById(question.getId()))
+                .thenReturn(Optional.of(question));
 
         //then
         assertThrows(
