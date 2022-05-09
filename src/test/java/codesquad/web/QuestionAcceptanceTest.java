@@ -24,7 +24,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     private QuestionRepository questionRepository;
 
     @Test
-    @DisplayName("로그인 한 유저는 질문 생성 폼을 요청할 수 있다")
+    @DisplayName("질문 생성 폼을 요청할 수 있다")
     void create_form() throws Exception{
         //when
         ResponseEntity<String> response = template().getForEntity("/questions/form", String.class);
@@ -153,7 +153,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         log.info("response = {}", response);
 
         //put 요청을 할 때, 수정된 내용이 있으면 body로 반환한다고 알고 있다
-        //response.getBody를 하면 null 값이 나오게 됨됨
+        //response.getBody를 하면 null 값이 나오게 됨
 
        //then
         assertAll(
