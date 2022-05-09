@@ -1,6 +1,7 @@
 package codesquad.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityNotFoundException;
@@ -8,7 +9,9 @@ import javax.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import codesquad.UnAuthorizedException;
 import codesquad.domain.AnswerRepository;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
@@ -32,6 +35,14 @@ public class QuestionService {
 		return questionRepository.save(question);
 	}
 
+
+	@Transactional
+	public Question updateQuestion(User loginUser, Long id, Question question) {
+		Optional<Question> updatedQuestion = questionRepository.findById(id);
+		updatedQuestion.get().update(loginUser, question);
+		return questionRepository.save(updatedQuestion.get());
+	}
+
 	public List<Question> findAll(){
 		return questionRepository.findAll();
 	}
@@ -40,4 +51,11 @@ public class QuestionService {
 		return questionRepository.findById(id).filter(question -> !question.isDeleted()).orElseThrow(EntityNotFoundException::new);
 	}
 
+	public Question findQuestionById(User loginUser, Long id) {
+		Question question = findQuestionById(id);
+		if (!question.isOwner(loginUser)) {
+			throw new UnAuthorizedException();
+		}
+		return question;
+	}
 }

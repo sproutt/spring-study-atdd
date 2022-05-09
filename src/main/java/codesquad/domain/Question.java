@@ -1,6 +1,8 @@
 package codesquad.domain;
 
 import org.hibernate.annotations.Where;
+
+import codesquad.UnAuthorizedException;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
@@ -86,4 +88,21 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     public String toString() {
         return "Question [id=" + getId() + ", title=" + title + ", contents=" + contents + ", writer=" + writer + "]";
     }
+
+    public Question update(User loginUser, Question updatedQuestion) {
+        if (!isMatch(updatedQuestion)) {
+            throw new EntityNotFoundException("not same question");
+        }
+        if (!writer.equals(loginUser)) {
+            throw new UnAuthorizedException("not match writer");
+        }
+        this.title = updatedQuestion.getTitle();
+        this.contents = updatedQuestion.getContents();
+        return updatedQuestion;
+    }
+
+    private boolean isMatch(Question question) {
+        return getId() == question.getId();
+    }
+
 }

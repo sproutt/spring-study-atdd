@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import codesquad.domain.Question;
@@ -46,5 +47,17 @@ public class QuestionController {
 		Question question = questionService.findQuestionById(id);
 		model.addAttribute("question", question);
 		return "/qna/show";
+	}
+
+	@GetMapping("/{id}/form")
+	public String edit(@LoginUser User loginUser, @PathVariable Long id, Model model) {
+		model.addAttribute("question", questionService.findQuestionById(loginUser, id));
+		return "qna/updateForm";
+	}
+
+	@PutMapping("/{id}")
+	public String update(@LoginUser User loginUser, @PathVariable Long id, Question question) {
+		questionService.updateQuestion(loginUser, id, question);
+		return "redirect:/questions/{id}";
 	}
 }
