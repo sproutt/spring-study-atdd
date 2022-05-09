@@ -1,7 +1,5 @@
 package codesquad.web;
 
-import javax.xml.ws.Response;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +42,7 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 	}
 
 	@Test
+	@Order(2)
 	public void show_exist_question() {
 		ResponseEntity<String> response = template().getForEntity("/questions/1", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -51,6 +50,7 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 	}
 
 	@Test
+	@Order(2)
 	public void show_non_exist_question() {
 		ResponseEntity<String> response = template().getForEntity("/question/100", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -67,16 +67,19 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 	}
 
 	@Test
+	@Order(3)
 	public void question_update_with_authorized_writer() {
 		ResponseEntity<String> response = update(basicAuthTemplate());
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 	}
 
+	@Order(3)
 	public void question_update_with_no_login() {
 		ResponseEntity<String> response = update(template());
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
+	@Order(3)
 	public void question_update_with_unauthorized_writer() {
 		ResponseEntity<String> response = update(basicAuthTemplate(findByUserId("sanjigi")));
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
@@ -90,7 +93,6 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 
 		HttpEntity<MultiValueMap<String, Object>> request = builder.build();
 		return template.postForEntity("/question/1", request, String.class);
-
 	}
 
 }
