@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.CannotDeleteException;
 import codesquad.UnAuthenticationException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
@@ -10,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -55,11 +53,21 @@ public class QuestionController {
     }
 
     @PutMapping("/questions/{id}")
-    public String update(@LoginUser User loginUser, @PathVariable long id, QuestionDto updatedQuestionDto) {
+    public String update(@LoginUser User loginUser, @PathVariable long id, QuestionDto updatedQuestionDto, Model model) {
         try {
-            qnaService.update(loginUser, id, updatedQuestionDto);
+            model.addAttribute("question", qnaService.update(loginUser, id, updatedQuestionDto));
             return "redirect:/questions/" + id;
         } catch (UnAuthenticationException e) {
+            return "redirect:/";
+        }
+    }
+
+    @DeleteMapping("/questions/{id}")
+    public String delete(@LoginUser User loginUser, @PathVariable long id) {
+        try {
+            qnaService.deleteQuestion(loginUser, id);
+            return "redirect:/questions/" + id;
+        } catch (CannotDeleteException exception) {
             return "redirect:/";
         }
     }

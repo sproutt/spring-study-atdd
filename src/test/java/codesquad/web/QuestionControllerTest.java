@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.CannotDeleteException;
 import codesquad.UnAuthenticationException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -175,6 +177,21 @@ class QuestionControllerTest {
                         .param("id", String.valueOf(question.getId()))
                 )
                 .andExpect(redirectedUrl(question.generateUrl()))
+                .andExpect(model().attributeExists("question"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("질문 삭제 요청 시 UnAuthenticationException이 발생하면 홈으로 리다이렉트 시킨다")
+    void delete_fail() throws Exception{
+        //when
+        doThrow(CannotDeleteException.class)
+                .when(qnaService)
+                .deleteQuestion(anyObject(), anyLong());
+
+        //then
+        mockMvc.perform(delete("/questions/1"))
+                .andExpect(redirectedUrl("/"))
                 .andDo(print());
     }
 

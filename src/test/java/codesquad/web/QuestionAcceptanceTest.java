@@ -163,4 +163,24 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.getHeaders().getLocation().getPath()).isEqualTo(savedQuestion.generateUrl())
         );
     }
+
+    @Test
+    @DisplayName("질문 작성자가 아니거나 로그인을 하지 않을 경우 질문 삭제를 하지 못한다")
+    void delete_fail() throws Exception{
+        //given
+        HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
+        htmlFormDataBuilder.addParameter("userId", defaultUser().getUserId());
+        htmlFormDataBuilder.addParameter("password", defaultUser().getPassword());
+
+        Question savedQuestion = questionRepository.findById(2L).get();
+        htmlFormDataBuilder.addParameter("_method", "DELETE");
+
+        //when
+        ResponseEntity<String> response = template().postForEntity(savedQuestion.generateUrl(), htmlFormDataBuilder.build(), String.class);
+
+        log.info("response = {}", response);
+
+        //then
+        assertEquals(response.getStatusCode(), FORBIDDEN);
+    }
 }

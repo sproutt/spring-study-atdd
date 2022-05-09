@@ -1,5 +1,6 @@
 package codesquad.service;
 
+import codesquad.CannotDeleteException;
 import codesquad.UnAuthenticationException;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
@@ -134,6 +135,29 @@ class QnaServiceTest {
                 () -> assertThat(savedQuestion.getContents()).isNotEqualTo(question.getContents()),
                 () -> assertThat(savedQuestion.getTitle()).isNotEqualTo(question.getTitle()),
                 () -> assertThat(savedQuestion.getId()).isEqualTo(question.getId())
+        );
+    }
+
+    @Test
+    @DisplayName("질문 작성자가 아닌 유저가 삭제할 경우 UnAuthenticationException 발생")
+    void delete_fail() throws Exception{
+        //given
+        Question question = createQuestion(1);
+        question.setId(1L);
+        User user1 = createUser(1);
+        user1.setId(1L);
+
+        User user2 = createUser(2);
+        user2.setId(2L);
+
+        question.writeBy(user1);
+
+        //when
+        when(questionRepository.findById(1L)).thenReturn(Optional.of(question));
+
+        //then
+        assertThrows(
+                CannotDeleteException.class, () -> qnaService.deleteQuestion(user2, question.getId())
         );
     }
 
