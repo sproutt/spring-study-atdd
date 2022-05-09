@@ -18,15 +18,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -45,9 +42,14 @@ class QuestionControllerTest {
     @Mock
     private QnaService qnaService;
 
+    private User dummyUser;
+    private Question dummyQuestion;
+
     @BeforeEach
     public void setUpMockMvc() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(questionController).build();
+        dummyUser = createUser(1L);
+        dummyQuestion = createQuestion(1L);
     }
 
     @Test
@@ -62,24 +64,23 @@ class QuestionControllerTest {
     @DisplayName("질문 생성 요청이 성공하면 홈으로 리다이렉트한다")
     void create() throws Exception {
         //given
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("title", "title");
-        map.add("contents", "aaaa");
-        map.add("userId", "userId");
-        map.add("password", "password");
-        map.add("name", "name");
-        map.add("email", "email");
+        //question, user 모두 id를 1로 하거나, 각각 1로 해도 오류가 뜸
+        Question question = createQuestion(0L);
+        User user = createUser(0L);
 
         //when
-        Question question = createQuestion();
-
-        when(qnaService.create(createUser(), question)).thenReturn(question);
+        when(qnaService.create(user, question)).thenReturn(question);
 
         //then
         mockMvc.perform(post("/questions")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .params(map))
-                .andExpect(redirectedUrl("/"));
+                        .param("title", question.getTitle())
+                        .param("contents", question.getContents())
+                        .param("userId", user.getUserId())
+                        .param("password", user.getPassword())
+                        .param("name", user.getName())
+                        .param("email", user.getEmail()))
+                        .andExpect(redirectedUrl("/"));
     }
 
     @Test
@@ -94,51 +95,44 @@ class QuestionControllerTest {
         //then
         mockMvc.perform(get("/")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(view().name("/home"))
-                .andDo(print());
+                        .andExpect(view().name("/home"))
+                        .andDo(print());
     }
 
     @Test
     @DisplayName("질문 단건 조회 요청이 성공하면 질문 상세보기 폼으로 이동한다")
     void show_question() throws Exception {
-        //given
-        Question question = new Question("국내에서 Ruby on Rails와 Play가 활성화되기 힘든 이유는 뭘까?", "aaa");
-        question.setId(1L);
-
         //when
-        when(qnaService.findById(1L)).thenReturn(Optional.of(question));
+        when(qnaService.findById(1L)).thenReturn(Optional.of(dummyQuestion));
 
         //then
-        mockMvc.perform(get(question.generateUrl())
+        mockMvc.perform(get(dummyQuestion.generateUrl())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(view().name("/qna/show"))
-                .andDo(print());
+                        .andExpect(view().name("/qna/show"))
+                        .andDo(print());
     }
 
     @Test
     @DisplayName("질문 수정 폼 요청이 성공하면 수정 전의 정보들이 담긴 수정 폼으로 이동한다")
     void update_form() throws Exception {
-        //given
-        Question question = createQuestion();
-        question.setId(1L);
-
         //when
-        when(qnaService.findById(1L)).thenReturn(Optional.of(question));
+        when(qnaService.findById(1L)).thenReturn(Optional.of(dummyQuestion));
 
         //then
-        mockMvc.perform(get(question.generateUrl() + "/updateForm")
-                        .param("id", String.valueOf(question.getId())))
-                .andExpect(status().isOk())
-                .andExpect(view().name("/qna/updateForm"))
-                .andExpect(model().attributeExists("question"))
-                .andDo(print());
+        mockMvc.perform(get(dummyQuestion.generateUrl() + "/updateForm")
+                        .param("id", String.valueOf(dummyQuestion.getId())))
+                        .andExpect(status().isOk())
+                        .andExpect(view().name("/qna/updateForm"))
+                        .andExpect(model().attributeExists("question"))
+                        .andDo(print());
     }
 
     @Test
     @DisplayName("질문 수정 요청 시 UnAuthenticationException이 발생하면 홈으로 리다이렉트 시킨다")
     void update_fail() throws Exception {
         //when
-        when(qnaService.update(anyObject(), anyLong(), anyObject())).thenThrow(UnAuthenticationException.class);
+        when(qnaService.update(anyObject(), anyLong(), anyObject()))
+                       .thenThrow(UnAuthenticationException.class);
 
         //then
         mockMvc.perform(put("/questions/1"))
@@ -150,34 +144,28 @@ class QuestionControllerTest {
     @DisplayName("질문 수정 요청 시 성공하면 수정된 질문으로 이동한다")
     void update_success() throws Exception {
         //given
-        User user = createUser();
-        user.setId(1L);
+        dummyQuestion.writeBy(dummyUser);
 
-        Question question = createQuestion();
-        question.setId(1L);
-        question.writeBy(user);
-
-        QuestionDto questionDto = question.toDto();
+        QuestionDto questionDto = dummyQuestion.toDto();
         questionDto.setContents("updateContents");
         questionDto.setTitle("updateTitle");
 
         //when
-        when(qnaService.update(user, 1L, questionDto)).thenReturn(question);
+        when(qnaService.update(dummyUser, 1L, questionDto)).thenReturn(dummyQuestion);
 
         //then
         mockMvc.perform(put("/questions/1")
                         .param("title", "updateTitle")
                         .param("contents", "updateContents")
-                        .param("writer", user.getUserId())
+                        .param("writer", dummyUser.getUserId())
                         .param("userId", "a")
                         .param("password", "a")
                         .param("name", "a")
                         .param("email", "a")
-                        .param("id", String.valueOf(question.getId()))
-                )
-                .andExpect(redirectedUrl(question.generateUrl()))
-                .andExpect(model().attributeExists("question"))
-                .andDo(print());
+                        .param("id", String.valueOf(dummyQuestion.getId())))
+                        .andExpect(redirectedUrl(dummyQuestion.generateUrl()))
+                        .andExpect(model().attributeExists("question"))
+                        .andDo(print());
     }
 
     @Test
@@ -197,30 +185,24 @@ class QuestionControllerTest {
     @Test
     @DisplayName("질문 삭제 요청 시 성공하면 홈으로 리다이렉트한다")
     void delete_success() throws Exception {
-        //given
-        User user = createUser();
-        user.setId(1L);
-        Question question = createQuestion();
-        question.setId(1L);
-
         //when
-        doNothing()
-                .when(qnaService)
-                .deleteQuestion(user, question.getId());
+        doNothing().when(qnaService).deleteQuestion(dummyUser, dummyQuestion.getId());
 
         //then
-        mockMvc.perform(delete(question.generateUrl()))
+        mockMvc.perform(delete(dummyQuestion.generateUrl()))
                 .andExpect(redirectedUrl("/"))
                 .andDo(print());
     }
 
-    private User createUser() {
-        return new User("a", "a", "a", "a");
+    private User createUser(long id) {
+        User user = new User("userId", "password", "name", "email");
+        user.setId(id);
+        return user;
     }
 
-    private Question createQuestion() {
-        return new Question("title", "contents");
+    private Question createQuestion(long id) {
+        Question question = new Question("title", "contents");
+        question.setId(id);
+        return question;
     }
-
-
 }
