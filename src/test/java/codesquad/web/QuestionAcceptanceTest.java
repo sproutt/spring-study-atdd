@@ -2,13 +2,16 @@ package codesquad.web;
 
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import support.helper.HtmlFormDataBuilder;
 import support.test.AcceptanceTest;
 
@@ -18,10 +21,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpStatus.*;
 
 public class QuestionAcceptanceTest extends AcceptanceTest {
-    private static final Logger log = LoggerFactory.getLogger(UserAcceptanceTest.class);
+    private static final Logger log = LoggerFactory.getLogger(QuestionAcceptanceTest.class);
 
     @Autowired
     private QuestionRepository questionRepository;
+
+    private HtmlFormDataBuilder htmlFormDataBuilder;
+
+    @BeforeEach
+    void htmlFormTestDataBuild() {
+        HtmlFormDataBuilder htmlFormTestDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
+        htmlFormTestDataBuilder.addParameter("userId", defaultUser().getUserId());
+        htmlFormTestDataBuilder.addParameter("password", defaultUser().getPassword());
+        htmlFormTestDataBuilder.addParameter("title", "title");
+        htmlFormTestDataBuilder.addParameter("contents", "aaaa");
+
+        htmlFormDataBuilder = htmlFormTestDataBuilder;
+    }
 
     @Test
     @DisplayName("질문 생성 폼을 요청할 수 있다")
@@ -38,15 +54,6 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("로그인 한 유저는 새로운 질문을 생성할 수 있다")
     void create() throws Exception {
-        //given
-        HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
-        htmlFormDataBuilder.addParameter("title", "title");
-        htmlFormDataBuilder.addParameter("contents", "aaaa");
-        htmlFormDataBuilder.addParameter("userId", "userId");
-        htmlFormDataBuilder.addParameter("password", "password");
-        htmlFormDataBuilder.addParameter("name", "자바지기");
-        htmlFormDataBuilder.addParameter("email", "javajigi@slipp.net");
-
         //when
         ResponseEntity<String> response = basicAuthTemplate().postForEntity("/questions", htmlFormDataBuilder.build(), String.class);
 
@@ -98,7 +105,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         Question savedQuestion = questionRepository.findById(1L).get();
 
         //when
-        ResponseEntity<String> response = template().getForEntity(
+        ResponseEntity<String> response = basicAuthTemplate().getForEntity(
                 savedQuestion.generateUrl() + "/updateForm", String.class);
 
         log.info("body = {}", response.getBody());
@@ -115,14 +122,9 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     @DisplayName("질문 작성자가 아니거나 로그인을 하지 않을 경우 질문 수정하지 못한다")
     void update_fail() throws Exception {
         //given
-        HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
-        htmlFormDataBuilder.addParameter("userId", defaultUser().getUserId());
-        htmlFormDataBuilder.addParameter("password", defaultUser().getPassword());
-
         Question savedQuestion = questionRepository.findById(2L).get();
-        htmlFormDataBuilder.addParameter("title", "title");
-        htmlFormDataBuilder.addParameter("contents", "aaaa");
         htmlFormDataBuilder.addParameter("_method", "put");
+        htmlFormDataBuilder.addParameter("writer", defaultUser().getUserId());
 
         //when
         ResponseEntity<String> response = template().postForEntity(savedQuestion.generateUrl(), htmlFormDataBuilder.build(), String.class);
@@ -133,17 +135,13 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         assertEquals(response.getStatusCode(), FORBIDDEN);
     }
 
+
+
     @Test
     @DisplayName("질문 작성자는 제목과 내용을 수정할 수 있다")
     void update_success() throws Exception {
         //given
-        HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
-        htmlFormDataBuilder.addParameter("userId", defaultUser().getUserId());
-        htmlFormDataBuilder.addParameter("password", defaultUser().getPassword());
-
         Question savedQuestion = questionRepository.findById(1L).get();
-        htmlFormDataBuilder.addParameter("title", "수정된 제목입니다");
-        htmlFormDataBuilder.addParameter("contents", "수정된 내용입니다");
         htmlFormDataBuilder.addParameter("writer", defaultUser().getUserId());
         htmlFormDataBuilder.addParameter("_method", "put");
 
@@ -166,10 +164,6 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     @DisplayName("질문 작성자가 아니거나 로그인을 하지 않을 경우 질문 삭제를 하지 못한다")
     void delete_fail() throws Exception{
         //given
-        HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
-        htmlFormDataBuilder.addParameter("userId", defaultUser().getUserId());
-        htmlFormDataBuilder.addParameter("password", defaultUser().getPassword());
-
         Question savedQuestion = questionRepository.findById(2L).get();
         htmlFormDataBuilder.addParameter("_method", "DELETE");
 
@@ -186,10 +180,6 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     @DisplayName("질문 작성자는 질문을 삭제할 수 있다")
     void delete_success() throws Exception{
         //given
-        HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
-        htmlFormDataBuilder.addParameter("userId", defaultUser().getUserId());
-        htmlFormDataBuilder.addParameter("password", defaultUser().getPassword());
-
         Question savedQuestion = questionRepository.findById(1L).get();
         htmlFormDataBuilder.addParameter("_method", "DELETE");
 
