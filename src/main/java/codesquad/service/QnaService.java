@@ -59,6 +59,8 @@ public class QnaService {
             throw new CannotDeleteException("삭제하지 못한다");
         }
 
+        log.info("savedQuestion = {}", savedQuestion);
+
         savedQuestion.delete();
     }
 

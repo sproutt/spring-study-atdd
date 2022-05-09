@@ -66,9 +66,9 @@ public class QuestionController {
     public String delete(@LoginUser User loginUser, @PathVariable long id) {
         try {
             qnaService.deleteQuestion(loginUser, id);
-            return "redirect:/questions/" + id;
-        } catch (CannotDeleteException exception) {
             return "redirect:/";
+        } catch (CannotDeleteException exception) {
+            return "redirect:/questions/" + id;
         }
     }
 }

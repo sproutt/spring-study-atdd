@@ -183,4 +183,27 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         //then
         assertEquals(response.getStatusCode(), FORBIDDEN);
     }
+
+    @Test
+    @DisplayName("질문 작성자는 질문을 삭제할 수 있다")
+    void delete_success() throws Exception{
+        //given
+        HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
+        htmlFormDataBuilder.addParameter("userId", defaultUser().getUserId());
+        htmlFormDataBuilder.addParameter("password", defaultUser().getPassword());
+
+        Question savedQuestion = questionRepository.findById(1L).get();
+        htmlFormDataBuilder.addParameter("_method", "DELETE");
+
+        //when
+        ResponseEntity<String> response = basicAuthTemplate().postForEntity(savedQuestion.generateUrl(), htmlFormDataBuilder.build(), String.class);
+
+        log.info("response = {}", response);
+
+        //then
+        assertAll(
+                () -> assertEquals(response.getStatusCode(), FOUND),
+                () -> assertThat(response.getHeaders().getLocation().getPath()).isEqualTo("/")
+        );
+    }
 }

@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -182,7 +181,7 @@ class QuestionControllerTest {
     }
 
     @Test
-    @DisplayName("질문 삭제 요청 시 UnAuthenticationException이 발생하면 홈으로 리다이렉트 시킨다")
+    @DisplayName("질문 삭제 요청 시 UnAuthenticationException이 발생하면 삭제를 시도한 질문으로 리다이렉트한다")
     void delete_fail() throws Exception{
         //when
         doThrow(CannotDeleteException.class)
@@ -191,6 +190,26 @@ class QuestionControllerTest {
 
         //then
         mockMvc.perform(delete("/questions/1"))
+                .andExpect(redirectedUrl("/questions/1"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("질문 삭제 요청 시 성공하면 홈으로 리다이렉트한다")
+    void delete_success() throws Exception {
+        //given
+        User user = createUser();
+        user.setId(1L);
+        Question question = createQuestion();
+        question.setId(1L);
+
+        //when
+        doNothing()
+                .when(qnaService)
+                .deleteQuestion(user, question.getId());
+
+        //then
+        mockMvc.perform(delete(question.generateUrl()))
                 .andExpect(redirectedUrl("/"))
                 .andDo(print());
     }

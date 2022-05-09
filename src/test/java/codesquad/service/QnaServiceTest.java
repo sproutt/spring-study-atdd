@@ -18,8 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -159,6 +158,26 @@ class QnaServiceTest {
         assertThrows(
                 CannotDeleteException.class, () -> qnaService.deleteQuestion(user2, question.getId())
         );
+    }
+
+    @Test
+    @DisplayName("질문 작성자가 질문을 삭제할 경우 삭제상태를 true로 변경")
+    void delete_success() throws Exception{
+        //given
+        Question question = createQuestion(1);
+        question.setId(1L);
+        User user1 = createUser(1);
+        user1.setId(1L);
+
+        question.writeBy(user1);
+
+        //when
+        when(questionRepository.findById(1L)).thenReturn(Optional.of(question));
+
+        //then
+        qnaService.deleteQuestion(user1, question.getId());
+
+        assertTrue(question.isDeleted());
     }
 
     private User createUser(int id) {
