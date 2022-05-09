@@ -4,6 +4,7 @@ import codesquad.UnAuthenticationException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.service.QnaService;
+import codesquad.web.dto.QuestionDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -141,6 +142,39 @@ class QuestionControllerTest {
         //then
         mockMvc.perform(put("/questions/1"))
                 .andExpect(redirectedUrl("/"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("질문 수정 요청 시 성공하면 수정된 질문으로 이동한다")
+    void update_success() throws Exception {
+        //given
+        User user = createUser();
+        user.setId(1L);
+
+        Question question = createQuestion();
+        question.setId(1L);
+        question.writeBy(user);
+
+        QuestionDto questionDto = question.toDto();
+        questionDto.setContents("updateContents");
+        questionDto.setTitle("updateTitle");
+
+        //when
+        when(qnaService.update(user, 1L, questionDto)).thenReturn(question);
+
+        //then
+        mockMvc.perform(put("/questions/1")
+                        .param("title", "updateTitle")
+                        .param("contents", "updateContents")
+                        .param("writer", user.getUserId())
+                        .param("userId", "a")
+                        .param("password", "a")
+                        .param("name", "a")
+                        .param("email", "a")
+                        .param("id", String.valueOf(question.getId()))
+                )
+                .andExpect(redirectedUrl(question.generateUrl()))
                 .andDo(print());
     }
 

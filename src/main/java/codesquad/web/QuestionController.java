@@ -5,6 +5,7 @@ import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.security.LoginUser;
 import codesquad.service.QnaService;
+import codesquad.web.dto.QuestionDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -54,10 +55,10 @@ public class QuestionController {
     }
 
     @PutMapping("/questions/{id}")
-    public String update(@LoginUser User loginUser, @PathVariable long id, Question updatedQuestion) {
+    public String update(@LoginUser User loginUser, @PathVariable long id, QuestionDto updatedQuestionDto) {
         try {
-            qnaService.update(loginUser, id, updatedQuestion);
-            return "redirect:" + updatedQuestion.generateUrl();
+            qnaService.update(loginUser, id, updatedQuestionDto);
+            return "redirect:/questions/" + id;
         } catch (UnAuthenticationException e) {
             return "redirect:/";
         }

@@ -3,6 +3,7 @@ package codesquad.service;
 import codesquad.CannotDeleteException;
 import codesquad.UnAuthenticationException;
 import codesquad.domain.*;
+import codesquad.web.dto.QuestionDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -38,15 +39,15 @@ public class QnaService {
     }
 
     @Transactional
-    public Question update(User loginUser, long id, Question updatedQuestion) throws UnAuthenticationException {
-        if(!updatedQuestion.isOwner(loginUser)){
-            throw new UnAuthenticationException();
-        }
-
+    public Question update(User loginUser, long id, QuestionDto updatedQuestionDto) throws UnAuthenticationException {
         Question savedQuestion = questionRepository.findById(id)
                                                    .orElseThrow(NoSuchElementException::new);
 
-        return savedQuestion.update(updatedQuestion);
+        if(!savedQuestion.isOwner(loginUser) || loginUser == null){
+            throw new UnAuthenticationException();
+        }
+
+        return savedQuestion.update(updatedQuestionDto);
     }
 
     @Transactional

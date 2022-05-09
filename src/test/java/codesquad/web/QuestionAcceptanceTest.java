@@ -119,7 +119,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         //given
         HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
         htmlFormDataBuilder.addParameter("userId", defaultUser().getUserId());
-        htmlFormDataBuilder.addParameter("password", defaultUser().getUserId());
+        htmlFormDataBuilder.addParameter("password", defaultUser().getPassword());
 
         Question savedQuestion = questionRepository.findById(2L).get();
         htmlFormDataBuilder.addParameter("title", "title");
@@ -129,7 +129,38 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         //when
         ResponseEntity<String> response = template().postForEntity(savedQuestion.generateUrl(), htmlFormDataBuilder.build(), String.class);
 
+        log.info("response = {}", response);
+
         //then
         assertEquals(response.getStatusCode(), FORBIDDEN);
+    }
+
+    @Test
+    @DisplayName("질문 작성자는 제목과 내용을 수정할 수 있다")
+    void update_success() throws Exception {
+        //given
+        HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
+        htmlFormDataBuilder.addParameter("userId", defaultUser().getUserId());
+        htmlFormDataBuilder.addParameter("password", defaultUser().getPassword());
+
+        Question savedQuestion = questionRepository.findById(1L).get();
+        htmlFormDataBuilder.addParameter("title", "수정된 제목입니다");
+        htmlFormDataBuilder.addParameter("contents", "수정된 내용입니다");
+        htmlFormDataBuilder.addParameter("writer", defaultUser().getUserId());
+        htmlFormDataBuilder.addParameter("_method", "put");
+
+        //when
+        ResponseEntity<String> response = basicAuthTemplate().postForEntity(savedQuestion.generateUrl(), htmlFormDataBuilder.build(), String.class);
+
+        log.info("response = {}", response);
+
+        //put 요청을 할 때, 수정된 내용이 있으면 body로 반환한다고 알고 있다
+        //response.getBody를 하면 null 값이 나오게 됨됨
+
+       //then
+        assertAll(
+                () -> assertEquals(response.getStatusCode(), FOUND),
+                () -> assertThat(response.getHeaders().getLocation().getPath()).isEqualTo(savedQuestion.generateUrl())
+        );
     }
 }
