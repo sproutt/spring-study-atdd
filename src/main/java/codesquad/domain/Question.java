@@ -2,6 +2,7 @@ package codesquad.domain;
 
 import org.hibernate.annotations.Where;
 
+import codesquad.CannotDeleteException;
 import codesquad.UnAuthorizedException;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
@@ -10,6 +11,8 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
+
+import static codesquad.domain.ContentType.*;
 
 @Entity
 public class Question extends AbstractEntity implements UrlGeneratable {
@@ -38,6 +41,35 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     public Question(String title, String contents) {
         this.title = title;
         this.contents = contents;
+    }
+
+    public Question update(User loginUser, Question updatedQuestion) {
+        if (!isMatch(updatedQuestion)) {
+            throw new EntityNotFoundException("not same question");
+        }
+        if (!writer.equals(loginUser)) {
+            throw new UnAuthorizedException("not match writer");
+        }
+        this.title = updatedQuestion.getTitle();
+        this.contents = updatedQuestion.getContents();
+        return updatedQuestion;
+    }
+
+    public List<DeleteHistory> delete(User loginUser) throws CannotDeleteException {
+        if (isDeleted()) {
+            throw new CannotDeleteException("not exist question");
+        }
+		if(!writer.equals(loginUser)) {
+			throw new UnAuthorizedException("not match writer");
+		}
+
+		ArrayList<DeleteHistory> histories = new ArrayList<>();
+		deleted = true;
+		histories.add(DeleteHistory.change(QUESTION, loginUser, this));
+		for (Answer answer : answers) {
+			histories.add(answer.delete(loginUser));
+		}
+		return histories;
     }
 
     public String getTitle() {
@@ -87,18 +119,6 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     @Override
     public String toString() {
         return "Question [id=" + getId() + ", title=" + title + ", contents=" + contents + ", writer=" + writer + "]";
-    }
-
-    public Question update(User loginUser, Question updatedQuestion) {
-        if (!isMatch(updatedQuestion)) {
-            throw new EntityNotFoundException("not same question");
-        }
-        if (!writer.equals(loginUser)) {
-            throw new UnAuthorizedException("not match writer");
-        }
-        this.title = updatedQuestion.getTitle();
-        this.contents = updatedQuestion.getContents();
-        return updatedQuestion;
     }
 
     private boolean isMatch(Question question) {

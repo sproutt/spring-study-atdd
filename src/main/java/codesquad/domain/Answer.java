@@ -1,10 +1,13 @@
 package codesquad.domain;
 
+import codesquad.CannotDeleteException;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+
+import static codesquad.domain.ContentType.*;
 
 @Entity
 public class Answer extends AbstractEntity implements UrlGeneratable {
@@ -37,6 +40,15 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         this.contents = contents;
         this.deleted = false;
     }
+
+    public DeleteHistory delete(User loginUser) throws CannotDeleteException {
+        if (!writer.equals(loginUser)) {
+            throw new CannotDeleteException("not match answer writer");
+        }
+        deleted = true;
+        return DeleteHistory.change(ANSWER, loginUser, this);
+    }
+
 
     public User getWriter() {
         return writer;

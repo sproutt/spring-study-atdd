@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import codesquad.CannotDeleteException;
 import codesquad.UnAuthorizedException;
 import codesquad.domain.AnswerRepository;
 import codesquad.domain.Question;
@@ -41,6 +42,11 @@ public class QuestionService {
 		Optional<Question> updatedQuestion = questionRepository.findById(id);
 		updatedQuestion.get().update(loginUser, question);
 		return questionRepository.save(updatedQuestion.get());
+	}
+
+	@Transactional
+	public void deleteQuestion(User loginUser, Long id) throws CannotDeleteException {
+		deleteHistoryService.saveAll(findQuestionById(id).delete(loginUser));
 	}
 
 	public List<Question> findAll(){
