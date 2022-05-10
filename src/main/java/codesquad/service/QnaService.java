@@ -52,10 +52,14 @@ public class QnaService {
 
     @Transactional
     public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
+        if(loginUser == null){
+            throw new CannotDeleteException("삭제하지 못한다");
+        }
+
         Question savedQuestion = questionRepository.findById(questionId)
                                                    .orElseThrow(NoSuchElementException::new);
 
-        if (!savedQuestion.isOwner(loginUser) || loginUser == null) {
+        if (!savedQuestion.isOwner(loginUser)) {
             throw new CannotDeleteException("삭제하지 못한다");
         }
 
