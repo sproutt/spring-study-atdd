@@ -1,5 +1,7 @@
 package codesquad.web;
 
+import javax.xml.ws.Response;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,6 +95,34 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 		builder.addParameter("title", "update title");
 		builder.addParameter("content", "update content");
 
+		HttpEntity<MultiValueMap<String, Object>> request = builder.build();
+		return template.postForEntity("/questions/1", request, String.class);
+	}
+
+	@Test
+	@Order(3)
+	public void question_delete_with_authorized_writer(){
+		ResponseEntity<String> response = delete(basicAuthTemplate());
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+	}
+
+	@Test
+	@Order(3)
+	public void question_delete_with_no_login() {
+		ResponseEntity<String> response = update(template());
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+	}
+
+	@Test
+	@Order(3)
+	public void question_delete_with_no_author() {
+		ResponseEntity<String> response = update(basicAuthTemplate(findByUserId("sanjigi")));
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+	}
+
+	private ResponseEntity<String> delete(TestRestTemplate template) {
+		HtmlFormDataBuilder builder = HtmlFormDataBuilder.urlEncodeForm();
+		builder.addParameter("_method", "delete");
 		HttpEntity<MultiValueMap<String, Object>> request = builder.build();
 		return template.postForEntity("/questions/1", request, String.class);
 	}
