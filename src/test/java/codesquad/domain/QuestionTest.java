@@ -7,4 +7,10 @@ public class QuestionTest {
         question.writeBy(loginUser);
         return question;
     }
+
+    public static Question updatedQuestion(String title, String contents, User loginUser) {
+        Question question = new Question(title, contents);
+        question.writeBy(loginUser);
+        return question;
+    }
 }
