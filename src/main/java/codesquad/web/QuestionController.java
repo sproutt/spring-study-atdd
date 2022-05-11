@@ -39,4 +39,11 @@ public class QuestionController {
         model.addAttribute("question", qnaService.findById(id).get());
         return "/qna/show";
     }
+
+    @GetMapping("/{id}/form")
+    public String updateForm(@LoginUser User loginUser, @PathVariable Long id, Model model) {
+        model.addAttribute("question", qnaService.findById(id).get());
+        log.debug("question : {}", qnaService.findById(id));
+        return "/qna/updateForm";
+    }
 }
