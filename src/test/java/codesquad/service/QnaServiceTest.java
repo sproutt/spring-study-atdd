@@ -59,4 +59,18 @@ public class QnaServiceTest {
 
         qnaService.findById(QUESTION_ID);
     }
+
+    @Test
+    public void update_question_success() {
+        User loginUser = UserTest.newUser(USER_ID);
+        Question question = QuestionTest.newQuestion(QUESTION_ID, loginUser);
+        Question targetQuestion = QuestionTest.updatedQuestion("오늘의 할 일은?", "자동차 주차하기", loginUser);
+        when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
+
+        Question updatedQuestion = qnaService.update(loginUser, QUESTION_ID, targetQuestion);
+
+        assertThat(updatedQuestion.getTitle()).isEqualTo(targetQuestion.getTitle());
+        assertThat(updatedQuestion.getContents()).isEqualTo(targetQuestion.getContents());
+        assertThat(updatedQuestion.getWriter()).isEqualTo(targetQuestion.getWriter());
+    }
 }
