@@ -79,4 +79,33 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
+
+    @Test
+    public void update_with_login() {
+        HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodeForm();
+        htmlFormDataBuilder.addParameter("_method", "put");
+        htmlFormDataBuilder.addParameter("title", "오늘의 미션은?");
+        htmlFormDataBuilder.addParameter("contents", "푹 쉬기");
+
+        HttpEntity<MultiValueMap<String, Object>> request = htmlFormDataBuilder.build();
+
+        ResponseEntity<String> response = basicAuthTemplate().postForEntity(String.format("/questions/%d", defaultQuestion().getId()), request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+        assertThat(response.getHeaders().getLocation().getPath()).startsWith("/questions");
+    }
+
+    @Test
+    public void update_no_login() {
+        HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodeForm();
+        htmlFormDataBuilder.addParameter("_method", "put");
+        htmlFormDataBuilder.addParameter("title", "오늘의 미션은?");
+        htmlFormDataBuilder.addParameter("contents", "푹 쉬기");
+
+        HttpEntity<MultiValueMap<String, Object>> request = htmlFormDataBuilder.build();
+
+        ResponseEntity<String> response = template().postForEntity(String.format("/questions/%d", defaultQuestion().getId()), request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
 }
