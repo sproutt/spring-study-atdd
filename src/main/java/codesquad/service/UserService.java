@@ -28,8 +28,8 @@ public class UserService {
 
     public User findById(User loginUser, long id) {
         return userRepository.findById(id)
-                .filter(user -> user.equals(loginUser))
-                .orElseThrow(UnAuthorizedException::new);
+                             .filter(user -> user.equals(loginUser))
+                             .orElseThrow(UnAuthorizedException::new);
     }
 
     public List<User> findAll() {
@@ -38,7 +38,7 @@ public class UserService {
 
     public User login(String userId, String password) throws UnAuthenticationException {
         return userRepository.findByUserId(userId)
-                .filter(user -> user.matchPassword(password))
-                .orElseThrow(UnAuthenticationException::new);
+                             .filter(user -> user.matchPassword(password))
+                             .orElseThrow(UnAuthenticationException::new);
     }
 }
