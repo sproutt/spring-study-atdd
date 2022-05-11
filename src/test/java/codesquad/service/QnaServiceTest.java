@@ -113,7 +113,7 @@ class QnaServiceTest {
 
     @Test
     @DisplayName("질문 작성자가 질문을 수정할 경우 수정된 질문을 반환한다")
-    void update_success() throws Exception{
+    void update_success() throws Exception {
         //given
         Question updatedQuestion = createQuestion(1L);
         updatedQuestion.setContents("contents");
@@ -139,7 +139,7 @@ class QnaServiceTest {
 
     @Test
     @DisplayName("질문 작성자가 아닌 유저가 삭제할 경우 UnAuthenticationException 발생")
-    void delete_fail() throws Exception{
+    void delete_fail() throws Exception {
         //given
         User user = createUser(2L);
 
@@ -156,7 +156,7 @@ class QnaServiceTest {
 
     @Test
     @DisplayName("질문 작성자가 질문을 삭제할 경우 삭제상태를 true로 변경")
-    void delete_success() throws Exception{
+    void delete_success() throws Exception {
         //given
         dummyQuestion.writeBy(dummyUser);
 

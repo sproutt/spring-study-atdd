@@ -56,8 +56,8 @@ class QuestionControllerTest {
     @DisplayName("질문 생성 폼 요청을 할 경우 생성 폼으로 이동한다")
     void create_form() throws Exception {
         mockMvc.perform(get("/questions/form"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("/qna/form"));
+               .andExpect(status().isOk())
+               .andExpect(view().name("/qna/form"));
     }
 
     @Test
@@ -73,14 +73,14 @@ class QuestionControllerTest {
 
         //then
         mockMvc.perform(post("/questions")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("title", question.getTitle())
-                        .param("contents", question.getContents())
-                        .param("userId", user.getUserId())
-                        .param("password", user.getPassword())
-                        .param("name", user.getName())
-                        .param("email", user.getEmail()))
-                        .andExpect(redirectedUrl("/"));
+                       .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                       .param("title", question.getTitle())
+                       .param("contents", question.getContents())
+                       .param("userId", user.getUserId())
+                       .param("password", user.getPassword())
+                       .param("name", user.getName())
+                       .param("email", user.getEmail()))
+               .andExpect(redirectedUrl("/"));
     }
 
     @Test
@@ -94,9 +94,9 @@ class QuestionControllerTest {
 
         //then
         mockMvc.perform(get("/")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                        .andExpect(view().name("/home"))
-                        .andDo(print());
+                       .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+               .andExpect(view().name("/home"))
+               .andDo(print());
     }
 
     @Test
@@ -107,9 +107,9 @@ class QuestionControllerTest {
 
         //then
         mockMvc.perform(get(dummyQuestion.generateUrl())
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                        .andExpect(view().name("/qna/show"))
-                        .andDo(print());
+                       .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+               .andExpect(view().name("/qna/show"))
+               .andDo(print());
     }
 
     @Test
@@ -120,11 +120,11 @@ class QuestionControllerTest {
 
         //then
         mockMvc.perform(get(dummyQuestion.generateUrl() + "/updateForm")
-                        .param("id", String.valueOf(dummyQuestion.getId())))
-                        .andExpect(status().isOk())
-                        .andExpect(view().name("/qna/updateForm"))
-                        .andExpect(model().attributeExists("question"))
-                        .andDo(print());
+                       .param("id", String.valueOf(dummyQuestion.getId())))
+               .andExpect(status().isOk())
+               .andExpect(view().name("/qna/updateForm"))
+               .andExpect(model().attributeExists("question"))
+               .andDo(print());
     }
 
     @Test
@@ -132,12 +132,12 @@ class QuestionControllerTest {
     void update_fail() throws Exception {
         //when
         when(qnaService.update(anyObject(), anyLong(), anyObject()))
-                       .thenThrow(UnAuthenticationException.class);
+                .thenThrow(UnAuthenticationException.class);
 
         //then
         mockMvc.perform(put("/questions/1"))
-                .andExpect(redirectedUrl("/"))
-                .andDo(print());
+               .andExpect(redirectedUrl("/"))
+               .andDo(print());
     }
 
     @Test
@@ -155,22 +155,22 @@ class QuestionControllerTest {
 
         //then
         mockMvc.perform(put("/questions/1")
-                        .param("title", "updateTitle")
-                        .param("contents", "updateContents")
-                        .param("writer", dummyUser.getUserId())
-                        .param("userId", "a")
-                        .param("password", "a")
-                        .param("name", "a")
-                        .param("email", "a")
-                        .param("id", String.valueOf(dummyQuestion.getId())))
-                        .andExpect(redirectedUrl(dummyQuestion.generateUrl()))
-                        .andExpect(model().attributeExists("question"))
-                        .andDo(print());
+                       .param("title", "updateTitle")
+                       .param("contents", "updateContents")
+                       .param("writer", dummyUser.getUserId())
+                       .param("userId", "a")
+                       .param("password", "a")
+                       .param("name", "a")
+                       .param("email", "a")
+                       .param("id", String.valueOf(dummyQuestion.getId())))
+               .andExpect(redirectedUrl(dummyQuestion.generateUrl()))
+               .andExpect(model().attributeExists("question"))
+               .andDo(print());
     }
 
     @Test
     @DisplayName("질문 삭제 요청 시 UnAuthenticationException이 발생하면 삭제를 시도한 질문으로 리다이렉트한다")
-    void delete_fail() throws Exception{
+    void delete_fail() throws Exception {
         //when
         doThrow(CannotDeleteException.class)
                 .when(qnaService)
@@ -178,8 +178,8 @@ class QuestionControllerTest {
 
         //then
         mockMvc.perform(delete("/questions/1"))
-                .andExpect(redirectedUrl("/questions/1"))
-                .andDo(print());
+               .andExpect(redirectedUrl("/questions/1"))
+               .andDo(print());
     }
 
     @Test
@@ -190,8 +190,8 @@ class QuestionControllerTest {
 
         //then
         mockMvc.perform(delete(dummyQuestion.generateUrl()))
-                .andExpect(redirectedUrl("/"))
-                .andDo(print());
+               .andExpect(redirectedUrl("/"))
+               .andDo(print());
     }
 
     private User createUser(long id) {

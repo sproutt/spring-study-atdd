@@ -8,14 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import support.helper.HtmlFormDataBuilder;
 import support.test.AcceptanceTest;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpStatus.*;
@@ -41,7 +39,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("질문 생성 폼을 요청할 수 있다")
-    void create_form() throws Exception{
+    void create_form() throws Exception {
         //when
         ResponseEntity<String> response = template().getForEntity("/questions/form", String.class);
 
@@ -136,7 +134,6 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     }
 
 
-
     @Test
     @DisplayName("질문 작성자는 제목과 내용을 수정할 수 있다")
     void update_success() throws Exception {
@@ -153,7 +150,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         //put 요청을 할 때, 수정된 내용이 있으면 body로 반환한다고 알고 있다
         //response.getBody를 하면 null 값이 나오게 됨
 
-       //then
+        //then
         assertAll(
                 () -> assertEquals(response.getStatusCode(), FOUND),
                 () -> assertThat(response.getHeaders().getLocation().getPath()).isEqualTo(savedQuestion.generateUrl())
@@ -162,7 +159,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("질문 작성자가 아니거나 로그인을 하지 않을 경우 질문 삭제를 하지 못한다")
-    void delete_fail() throws Exception{
+    void delete_fail() throws Exception {
         //given
         Question savedQuestion = questionRepository.findById(2L).get();
         htmlFormDataBuilder.addParameter("_method", "DELETE");
@@ -178,7 +175,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("질문 작성자는 질문을 삭제할 수 있다")
-    void delete_success() throws Exception{
+    void delete_success() throws Exception {
         //given
         Question savedQuestion = questionRepository.findById(1L).get();
         htmlFormDataBuilder.addParameter("_method", "DELETE");
