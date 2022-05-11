@@ -8,10 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -45,5 +42,11 @@ public class QuestionController {
         model.addAttribute("question", qnaService.findById(id).get());
         log.debug("question : {}", qnaService.findById(id));
         return "/qna/updateForm";
+    }
+
+    @PutMapping("{id}")
+    public String update(@LoginUser User loginUser, @PathVariable Long id, Question question) {
+        Question updatedQuestion = qnaService.update(loginUser, id, question);
+        return "redirect:/" + updatedQuestion.generateUrl();
     }
 }
