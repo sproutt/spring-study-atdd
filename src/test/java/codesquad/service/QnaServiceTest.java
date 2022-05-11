@@ -1,5 +1,6 @@
 package codesquad.service;
 
+import codesquad.UnAuthorizedException;
 import codesquad.domain.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,5 +73,25 @@ public class QnaServiceTest {
         assertThat(updatedQuestion.getTitle()).isEqualTo(targetQuestion.getTitle());
         assertThat(updatedQuestion.getContents()).isEqualTo(targetQuestion.getContents());
         assertThat(updatedQuestion.getWriter()).isEqualTo(targetQuestion.getWriter());
+    }
+
+    @Test(expected = UnAuthorizedException.class)
+    public void update_failed_when_writer_mismatch() {
+        User user = UserTest.newUser(USER_ID);
+        User loginUser = UserTest.SANJIGI;
+        Question question = QuestionTest.newQuestion(QUESTION_ID, user);
+        Question targetQuestion = QuestionTest.updatedQuestion("오늘의 할 일은?", "자동차 주차하기", loginUser);
+        when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
+
+        qnaService.update(loginUser, QUESTION_ID, targetQuestion);
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void update_failed_when_entity_not_found() {
+        User loginUser = UserTest.newUser(USER_ID);
+        Question targetQuestion = QuestionTest.updatedQuestion("오늘의 할 일은?", "자동차 주차하기", loginUser);
+        when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.empty());
+
+        qnaService.update(loginUser, QUESTION_ID, targetQuestion);
     }
 }
