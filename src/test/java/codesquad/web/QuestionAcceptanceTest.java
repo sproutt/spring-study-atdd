@@ -3,6 +3,7 @@ package codesquad.web;
 import codesquad.HtmlFormDataBuilder;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import support.test.AcceptanceTest;
-
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,6 +32,11 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         Question question = new Question("before() Title", "before() Contents");
         question.setWriter(defaultUser());
         this.question = questionRepository.save(question);
+    }
+
+    @After
+    public void after() {
+        questionRepository.deleteAll();
     }
 
     @Test
@@ -108,7 +113,6 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         HttpEntity<MultiValueMap<String, Object>> request = htmlFormDataBuilder.build();
         //when
         ResponseEntity<String> response = basicAuthTemplate().exchange("/questions/1", HttpMethod.DELETE, request, String.class);
-
         //then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(questionRepository.findAll()
@@ -183,9 +187,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
                                                                      .addParameter("contents", "수정된 내용");
         HttpEntity<MultiValueMap<String, Object>> request = htmlFormDataBuilder.build();
         //when
-
         ResponseEntity<String> response = basicAuthTemplate().exchange("/questions/" + id, HttpMethod.PUT, request, String.class);
-
         //then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
     }
