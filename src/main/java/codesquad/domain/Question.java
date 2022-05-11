@@ -38,6 +38,12 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         this.contents = contents;
     }
 
+    public Question(Long id, String title, String contents) {
+        super(id);
+        this.title = title;
+        this.contents = contents;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -81,6 +87,10 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         this.title = updatedQuestion.getTitle();
         this.contents = updatedQuestion.getContents();
         this.writer = updatedQuestion.writer;
+    }
+
+    public void delete() {
+        this.deleted = true;
     }
 
     @Override
