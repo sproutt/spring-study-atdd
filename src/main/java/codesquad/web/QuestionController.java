@@ -25,28 +25,28 @@ public class QuestionController {
 
     @GetMapping("/form")
     public String form(@LoginUser User loginUser) {
-        log.debug("form() loginUser ={}", loginUser);
+        log.debug("QuestionController form() loginUser ={}", loginUser);
         return "qna/form";
     }
 
     @PostMapping("")
     public String create(@LoginUser User loginUser, Question question) {
-        log.debug("create() loginUser ={}", loginUser);
-        log.debug("create() question ={}", question);
+        log.debug("QuestionController create() loginUser ={}", loginUser);
+        log.debug("QuestionController create() question ={}", question);
         qnaService.create(loginUser, question);
         return "redirect:/users";
     }
 
     @DeleteMapping("/{id}")
     public String remove(@PathVariable Long id, @LoginUser User loginUser) throws CannotDeleteException {
-        log.debug("remove() loginUser ={}", loginUser);
+        log.debug("QuestionController remove() loginUser ={}", loginUser);
         qnaService.deleteQuestion(loginUser, id);
         return "redirect:/";
     }
 
     @GetMapping("/{id}")
     public String show(@PathVariable Long id, @LoginUser User loginUser, Model model) {
-        log.debug("show() loginUser ={}", loginUser);
+        log.debug("QuestionController show() loginUser ={}", loginUser);
         Question question = qnaService.findById(id);
         model.addAttribute("question", question);
         return "qna/show";
@@ -54,15 +54,15 @@ public class QuestionController {
 
     @GetMapping("/updateForm")
     public String updateForm(@LoginUser User loginUser) {
-        log.debug("updateForm() loginUser ={}", loginUser);
+        log.debug("QuestionController updateForm() loginUser ={}", loginUser);
         return "qna/updateForm";
     }
 
 
     @PutMapping("/{id}")
     public String update(@PathVariable Long id, @LoginUser User loginUser, Question question) {
-        log.debug("update() loginUser ={}", loginUser);
-        log.debug("update() question ={}", question);
+        log.debug("QuestionController update() loginUser ={}", loginUser);
+        log.debug("QuestionController update() question ={}", question);
         qnaService.update(loginUser, id, question);
         return "redirect:/";
     }
