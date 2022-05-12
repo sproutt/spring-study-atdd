@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service("qnaService")
 public class QnaService {
@@ -31,7 +30,7 @@ public class QnaService {
 
     public Question create(User loginUser, Question question) {
         question.writeBy(loginUser);
-        log.debug("question : {}", question);
+        log.debug("QnaService question ={}", question.getWriter());
         return questionRepository.save(question);
     }
 
@@ -41,12 +40,15 @@ public class QnaService {
     }
 
     @Transactional
-    public Question update(User loginUser, long id, Question updatedQuestion) {
+    public Question update(User loginUser, long id, Question newQuestion) {
         // TODO 수정 기능 구현
-        Question question = questionRepository.findById(id).filter(s -> s.getWriter()
-                                                      .equals(loginUser))
-                                        .orElseThrow(NoSuchElementException::new);
-        return question.update(updatedQuestion);
+        Question question = questionRepository.findById(id)
+                                              .filter(s -> s.getWriter()
+                                                            .equals(loginUser))
+                                              .orElseThrow(NoSuchElementException::new);
+
+        log.debug("QnaService update() question.getWriter() ={}", question.getWriter());
+        return question.update(newQuestion);
     }
 
     @Transactional
@@ -56,6 +58,7 @@ public class QnaService {
                                               .filter(s -> s.getWriter()
                                                             .equals(loginUser))
                                               .orElseThrow(NoSuchElementException::new);
+        log.debug("QnaService deleteQuestion setDeleted() called");
         question.setDeleted(true);
         questionRepository.delete(question);
     }
