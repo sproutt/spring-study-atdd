@@ -1,9 +1,6 @@
 package codesquad.web;
 
 import codesquad.HtmlFormDataBuilder;
-import codesquad.domain.User;
-import codesquad.security.HttpSessionUtils;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
