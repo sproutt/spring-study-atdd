@@ -49,7 +49,7 @@ public class LoginAcceptanceTest extends AcceptanceTest{
 		HttpEntity<MultiValueMap<String, Object>> request = builder.build();
 		ResponseEntity<String> response = template().postForEntity("/users/login", request, String.class);
 
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		assertThat(userRepository.findByUserId(userId).isPresent()).isTrue();
 	}
 

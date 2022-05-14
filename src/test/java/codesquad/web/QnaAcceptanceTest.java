@@ -103,7 +103,7 @@ public class QnaAcceptanceTest extends AcceptanceTest {
 	@Order(3)
 	public void question_delete_with_authorized_writer(){
 		ResponseEntity<String> response = delete(basicAuthTemplate());
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+ 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 	}
 
 	@Test
