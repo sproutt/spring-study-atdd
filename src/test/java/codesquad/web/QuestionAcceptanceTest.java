@@ -28,13 +28,11 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void htmlFormTestDataBuild() {
-        HtmlFormDataBuilder htmlFormTestDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
-        htmlFormTestDataBuilder.addParameter("userId", defaultUser().getUserId());
-        htmlFormTestDataBuilder.addParameter("password", defaultUser().getPassword());
-        htmlFormTestDataBuilder.addParameter("title", "title");
-        htmlFormTestDataBuilder.addParameter("contents", "aaaa");
-
-        htmlFormDataBuilder = htmlFormTestDataBuilder;
+        htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm()
+                                                 .addParameter("userId", defaultUser().getUserId())
+                                                 .addParameter("password", defaultUser().getPassword())
+                                                 .addParameter("title", "title")
+                                                 .addParameter("contents", "aaaa");
     }
 
     @Test
