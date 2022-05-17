@@ -25,7 +25,6 @@ import codesquad.service.QuestionService;
 public class QuestionController {
 	private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
-	@Resource(name = "questionService")
 	private QuestionService questionService;
 
 	@Autowired
