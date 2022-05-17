@@ -1,9 +1,9 @@
 package codesquad.validate;
 
 public class ValidationError {
-    private String fieldName;
+    private final String fieldName;
 
-    private String errorMessage;
+    private final String errorMessage;
 
     public ValidationError(String fieldName, String errorMessage) {
         this.fieldName = fieldName;

@@ -10,7 +10,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class BasicAuthInterceptor extends HandlerInterceptorAdapter {
@@ -29,7 +29,7 @@ public class BasicAuthInterceptor extends HandlerInterceptorAdapter {
         }
 
         String base64Credentials = authorization.substring("Basic".length()).trim();
-        String credentials = new String(Base64.getDecoder().decode(base64Credentials), Charset.forName("UTF-8"));
+        String credentials = new String(Base64.getDecoder().decode(base64Credentials), StandardCharsets.UTF_8);
         final String[] values = credentials.split(":", 2);
         log.debug("username : {}", values[0]);
         log.debug("password : {}", values[1]);

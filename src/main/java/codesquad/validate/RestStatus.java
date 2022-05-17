@@ -1,7 +1,7 @@
 package codesquad.validate;
 
 public class RestStatus {
-    private boolean status;
+    private final boolean status;
 
     public RestStatus(boolean status) {
         this.status = status;
