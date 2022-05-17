@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RestResponse extends RestStatus {
-    private Map<String, Object> result;
+    private final Map<String, Object> result;
 
     public RestResponse() {
         super(true);

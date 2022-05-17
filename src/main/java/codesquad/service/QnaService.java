@@ -40,7 +40,7 @@ public class QnaService {
     public Question update(User loginUser, long id, Question updatedQuestion) throws UnAuthorizedException {
         Question savedQuestion = findById(id);
 
-        if(!savedQuestion.isOwner(loginUser)) {
+        if (!savedQuestion.isOwner(loginUser)) {
             throw new UnAuthorizedException();
         }
 
@@ -54,7 +54,7 @@ public class QnaService {
         // TODO 삭제 기능 구현
         Question savedQuestion = findById(questionId);
 
-        if(!savedQuestion.isOwner(loginUser)) {
+        if (!savedQuestion.isOwner(loginUser)) {
             throw new CannotDeleteException("삭제 권한이 없습니다.");
         }
 

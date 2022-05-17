@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ValidationErrorsResponse extends RestStatus {
-    private List<ValidationError> errors;
+    private final List<ValidationError> errors;
 
     public ValidationErrorsResponse() {
         super(false);
