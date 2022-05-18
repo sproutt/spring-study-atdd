@@ -154,7 +154,11 @@ class QuestionControllerTest {
         //given
         dummyQuestion.writeBy(dummyUser);
 
-        QuestionDto questionDto = dummyQuestion.toDto();
+        QuestionDto questionDto = new QuestionDto(
+                dummyUser.getUserId(),
+                dummyQuestion.getTitle(),
+                dummyQuestion.getContents());
+
         questionDto.setContents("updateContents");
         questionDto.setTitle("updateTitle");
 
@@ -166,10 +170,10 @@ class QuestionControllerTest {
                        .param("title", "updateTitle")
                        .param("contents", "updateContents")
                        .param("writer", dummyUser.getUserId())
-                       .param("userId", "a")
-                       .param("password", "a")
-                       .param("name", "a")
-                       .param("email", "a")
+                       .param("userId", dummyUser.getUserId())
+                       .param("password", dummyUser.getPassword())
+                       .param("name", dummyUser.getName())
+                       .param("email", dummyUser.getEmail())
                        .param("id", String.valueOf(dummyQuestion.getId())))
                .andExpect(redirectedUrl(dummyQuestion.generateUrl()))
                .andExpect(model().attributeExists("question"))

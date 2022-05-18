@@ -4,6 +4,8 @@ import codesquad.CannotDeleteException;
 import codesquad.UnAuthenticationException;
 import codesquad.domain.*;
 import codesquad.web.dto.QuestionDto;
+import codesquad.web.mapper.QuestionMapper;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -16,21 +18,21 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service("qnaService")
+@RequiredArgsConstructor
 public class QnaService {
     private static final Logger log = LoggerFactory.getLogger(QnaService.class);
 
-    @Resource(name = "questionRepository")
-    private QuestionRepository questionRepository;
+    private final QuestionRepository questionRepository;
 
-    @Resource(name = "answerRepository")
-    private AnswerRepository answerRepository;
+    private final QuestionMapper questionMapper;
 
-    @Resource(name = "deleteHistoryService")
-    private DeleteHistoryService deleteHistoryService;
+    private final AnswerRepository answerRepository;
+
+    private final DeleteHistoryService deleteHistoryService;
 
     public Question create(User loginUser, Question question) {
         question.writeBy(loginUser);
-        log.debug("question : {}", question);
+        log.debug("question : {}", question.getId());
         return questionRepository.save(question);
     }
 
@@ -51,7 +53,7 @@ public class QnaService {
             throw new UnAuthenticationException("질문 작성자만 수정이 가능합니다");
         }
 
-        return savedQuestion.update(updatedQuestionDto);
+        return savedQuestion.update(questionMapper.updateFromDto(updatedQuestionDto, savedQuestion));
     }
 
     @Transactional

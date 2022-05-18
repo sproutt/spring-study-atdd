@@ -6,6 +6,7 @@ import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
 import codesquad.web.dto.QuestionDto;
+import codesquad.web.mapper.QuestionMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,9 @@ class QnaServiceTest {
 
     @InjectMocks
     private QnaService qnaService;
+
+    @Mock
+    private QuestionMapper questionMapper;
 
     private User dummyUser;
     private Question dummyQuestion;
@@ -99,12 +103,14 @@ class QnaServiceTest {
         dummyQuestion.writeBy(dummyUser);
         updatedQuestion.writeBy(dummyUser);
 
-        QuestionDto updatedQuestionDto = updatedQuestion.toDto();
+        QuestionDto updatedQuestionDto = new QuestionDto(
+                updatedQuestion.getWriter().getName(),
+                updatedQuestion.getTitle(),
+                updatedQuestion.getContents());
 
         //when
         when(questionRepository.findById(dummyQuestion.getId()))
                 .thenReturn(Optional.of(dummyQuestion));
-
         //then
         assertThrows(
                 UnAuthenticationException.class, () -> qnaService.update(user, dummyQuestion.getId(), updatedQuestionDto)
@@ -122,10 +128,15 @@ class QnaServiceTest {
         dummyQuestion.writeBy(dummyUser);
         updatedQuestion.writeBy(dummyUser);
 
-        QuestionDto updatedQuestionDto = updatedQuestion.toDto();
+        QuestionDto updatedQuestionDto = new QuestionDto(
+                updatedQuestion.getWriter().getName(),
+                updatedQuestion.getTitle(),
+                updatedQuestion.getContents());
 
         //when
         when(questionRepository.findById(1L)).thenReturn(Optional.of(updatedQuestion));
+        when(questionMapper.updateFromDto(updatedQuestionDto, updatedQuestion))
+                .thenReturn(updatedQuestion);
 
         Question savedQuestion = qnaService.update(dummyUser, dummyQuestion.getId(), updatedQuestionDto);
 
