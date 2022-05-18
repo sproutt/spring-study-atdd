@@ -24,10 +24,18 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyObject;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @WebMvcTest(QuestionController.class)
 @ExtendWith(MockitoExtension.class)
@@ -64,9 +72,8 @@ class QuestionControllerTest {
     @DisplayName("질문 생성 요청이 성공하면 홈으로 리다이렉트한다")
     void create() throws Exception {
         //given
-        //question, user 모두 id를 1로 하거나, 각각 1로 해도 오류가 뜸
-        Question question = createQuestion(0L);
-        User user = createUser(0L);
+        Question question = createQuestion(1L);
+        User user = createUser(1L);
 
         //when
         when(qnaService.create(user, question)).thenReturn(question);
@@ -74,6 +81,7 @@ class QuestionControllerTest {
         //then
         mockMvc.perform(post("/questions")
                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                       .param("id", String.valueOf(question.getId()))
                        .param("title", question.getTitle())
                        .param("contents", question.getContents())
                        .param("userId", user.getUserId())
