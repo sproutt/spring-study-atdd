@@ -32,9 +32,6 @@ class QnaServiceTest {
     @InjectMocks
     private QnaService qnaService;
 
-    @Mock
-    private QuestionMapper questionMapper;
-
     private User dummyUser;
     private Question dummyQuestion;
 
@@ -113,7 +110,7 @@ class QnaServiceTest {
                 .thenReturn(Optional.of(dummyQuestion));
         //then
         assertThrows(
-                UnAuthenticationException.class, () -> qnaService.update(user, dummyQuestion.getId(), updatedQuestionDto)
+                UnAuthenticationException.class, () -> qnaService.update(user, dummyQuestion.getId(), updatedQuestion)
         );
     }
 
@@ -135,10 +132,9 @@ class QnaServiceTest {
 
         //when
         when(questionRepository.findById(1L)).thenReturn(Optional.of(updatedQuestion));
-        when(questionMapper.updateFromDto(updatedQuestionDto, updatedQuestion))
-                .thenReturn(updatedQuestion);
 
-        Question savedQuestion = qnaService.update(dummyUser, dummyQuestion.getId(), updatedQuestionDto);
+
+        Question savedQuestion = qnaService.update(dummyUser, dummyQuestion.getId(), updatedQuestion);
 
         //then
         assertAll(

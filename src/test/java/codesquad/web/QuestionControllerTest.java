@@ -6,6 +6,7 @@ import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.service.QnaService;
 import codesquad.web.dto.QuestionDto;
+import codesquad.web.mapper.QuestionMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,9 @@ class QuestionControllerTest {
 
     @Mock
     private QnaService qnaService;
+
+    @Mock
+    private QuestionMapper questionMapper;
 
     private User dummyUser;
     private Question dummyQuestion;
@@ -154,16 +158,21 @@ class QuestionControllerTest {
         //given
         dummyQuestion.writeBy(dummyUser);
 
-        QuestionDto questionDto = new QuestionDto(
-                dummyUser.getUserId(),
-                dummyQuestion.getTitle(),
-                dummyQuestion.getContents());
-
-        questionDto.setContents("updateContents");
-        questionDto.setTitle("updateTitle");
+        Question updatedQuestion = createQuestion(1L);
+        updatedQuestion.setContents("updateContents");
+        updatedQuestion.setTitle("updateTitle");
+        updatedQuestion.writeBy(dummyUser);
 
         //when
-        when(qnaService.update(dummyUser, 1L, questionDto)).thenReturn(dummyQuestion);
+        when(questionMapper.toEntity(
+                new QuestionDto(
+                        dummyUser.getUserId(),
+                        updatedQuestion.getTitle(),
+                        updatedQuestion.getContents()
+                )))
+                .thenReturn(updatedQuestion);
+        when(qnaService.update(dummyUser, 1L, updatedQuestion)).thenReturn(updatedQuestion);
+
 
         //then
         mockMvc.perform(put("/questions/1")

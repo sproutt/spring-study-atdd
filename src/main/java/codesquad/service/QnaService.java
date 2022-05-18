@@ -2,9 +2,11 @@ package codesquad.service;
 
 import codesquad.CannotDeleteException;
 import codesquad.UnAuthenticationException;
-import codesquad.domain.*;
-import codesquad.web.dto.QuestionDto;
-import codesquad.web.mapper.QuestionMapper;
+import codesquad.domain.Answer;
+import codesquad.domain.AnswerRepository;
+import codesquad.domain.Question;
+import codesquad.domain.QuestionRepository;
+import codesquad.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -23,8 +24,6 @@ public class QnaService {
     private static final Logger log = LoggerFactory.getLogger(QnaService.class);
 
     private final QuestionRepository questionRepository;
-
-    private final QuestionMapper questionMapper;
 
     private final AnswerRepository answerRepository;
 
@@ -41,7 +40,7 @@ public class QnaService {
     }
 
     @Transactional
-    public Question update(User loginUser, long id, QuestionDto updatedQuestionDto) throws UnAuthenticationException {
+    public Question update(User loginUser, long id, Question updatedQuestion) throws UnAuthenticationException {
         if (loginUser == null) {
             throw new UnAuthenticationException("질문 작성자만 수정이 가능합니다");
         }
@@ -53,7 +52,7 @@ public class QnaService {
             throw new UnAuthenticationException("질문 작성자만 수정이 가능합니다");
         }
 
-        return savedQuestion.update(questionMapper.updateFromDto(updatedQuestionDto, savedQuestion));
+        return savedQuestion.update(updatedQuestion);
     }
 
     @Transactional
