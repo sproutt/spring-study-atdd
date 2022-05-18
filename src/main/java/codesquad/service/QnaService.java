@@ -40,11 +40,15 @@ public class QnaService {
 
     @Transactional
     public Question update(User loginUser, long id, QuestionDto updatedQuestionDto) throws UnAuthenticationException {
+        if (loginUser == null) {
+            throw new UnAuthenticationException("질문 작성자만 수정이 가능합니다");
+        }
+
         Question savedQuestion = questionRepository.findById(id)
                                                    .orElseThrow(NoSuchElementException::new);
 
-        if(!savedQuestion.isOwner(loginUser) || loginUser == null){
-            throw new UnAuthenticationException();
+        if(!savedQuestion.isOwner(loginUser)){
+            throw new UnAuthenticationException("질문 작성자만 수정이 가능합니다");
         }
 
         return savedQuestion.update(updatedQuestionDto);
@@ -53,14 +57,14 @@ public class QnaService {
     @Transactional
     public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
         if(loginUser == null){
-            throw new CannotDeleteException("삭제하지 못한다");
+            throw new CannotDeleteException("질문 작성자만 삭제 가능합니다");
         }
 
         Question savedQuestion = questionRepository.findById(questionId)
                                                    .orElseThrow(NoSuchElementException::new);
 
         if (!savedQuestion.isOwner(loginUser)) {
-            throw new CannotDeleteException("삭제하지 못한다");
+            throw new CannotDeleteException("질문 작성자만 삭제 가능합니다");
         }
 
         log.info("savedQuestion = {}", savedQuestion);
