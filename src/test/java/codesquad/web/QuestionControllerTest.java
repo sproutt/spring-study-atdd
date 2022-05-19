@@ -79,20 +79,24 @@ class QuestionControllerTest {
         Question question = createQuestion(1L);
         User user = createUser(1L);
 
+        String data =
+                "id=" + String.valueOf(question.getId()) + "&" +
+                "title=" + question.getTitle() + "&" +
+                "contents=" + question.getContents() + "&" +
+                "userId=" + user.getUserId() + "&" +
+                "password=" + user.getPassword() + "&" +
+                "name=" + user.getName() + "&" +
+                "email=" + user.getEmail();
+
         //when
         when(qnaService.create(user, question)).thenReturn(question);
 
         //then
         mockMvc.perform(post("/questions")
                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                       .param("id", String.valueOf(question.getId()))
-                       .param("title", question.getTitle())
-                       .param("contents", question.getContents())
-                       .param("userId", user.getUserId())
-                       .param("password", user.getPassword())
-                       .param("name", user.getName())
-                       .param("email", user.getEmail()))
-               .andExpect(redirectedUrl("/"));
+                       .content(data))
+               .andExpect(redirectedUrl("/"))
+               .andDo(print());
     }
 
     @Test
@@ -173,17 +177,19 @@ class QuestionControllerTest {
                 .thenReturn(updatedQuestion);
         when(qnaService.update(dummyUser, 1L, updatedQuestion)).thenReturn(updatedQuestion);
 
+        String data =
+                "title=" + "updateTitle" + "&" +
+                "contents=" + "updateContents" + "&" +
+                "writer=" + dummyUser.getUserId() + "&" +
+                "userId=" + dummyUser.getUserId() + "&" +
+                "password=" + dummyUser.getPassword() + "&" +
+                "name=" + dummyUser.getName() + "&" +
+                "email=" + dummyUser.getEmail();
 
         //then
         mockMvc.perform(put("/questions/1")
-                       .param("title", "updateTitle")
-                       .param("contents", "updateContents")
-                       .param("writer", dummyUser.getUserId())
-                       .param("userId", dummyUser.getUserId())
-                       .param("password", dummyUser.getPassword())
-                       .param("name", dummyUser.getName())
-                       .param("email", dummyUser.getEmail())
-                       .param("id", String.valueOf(dummyQuestion.getId())))
+                       .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                       .content(data))
                .andExpect(redirectedUrl(dummyQuestion.generateUrl()))
                .andExpect(model().attributeExists("question"))
                .andDo(print());
