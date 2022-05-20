@@ -1,8 +1,7 @@
-
 package codesquad.web;
 
 import codesquad.domain.Question;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import support.test.AcceptanceTest;
@@ -15,13 +14,21 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     public void create_authorized() {
         //given
         Question question = createQuestion();
-
         //when
         ResponseEntity<String> response = basicAuthTemplate().postForEntity("/api/questions", question, String.class);
-
         //then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(findByQuestionId(3L)).isNotNull();
+    }
+
+    @Test
+    public void create_unAuthorized() {
+        //given
+        Question question = createQuestion();
+        //when
+        ResponseEntity<String> response = template().postForEntity("/api/questions", question, String.class);
+        //then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
