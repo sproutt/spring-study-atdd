@@ -105,7 +105,7 @@ public class ApiQuestionControllerTest {
         String data = objectMapper.writeValueAsString(updatedQuestion);
 
         //when
-        when(qnaService.update(any(), 1L, updatedQuestion))
+        when(qnaService.update(any(), eq(1L), eq(updatedQuestion)))
                 .thenReturn(updatedQuestion);
 
         //then
