@@ -52,9 +52,21 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         ResponseEntity<String> response = basicAuthTemplate().exchange("/api/questions/1", HttpMethod.PUT, request, String.class);
         String responseBodyData = response.getBody();
         //then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-        assertThat(question.getTitle()).isEqualTo("title 수정");
-        assertThat(question.getContents()).isEqualTo("contents 수정");
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseBodyData).contains("title1 수정");
+        assertThat(responseBodyData).contains("contents1 수정");
+
+    }
+
+    @Test
+    public void update_unAuthorized() {
+        //given
+        Question question = new Question("title1 수정", "contents1 수정");
+        HttpEntity<Question> request = new HttpEntity<>(question);
+        //when
+        ResponseEntity<String> response = template().exchange("/api/questions/1", HttpMethod.PUT, request, String.class);
+        //then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     public Question createQuestion() {
