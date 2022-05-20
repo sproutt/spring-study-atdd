@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -112,8 +113,8 @@ public class ApiQuestionControllerTest {
         mockMvc.perform(put("/api/questions/1")
                                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                                 .content(data))
-               .andExpect(status().isFound())
-               .andExpect(redirectedUrl("/api/questions/1"))
+               .andExpect(status().isOk())
+               .andExpect(content().string(data))
                .andDo((print()));
     }
 
