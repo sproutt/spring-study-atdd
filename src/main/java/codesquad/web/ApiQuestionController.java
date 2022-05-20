@@ -32,8 +32,7 @@ public class ApiQuestionController {
     
     @PutMapping("/questions/{id}")
     public Question update(@LoginUser User user, @PathVariable long id, @RequestBody Question updatedQuestion) {
-
+        log.debug("수정요청 된 질문 ={}", updatedQuestion);
+        return qnaService.update(user, id, updatedQuestion);
     }
-
-
 }
