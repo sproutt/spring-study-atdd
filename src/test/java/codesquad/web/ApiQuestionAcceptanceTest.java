@@ -59,6 +59,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(question.getTitle()).isEqualTo("title 수정");
+        assertThat(question.getContents()).isEqualTo("contents 수정");
     }
 
     public Question createQuestion() {
