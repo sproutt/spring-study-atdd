@@ -118,6 +118,19 @@ public class ApiQuestionControllerTest {
                .andDo((print()));
     }
 
+    @Test
+    public void delete() throws Exception {
+        //given
+        String data = objectMapper.writeValueAsString(question);
+
+        //when
+        doNothing().when(qnaService).deleteQuestion(user, question.getId());
+
+        //then
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/questions/" + question.getId()))
+               .andExpect(status().isOk());
+    }
+
 
     private Question createQuestion(long id) {
         Question question = new Question("title1", "contents1");
