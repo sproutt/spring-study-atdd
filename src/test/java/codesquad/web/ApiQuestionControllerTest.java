@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -49,6 +50,26 @@ public class ApiQuestionControllerTest {
                                  .build();
         user = UserTest.JAVAJIGI;
         question = createQuestion(1L);
+    }
+
+    @Test
+    public void create() throws Exception {
+        //given
+        String questionData = objectMapper.writeValueAsString(question);
+
+        log.debug("데이터 ={}", questionData);
+        log.debug("테스트 질문 ={}", question);
+
+        //when
+        when(qnaService.create(any(), any())).thenReturn(question);
+
+        //then
+        mockMvc.perform(post("/api/questions")
+                                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                                .content(questionData))
+               .andExpect(status().isOk())
+               .andExpect(content().string(questionData))
+               .andDo(print());
     }
 
     @Test

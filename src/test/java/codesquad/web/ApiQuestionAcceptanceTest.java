@@ -12,6 +12,19 @@ import static org.assertj.core.api.Assertions.*;
 public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
+    public void create_authorized() {
+        //given
+        Question question = createQuestion();
+
+        //when
+        ResponseEntity<String> response = basicAuthTemplate().postForEntity("/api/questions", question, String.class);
+
+        //then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(findByQuestionId(3L)).isNotNull();
+    }
+
+    @Test
     public void read() {
         //given
         Question question = findByQuestionId(1L);
