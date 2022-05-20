@@ -97,6 +97,26 @@ public class ApiQuestionControllerTest {
                   .isEqualTo(data);
     }
 
+    @Test
+    public void update() throws Exception {
+        //given
+        Question updatedQuestion = new Question("title 수정", "contents 수정");
+
+        String data = objectMapper.writeValueAsString(updatedQuestion);
+
+        //when
+        when(qnaService.update(any(), 1L, updatedQuestion))
+                .thenReturn(updatedQuestion);
+
+        //then
+        mockMvc.perform(put("/api/questions/1")
+                                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                                .content(data))
+               .andExpect(status().isFound())
+               .andExpect(redirectedUrl("/api/questions/1"))
+               .andDo((print()));
+    }
+
 
     private Question createQuestion(long id) {
         Question question = new Question("title1", "contents1");

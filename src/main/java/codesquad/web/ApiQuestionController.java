@@ -29,4 +29,11 @@ public class ApiQuestionController {
     public Question read(@PathVariable long id) {
         return qnaService.findById(id);
     }
+    
+    @PutMapping("/questions/{id}")
+    public Question update(@LoginUser User user, @PathVariable long id, @RequestBody Question updatedQuestion) {
+
+    }
+
+
 }
