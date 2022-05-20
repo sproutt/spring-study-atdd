@@ -69,6 +69,34 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
+    @Test
+    public void delete_authorized() {
+        //given
+        Question savedQuestion = findByQuestionId(1L);
+        HttpEntity<Question> request = new HttpEntity<>(savedQuestion);
+
+        //when
+        ResponseEntity<String> response = basicAuthTemplate().exchange("/api/questions/1", HttpMethod.DELETE, request, String.class);
+
+        //then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(findByQuestionId(1L).isDeleted()).isEqualTo(true);
+    }
+
+    @Test
+    public void delete_unAuthorized() {
+        //given
+        Question savedQuestion = findByQuestionId(1L);
+        HttpEntity<Question> request = new HttpEntity<>(savedQuestion);
+        //when
+        ResponseEntity<String> response = template().exchange("/api/questions/1", HttpMethod.DELETE, request, String.class);
+        //then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(findByQuestionId(1L).isDeleted()).isEqualTo(false);
+    }
+
+
+
     public Question createQuestion() {
         return new Question("title1", "contents");
     }
