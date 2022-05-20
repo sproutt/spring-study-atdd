@@ -60,7 +60,6 @@ public class QnaService {
                                               .orElseThrow(NoSuchElementException::new);
         log.debug("QnaService deleteQuestion setDeleted() called");
         question.setDeleted(true);
-        questionRepository.delete(question);
     }
 
     public Iterable<Question> findAll() {
