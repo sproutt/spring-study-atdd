@@ -1,33 +1,37 @@
 package codesquad.service;
 
 import codesquad.CannotDeleteException;
-import codesquad.domain.*;
+import codesquad.UnAuthenticationException;
+import codesquad.domain.Answer;
+import codesquad.domain.AnswerRepository;
+import codesquad.domain.Question;
+import codesquad.domain.QuestionRepository;
+import codesquad.domain.User;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service("qnaService")
+@RequiredArgsConstructor
 public class QnaService {
     private static final Logger log = LoggerFactory.getLogger(QnaService.class);
 
-    @Resource(name = "questionRepository")
-    private QuestionRepository questionRepository;
+    private final QuestionRepository questionRepository;
 
-    @Resource(name = "answerRepository")
-    private AnswerRepository answerRepository;
+    private final AnswerRepository answerRepository;
 
-    @Resource(name = "deleteHistoryService")
-    private DeleteHistoryService deleteHistoryService;
+    private final DeleteHistoryService deleteHistoryService;
 
     public Question create(User loginUser, Question question) {
         question.writeBy(loginUser);
-        log.debug("question : {}", question);
+        log.debug("question : {}", question.getId());
         return questionRepository.save(question);
     }
 
@@ -36,14 +40,37 @@ public class QnaService {
     }
 
     @Transactional
-    public Question update(User loginUser, long id, Question updatedQuestion) {
-        // TODO 수정 기능 구현
-        return null;
+    public Question update(User loginUser, long id, Question updatedQuestion) throws UnAuthenticationException {
+        if (loginUser == null) {
+            throw new UnAuthenticationException("질문 작성자만 수정이 가능합니다");
+        }
+
+        Question savedQuestion = questionRepository.findById(id)
+                                                   .orElseThrow(NoSuchElementException::new);
+
+        if(!savedQuestion.isOwner(loginUser)){
+            throw new UnAuthenticationException("질문 작성자만 수정이 가능합니다");
+        }
+
+        return savedQuestion.update(updatedQuestion);
     }
 
     @Transactional
     public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
-        // TODO 삭제 기능 구현
+        if(loginUser == null){
+            throw new CannotDeleteException("질문 작성자만 삭제 가능합니다");
+        }
+
+        Question savedQuestion = questionRepository.findById(questionId)
+                                                   .orElseThrow(NoSuchElementException::new);
+
+        if (!savedQuestion.isOwner(loginUser)) {
+            throw new CannotDeleteException("질문 작성자만 삭제 가능합니다");
+        }
+
+        log.info("savedQuestion = {}", savedQuestion);
+
+        savedQuestion.delete();
     }
 
     public Iterable<Question> findAll() {

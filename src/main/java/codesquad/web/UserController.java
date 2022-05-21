@@ -56,11 +56,14 @@ public class UserController {
 
     @PostMapping("/login")
     public String login(LoginUserDto loginUserDto) {
-        log.info("login userId = {}", loginUserDto.getUserId());
-        log.info("login password = {}", loginUserDto.getPassword());
+        String userId = loginUserDto.getUserId();
+        String password = loginUserDto.getPassword();
+
+        log.info("login userId = {}", userId);
+        log.info("login password = {}", password);
 
         try {
-            User savedUser = userService.login(loginUserDto.getUserId(), loginUserDto.getPassword());
+            User savedUser = userService.login(userId, password);
             return "redirect:/users";
         } catch (UnAuthenticationException e) {
             return "/user/login_failed";

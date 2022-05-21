@@ -1,14 +1,16 @@
 package codesquad.web;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import support.helper.HtmlFormDataBuilder;
 import support.test.AcceptanceTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LoginAcceptanceTest extends AcceptanceTest {
 
@@ -34,7 +36,7 @@ public class LoginAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void login_fail() throws Exception{
+    public void login_fail() throws Exception {
         //given
         HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
         htmlFormDataBuilder.addParameter("userId", defaultUser().getUserId());
