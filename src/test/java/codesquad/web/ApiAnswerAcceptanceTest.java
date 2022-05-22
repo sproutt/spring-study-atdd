@@ -48,7 +48,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
         //given
 
         //when
-        ResponseEntity<String> response = template().getForEntity("/api/questions/1/answers", String.class);
+        ResponseEntity<String> response = template().getForEntity("/api/questions/1/answers/1", String.class);
 
         //then
         Assertions.assertAll(
