@@ -53,7 +53,6 @@ public class ApiAnswerControllerTest {
     public void create() throws Exception {
         //given
         String answerData = objectMapper.writeValueAsString(answer);
-
         //when
         when(qnaService.addAnswer(any(), anyLong(), any())).thenReturn(answer);
         //then

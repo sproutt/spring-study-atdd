@@ -19,12 +19,17 @@ public class ApiAnswerController {
         this.qnaService = qnaService;
     }
 
-    @PostMapping("/{question_id}/answers")
-    public Answer create(@LoginUser User user, @PathVariable("question_id") long questionId, @RequestBody String contents) {
+    @PostMapping("/{question-id}/answers")
+    public Answer create(@LoginUser User user, @PathVariable("question-id") long questionId, @RequestBody String contents) {
         log.info("user = {}", user);
         log.info("question-id = {}", questionId);
         log.info("contents = {}", contents);
 
         return qnaService.addAnswer(user, questionId, contents);
+    }
+
+    @GetMapping("/{question-id}/answers/{answer-id}")
+    public Answer read(@PathVariable("question-id") long questionId, @PathVariable("answer-id") long answerId) {
+        return qnaService.findByAnswerId(answerId);
     }
 }
