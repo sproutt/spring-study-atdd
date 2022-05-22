@@ -5,6 +5,8 @@ import codesquad.domain.AnswerRepository;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import support.test.AcceptanceTest;
@@ -56,6 +58,24 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
                                                                    .get()
                                                                    .getContents())));
     }
+
+    @Test
+    public void update_authorized(){
+        //given
+        Answer updatedAnswer = createAnswer();
+
+        HttpEntity<Answer> request = new HttpEntity<>(updatedAnswer);
+
+        //when
+        ResponseEntity<String> response = basicAuthTemplate().exchange("/api/questions/1/answers/1", HttpMethod.PUT, request, String.class);
+
+        //then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(answerRepository.findById(1L)
+                                   .get()
+                                   .getContents()).isEqualTo("contents1");
+    }
+
 
     private Answer createAnswer() {
         Answer answer = new Answer(defaultUser(), "contents1");
