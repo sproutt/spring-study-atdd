@@ -17,16 +17,18 @@ public class QnaService {
     private static final Logger log = LoggerFactory.getLogger(QnaService.class);
 
     private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
 
-    @Resource(name = "answerRepository")
-    private AnswerRepository answerRepository;
+    public QnaService(QuestionRepository questionRepository, AnswerRepository answerRepository) {
+        this.questionRepository = questionRepository;
+        this.answerRepository = answerRepository;
+    }
+
+
 
     @Resource(name = "deleteHistoryService")
     private DeleteHistoryService deleteHistoryService;
 
-    public QnaService(QuestionRepository questionRepository) {
-        this.questionRepository = questionRepository;
-    }
 
     public Question create(User loginUser, Question question) {
         question.writeBy(loginUser);
@@ -69,7 +71,6 @@ public class QnaService {
     public List<Question> findAll(Pageable pageable) {
         return questionRepository.findAll(pageable).getContent();
     }
-
 
     public Answer addAnswer(User loginUser, long questionId, String contents) {
         // TODO 답변 추가 기능 구현

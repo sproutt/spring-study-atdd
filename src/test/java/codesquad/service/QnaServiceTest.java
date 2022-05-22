@@ -27,6 +27,8 @@ public class QnaServiceTest {
 
     @Mock
     private QuestionRepository questionRepository;
+    @Mock
+    private AnswerRepository answerRepository;
 
     @InjectMocks
     private QnaService qnaService;
