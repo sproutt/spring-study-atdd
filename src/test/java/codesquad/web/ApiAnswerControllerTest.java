@@ -54,7 +54,7 @@ public class ApiAnswerControllerTest {
         //when
         when(qnaService.addAnswer(user, 1L, "contents1")).thenReturn(answer);
         //then
-        mockMvc.perform(post("/api/answers")
+        mockMvc.perform(post("/api/questions/1/answers")
                                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                                 .content(answer.getContents()))
                .andExpect(status().isOk())
