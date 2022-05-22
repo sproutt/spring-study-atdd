@@ -162,4 +162,21 @@ public class QnaServiceTest {
                 () -> assertThat(savedAnswer.getQuestion()).isEqualTo(answer.getQuestion()),
                 () -> assertThat(savedAnswer.getContents()).isEqualTo(answer.getContents()));
     }
+
+    @Test
+    public void 답변이_단건으로_잘_조회되는지_테스트() {
+        //given
+        Answer answer = new Answer(authorizedUser, "contents1");
+
+        //when
+        when(answerRepository.findById(1L)).thenReturn(Optional.of(answer));
+
+        Answer savedAnswer = qnaService.findByAnswerId(1L);
+
+        //then
+        assertAll(
+                () -> assertThat(savedAnswer.getWriter()).isEqualTo(answer.getWriter()),
+                () -> assertThat(savedAnswer.getQuestion()).isEqualTo(answer.getQuestion()),
+                () -> assertThat(savedAnswer.getContents()).isEqualTo(answer.getContents()));
+    }
 }
