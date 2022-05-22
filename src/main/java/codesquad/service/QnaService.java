@@ -86,4 +86,9 @@ public class QnaService {
         // TODO 답변 삭제 기능 구현 
         return null;
     }
+
+    public Answer findByAnswerId(long answerId) {
+        return answerRepository.findById(answerId)
+                               .orElseThrow(NoSuchElementException::new);
+    }
 }
