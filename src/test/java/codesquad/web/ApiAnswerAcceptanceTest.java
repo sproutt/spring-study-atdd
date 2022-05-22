@@ -22,11 +22,39 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
         Answer answer = createAnswer();
 
         //when
-        ResponseEntity<String> response = basicAuthTemplate().postForEntity("/api/answers", answer, String.class);
+        ResponseEntity<String> response = basicAuthTemplate().postForEntity("/api/questions/1/answers", answer, String.class);
 
         //then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(answerRepository.findById(3L).get()).isNotNull();
+    }
+
+    @Test
+    public void create_unauthorized() {
+        //given
+        Answer answer = createAnswer();
+
+        //when
+        ResponseEntity<String> response = template().postForEntity("/api/questions/1/answers", answer, String.class);
+
+        //then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    public void read() {
+        //given
+
+        //when
+        ResponseEntity<String> response = template().getForEntity("/api/questions/1/answers", String.class);
+
+        //then
+        Assertions.assertAll(
+                () -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK),
+                () -> assertThat(response.getBody()
+                                         .contains(answerRepository.findById(1L)
+                                                                   .get()
+                                                                   .getContents())));
     }
 
     private Answer createAnswer() {
