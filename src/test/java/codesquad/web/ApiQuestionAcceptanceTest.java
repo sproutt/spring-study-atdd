@@ -1,10 +1,8 @@
 package codesquad.web;
 
-import codesquad.HtmlFormDataBuilder;
 import codesquad.domain.Question;
 import org.junit.Test;
 import org.springframework.http.*;
-import org.springframework.util.MultiValueMap;
 import support.test.AcceptanceTest;
 
 import static org.assertj.core.api.Assertions.*;
