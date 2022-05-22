@@ -1,10 +1,7 @@
 package codesquad.service;
 
 import codesquad.CannotDeleteException;
-import codesquad.domain.Question;
-import codesquad.domain.QuestionRepository;
-import codesquad.domain.User;
-import codesquad.domain.UserTest;
+import codesquad.domain.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +15,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -146,5 +144,22 @@ public class QnaServiceTest {
 
         //then
         assertThat(noSuchElementException).isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    public void 한사용자가_로그인되어_있을_떄_답변이_잘_작성되는지_테스트() {
+        Question question = makeDefaultQuestion();
+        Answer answer = new Answer(authorizedUser, "contents1");
+        answer.toQuestion(question);
+
+        when(questionRepository.findById(1L)).thenReturn(Optional.ofNullable(question));
+        when(answerRepository.save(answer)).thenReturn(answer);
+
+        Answer savedAnswer = qnaService.addAnswer(authorizedUser, question.getId(), answer.getContents());
+
+        assertAll(
+                () -> assertThat(savedAnswer.getWriter()).isEqualTo(answer.getWriter()),
+                () -> assertThat(savedAnswer.getQuestion()).isEqualTo(answer.getQuestion()),
+                () -> assertThat(savedAnswer.getContents()).isEqualTo(answer.getContents()));
     }
 }
