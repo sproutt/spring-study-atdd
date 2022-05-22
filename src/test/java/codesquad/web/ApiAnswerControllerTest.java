@@ -18,8 +18,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -67,8 +66,6 @@ public class ApiAnswerControllerTest {
     @Test
     public void read() throws Exception {
         //given
-
-
         //when
         when(qnaService.findByAnswerId(1L)).thenReturn(answer);
 
@@ -77,5 +74,21 @@ public class ApiAnswerControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                .andExpect(status().isOk())
                .andExpect(content().string(objectMapper.writeValueAsString(answer)));
+    }
+    
+    @Test
+    public void update() throws Exception {
+        //given
+        String answerData = objectMapper.writeValueAsString(answer);
+
+        //when
+        when(qnaService.updateAnswer(user, 1L)).thenReturn(answer);
+        //then
+        mockMvc.perform(put("/api/questions/1/answers/1")
+                                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                                .content(answer.getContents()))
+               .andExpect(status().isOk())
+               .andExpect(content().string(answerData))
+               .andDo(print());
     }
 }
