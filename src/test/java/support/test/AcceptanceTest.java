@@ -1,10 +1,6 @@
 package support.test;
 
-import codesquad.domain.Question;
-import codesquad.domain.QuestionRepository;
-import codesquad.domain.User;
-import codesquad.domain.UserRepository;
-import org.assertj.core.api.Assertions;
+import codesquad.domain.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -61,4 +57,6 @@ public abstract class AcceptanceTest {
     protected Question findByQuestionId(long questionId) {
         return questionRepository.findById(questionId).get();
     }
+
+
 }
