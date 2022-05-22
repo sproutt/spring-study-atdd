@@ -3,6 +3,7 @@ package codesquad.web;
 import codesquad.domain.Answer;
 import codesquad.domain.AnswerRepository;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
