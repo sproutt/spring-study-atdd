@@ -34,7 +34,7 @@ public class ApiAnswerController {
     }
 
     @PutMapping("/{question-id}/answers/{answer-id}")
-    public Answer update(@PathVariable("question-id") long questionId, @PathVariable("answer-id") long answerId, String contents) {
-        return qnaService.updateAnswer(answerId, contents);
+    public Answer update(@LoginUser User user, @PathVariable("question-id") long questionId, @PathVariable("answer-id") long answerId, @RequestBody String contents) {
+        return qnaService.updateAnswer(user, answerId, contents);
     }
 }
