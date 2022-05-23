@@ -101,6 +101,21 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
                                    .isDeleted()).isEqualTo(true);
     }
 
+    @Test
+    public void delete_unauthorized() {
+        //given
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+
+        HttpEntity<Object> request = new HttpEntity<>(headers);
+
+        //when
+        ResponseEntity<String> response = template().exchange("/api/questions/1/answers/1", HttpMethod.DELETE, request, String.class);
+
+        //then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
     private Answer createAnswer() {
         Answer answer = new Answer(defaultUser(), "contents1");
         answer.toQuestion(findByQuestionId(1L));
