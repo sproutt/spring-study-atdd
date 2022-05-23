@@ -50,7 +50,7 @@ public class QnaService {
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
+    public Question deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
         // TODO 삭제 기능 구현
         Question savedQuestion = findById(questionId);
 
@@ -59,6 +59,7 @@ public class QnaService {
         }
 
         savedQuestion.delete();
+        return questionRepository.save(savedQuestion);
     }
 
     public Iterable<Question> findAll() {
