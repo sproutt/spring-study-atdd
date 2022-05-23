@@ -74,6 +74,17 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
                                    .getContents()).isEqualTo("수정된 내용");
     }
 
+    @Test
+    public void update_unauthorized() {
+        //given
+        HttpEntity<String> request = new HttpEntity<>("수정된 내용");
+
+        //when
+        ResponseEntity<String> response = template().exchange("/api/questions/1/answers/1", HttpMethod.PUT, request, String.class);
+
+        //then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
 
     private Answer createAnswer() {
         Answer answer = new Answer(defaultUser(), "contents1");
