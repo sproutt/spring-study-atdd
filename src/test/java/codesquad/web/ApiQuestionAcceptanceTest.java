@@ -87,10 +87,4 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         Question dbQuestion = getResource(location, Question.class);
         assertThat(dbQuestion.isDeleted()).isFalse();
     }
-
-    private HttpEntity createHttpEntity(Object body) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new HttpEntity(body, headers);
-    }
 }
