@@ -48,6 +48,21 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         assertThat(updatedQuestion.equalsTitleAndContents(response.getBody())).isTrue();
     }
 
+    @Test
+    public void update_다른_사람() {
+        ResponseEntity<Question> response = basicAuthTemplate().postForEntity("/api/questions", defaultQuestion(), Question.class);
+        String location = response.getHeaders().getLocation().getPath();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        User otherUser = newUser(2L);
+        Question savedQuestion = basicAuthTemplate().getForObject(location, Question.class);
+
+        Question updatedQuestion = new Question(savedQuestion.getId(), "오늘의 미션은?", "세차하기");
+
+        response = basicAuthTemplate(otherUser).exchange(location, HttpMethod.PUT, createHttpEntity(updatedQuestion), Question.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
     private HttpEntity createHttpEntity(Object body) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
