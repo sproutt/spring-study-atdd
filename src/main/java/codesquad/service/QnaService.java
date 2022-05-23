@@ -36,6 +36,10 @@ public class QnaService {
         return questionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
+    public Answer findAnswerById(long id) throws EntityNotFoundException {
+        return answerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    }
+
     @Transactional
     public Question update(User loginUser, long id, Question updatedQuestion) throws UnAuthorizedException {
         Question savedQuestion = findById(id);
@@ -75,6 +79,12 @@ public class QnaService {
         answer.toQuestion(findById(questionId));
         return answerRepository.save(answer);
 
+    }
+
+    public Answer updateAnswer(User loginUser, long id, String updatedContents) {
+        Answer answer = findAnswerById(id);
+        answer.updateContents(loginUser, updatedContents);
+        return answerRepository.save(answer);
     }
 
     public Answer deleteAnswer(User loginUser, long id) {
