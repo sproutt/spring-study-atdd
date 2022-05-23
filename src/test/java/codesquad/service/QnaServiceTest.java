@@ -1,6 +1,7 @@
 package codesquad.service;
 
 import codesquad.CannotDeleteException;
+import codesquad.UnAuthorizedException;
 import codesquad.domain.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -191,10 +192,24 @@ public class QnaServiceTest {
 
         Answer updatedAnswer = qnaService.updateAnswer(authorizedUser, 1L, updateContents);
 
-
         //then
         assertThat(updatedAnswer.getContents()).isEqualTo(answer.getContents());
         assertThat(updatedAnswer.getWriter()).isEqualTo(answer.getWriter());
+    }
+
+    @Test
+    public void 답변_작성자와_로그인한_사용자가_일치하지_않을_때_UnAuthorized를_던지는지_테스트() {
+        //given
+        Answer answer = new Answer(authorizedUser, "contents1");
+        String updateContents = "수정된 내용";
+
+        //when
+        when(answerRepository.findById(1L)).thenReturn(Optional.of(answer));
+
+        //then
+        assertThrows(
+                UnAuthorizedException.class, () -> qnaService.updateAnswer(unAuthorizedUser, 1L, updateContents));
+
     }
 
     @Test
