@@ -15,8 +15,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -196,5 +195,19 @@ public class QnaServiceTest {
         //then
         assertThat(updatedAnswer.getContents()).isEqualTo(answer.getContents());
         assertThat(updatedAnswer.getWriter()).isEqualTo(answer.getWriter());
+    }
+
+    @Test
+    public void 답변_작성자와_로그인한_사용자가_일치할_때_답변의_삭제상태가_제대로_비뀌는지_테스트() {
+        //given
+        Answer answer = new Answer(authorizedUser, "contents1");
+
+        //when
+        when(answerRepository.findById(1L)).thenReturn(Optional.of(answer));
+
+        Answer savedAnswer = qnaService.deleteAnswer(authorizedUser, 1L);
+
+        //then
+        assertTrue(savedAnswer.isDeleted());
     }
 }
