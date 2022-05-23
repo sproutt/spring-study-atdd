@@ -198,7 +198,7 @@ public class QnaServiceTest {
     }
 
     @Test
-    public void 답변_작성자와_로그인한_사용자가_일치하지_않을_때_UnAuthorized를_던지는지_테스트() {
+    public void 답변_작성자와_로그인한_사용자가_일치하지_않을_때_답변_수정할시_UnAuthorized를_던지는지_테스트() {
         //given
         Answer answer = new Answer(authorizedUser, "contents1");
         String updateContents = "수정된 내용";
@@ -224,5 +224,17 @@ public class QnaServiceTest {
 
         //then
         assertTrue(savedAnswer.isDeleted());
+    }
+
+    @Test
+    public void 답변_작성자와_로그인한_사용자가_일치하지_않을_때_답변_삭제할시_UnAuthorized를_던지는지_테스트() {
+        //given
+        Answer answer = new Answer(authorizedUser, "contents1");
+
+        //when
+        when(answerRepository.findById(1L)).thenReturn(Optional.of(answer));
+
+        //then
+        assertThrows(UnAuthorizedException.class, () -> qnaService.deleteAnswer(unAuthorizedUser, 1L));
     }
 }
