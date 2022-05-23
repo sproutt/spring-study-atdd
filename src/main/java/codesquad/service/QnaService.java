@@ -1,6 +1,7 @@
 package codesquad.service;
 
 import codesquad.CannotDeleteException;
+import codesquad.UnAuthorizedException;
 import codesquad.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +24,6 @@ public class QnaService {
         this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
     }
-
-
 
     @Resource(name = "deleteHistoryService")
     private DeleteHistoryService deleteHistoryService;
@@ -90,5 +89,15 @@ public class QnaService {
     public Answer findByAnswerId(long answerId) {
         return answerRepository.findById(answerId)
                                .orElseThrow(NoSuchElementException::new);
+    }
+
+    @Transactional
+    public Answer updateAnswer(User user, long answerId, String updatedContents) {
+
+        Answer savedAnswer = answerRepository.findById(answerId)
+                                         .filter(answer -> answer.isOwner(user))
+                                         .orElseThrow(UnAuthorizedException::new);
+
+        return savedAnswer.updateContents(updatedContents);
     }
 }
