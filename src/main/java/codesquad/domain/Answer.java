@@ -75,6 +75,13 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         this.contents = updatedContents;
     }
 
+    public void delete(User loginUser) {
+        if (!isOwner(loginUser)) {
+            throw new UnAuthorizedException();
+        }
+        this.deleted = true;
+    }
+
     @Override
     public String generateUrl() {
         return String.format("%s/answers/%d", question.generateUrl(), getId());
