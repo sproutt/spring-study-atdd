@@ -76,4 +76,9 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
     public String toString() {
         return "Answer [id=" + getId() + ", writer=" + writer + ", contents=" + contents + "]";
     }
+
+    public Answer updateContents(String contents) {
+        this.contents = contents;
+        return this;
+    }
 }
