@@ -74,6 +74,7 @@ public class QnaService {
         return questionRepository.findAll(pageable).getContent();
     }
 
+    @Transactional
     public Answer addAnswer(User loginUser, long questionId, String contents) {
         Answer answer = new Answer(loginUser, contents);
         answer.toQuestion(findById(questionId));
@@ -81,14 +82,17 @@ public class QnaService {
 
     }
 
+    @Transactional
     public Answer updateAnswer(User loginUser, long id, String updatedContents) {
         Answer answer = findAnswerById(id);
         answer.updateContents(loginUser, updatedContents);
         return answerRepository.save(answer);
     }
 
+    @Transactional
     public Answer deleteAnswer(User loginUser, long id) {
-        // TODO 답변 삭제 기능 구현 
-        return null;
+        Answer answer = findAnswerById(id);
+        answer.delete(loginUser);
+        return answerRepository.save(answer);
     }
 }
