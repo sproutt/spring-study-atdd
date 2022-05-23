@@ -63,6 +63,33 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
+    @Test
+    public void delete() {
+        ResponseEntity<Question> response = basicAuthTemplate().postForEntity("/api/questions", defaultQuestion(), Question.class);
+        String location = response.getHeaders().getLocation().getPath();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        Question savedQuestion = basicAuthTemplate().getForObject(location, Question.class);
+
+        basicAuthTemplate().delete(location);
+
+        Question dbQuestion = basicAuthTemplate().getForObject(location, Question.class, defaultUser());
+        assertThat(dbQuestion.isDeleted()).isTrue();
+    }
+
+    @Test
+    public void delete_다른_사람() {
+        ResponseEntity<Question> response = basicAuthTemplate().postForEntity("/api/questions", defaultQuestion(), Question.class);
+        String location = response.getHeaders().getLocation().getPath();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        User otherUser = newUser(2L);
+        Question savedQuestion = basicAuthTemplate().getForObject(location, Question.class);
+
+        basicAuthTemplate(otherUser).delete(location);
+
+        Question dbQuestion = basicAuthTemplate().getForObject(location, Question.class, defaultUser());
+        assertThat(dbQuestion.isDeleted()).isFalse();
+    }
+
     private HttpEntity createHttpEntity(Object body) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
