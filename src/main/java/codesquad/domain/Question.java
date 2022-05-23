@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Question extends AbstractEntity implements UrlGeneratable {
@@ -97,5 +98,14 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     @Override
     public String toString() {
         return "Question [id=" + getId() + ", title=" + title + ", contents=" + contents + ", writer=" + writer + "]";
+    }
+
+    public boolean equalsTitleAndContents(Question target) {
+        if(Objects.isNull(target)) {
+            return false;
+        }
+
+        return this.title.equals(target.getTitle()) &&
+                this.contents.equals(target.getContents());
     }
 }
