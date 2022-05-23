@@ -33,4 +33,9 @@ public class ApiAnswerController {
         headers.setLocation(URI.create("/api/questions/" + questionId + "/answers/" + savedAnswer.getId()));
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Answer> update(@LoginUser User loginUser, @PathVariable Long id, @Valid @RequestBody String updatedContents) {
+        return new ResponseEntity<>(qnaService.updateAnswer(loginUser, id, updatedContents), HttpStatus.OK);
+    }
 }
