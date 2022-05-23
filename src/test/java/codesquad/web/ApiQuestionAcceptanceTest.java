@@ -3,8 +3,7 @@ package codesquad.web;
 import codesquad.domain.Question;
 import codesquad.domain.User;
 import org.junit.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import support.test.AcceptanceTest;
 
 import static codesquad.domain.QuestionTest.newQuestion;
@@ -15,13 +14,12 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void create() {
-        User loginUser = newUser("javajigi");
-        Question newQuestion = newQuestion(loginUser);
-        ResponseEntity<Question> response = basicAuthTemplate(loginUser).postForEntity("/api/questions", newQuestion, Question.class);
+        Question newQuestion = defaultQuestion();
+        ResponseEntity<Question> response = basicAuthTemplate().postForEntity("/api/questions", newQuestion, Question.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         String location = response.getHeaders().getLocation().getPath();
 
-        Question dbQuestion = basicAuthTemplate(loginUser).getForObject(location, Question.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        Question dbQuestion = basicAuthTemplate().getForObject(location, Question.class);
         assertThat(dbQuestion).isNotNull();
     }
 
@@ -29,9 +27,30 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     public void show() {
         ResponseEntity<Question> response = basicAuthTemplate().postForEntity("/api/questions", defaultQuestion(), Question.class);
         String location = response.getHeaders().getLocation().getPath();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         response = template().getForEntity(location, Question.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
+    @Test
+    public void update() {
+        ResponseEntity<Question> response = basicAuthTemplate().postForEntity("/api/questions", defaultQuestion(), Question.class);
+        String location = response.getHeaders().getLocation().getPath();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        Question savedQuestion = basicAuthTemplate().getForObject(location, Question.class);
+
+        Question updatedQuestion = new Question(savedQuestion.getId(), "오늘의 미션은?", "세차하기");
+
+        response = basicAuthTemplate().exchange(location, HttpMethod.PUT, createHttpEntity(updatedQuestion), Question.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(updatedQuestion.equalsTitleAndContents(response.getBody())).isTrue();
+    }
+
+    private HttpEntity createHttpEntity(Object body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new HttpEntity(body, headers);
+    }
 }
