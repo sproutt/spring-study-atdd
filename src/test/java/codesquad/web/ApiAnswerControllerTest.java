@@ -13,14 +13,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ApiAnswerControllerTest {
@@ -89,5 +90,20 @@ public class ApiAnswerControllerTest {
                .andExpect(status().isOk())
                .andExpect(content().string(answerData))
                .andDo(print());
+    }
+
+    @Test
+    public void delete() throws Exception {
+        //given
+        answer.delete();
+
+        //when
+        when(qnaService.deleteAnswer(any(), anyLong())).thenReturn(answer);
+
+        //then
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/questions/1/answers/1")
+                                              .contentType(MediaType.APPLICATION_JSON_UTF8))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.deleted").value(true));
     }
 }
