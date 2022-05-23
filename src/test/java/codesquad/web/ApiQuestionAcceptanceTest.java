@@ -21,7 +21,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void create_unAuthorized() {
+    public void create_unauthorized() {
         //given
         Question question = createQuestion();
         //when
@@ -57,7 +57,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void update_unAuthorized() {
+    public void update_unauthorized() {
         //given
         Question question = new Question("title1 수정", "contents1 수정");
         HttpEntity<Question> request = new HttpEntity<>(question);
@@ -82,7 +82,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void delete_unAuthorized() {
+    public void delete_unauthorized() {
         //given
         Question savedQuestion = findByQuestionId(1L);
         HttpEntity<Question> request = new HttpEntity<>(savedQuestion);
