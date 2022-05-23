@@ -148,15 +148,16 @@ public class QnaServiceTest {
 
     @Test
     public void 한사용자가_로그인되어_있을_떄_답변이_잘_작성되는지_테스트() {
+        //given
         Question question = makeDefaultQuestion();
         Answer answer = new Answer(authorizedUser, "contents1");
         answer.toQuestion(question);
-
+        //when
         when(questionRepository.findById(1L)).thenReturn(Optional.ofNullable(question));
         when(answerRepository.save(answer)).thenReturn(answer);
 
         Answer savedAnswer = qnaService.addAnswer(authorizedUser, question.getId(), answer.getContents());
-
+        //then
         assertAll(
                 () -> assertThat(savedAnswer.getWriter()).isEqualTo(answer.getWriter()),
                 () -> assertThat(savedAnswer.getQuestion()).isEqualTo(answer.getQuestion()),
@@ -178,5 +179,22 @@ public class QnaServiceTest {
                 () -> assertThat(savedAnswer.getWriter()).isEqualTo(answer.getWriter()),
                 () -> assertThat(savedAnswer.getQuestion()).isEqualTo(answer.getQuestion()),
                 () -> assertThat(savedAnswer.getContents()).isEqualTo(answer.getContents()));
+    }
+
+    @Test
+    public void 답변_작성자와_로그인한_사용자가_일치할_때_답변이_잘_수정되는지_테스트() {
+        //given
+        Answer answer = new Answer(authorizedUser, "contents1");
+        String updateContents = "수정된 내용";
+
+        //when
+        when(answerRepository.findById(1L)).thenReturn(Optional.of(answer));
+
+        Answer updatedAnswer = qnaService.updateAnswer(authorizedUser, 1L, updateContents);
+
+
+        //then
+        assertThat(updatedAnswer.getContents()).isEqualTo(answer.getContents());
+        assertThat(updatedAnswer.getWriter()).isEqualTo(answer.getWriter());
     }
 }
