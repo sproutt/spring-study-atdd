@@ -81,9 +81,12 @@ public class QnaService {
         return answerRepository.save(answer);
     }
 
-    public Answer deleteAnswer(User loginUser, long id) {
-        // TODO 답변 삭제 기능 구현 
-        return null;
+    @Transactional
+    public Answer deleteAnswer(User user, long answerId) {
+        Answer savedAnswer = answerRepository.findById(answerId)
+                                             .filter(answer -> answer.isOwner(user))
+                                             .orElseThrow(UnAuthorizedException::new);
+        return savedAnswer.delete();
     }
 
     public Answer findByAnswerId(long answerId) {
