@@ -38,4 +38,9 @@ public class ApiAnswerController {
     public ResponseEntity<Answer> update(@LoginUser User loginUser, @PathVariable Long id, @Valid @RequestBody String updatedContents) {
         return new ResponseEntity<>(qnaService.updateAnswer(loginUser, id, updatedContents), HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Answer> delete(@LoginUser User loginUser, @PathVariable Long id) {
+        return new ResponseEntity<>(qnaService.deleteAnswer(loginUser, id), HttpStatus.OK);
+    }
 }
