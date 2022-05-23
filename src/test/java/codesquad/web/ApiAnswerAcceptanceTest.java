@@ -5,10 +5,7 @@ import codesquad.domain.AnswerRepository;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import support.test.AcceptanceTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -84,6 +81,24 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    public void delete_authorized() {
+        //given
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+
+        HttpEntity<Object> request = new HttpEntity<>(headers);
+
+        //when
+        ResponseEntity<String> response = basicAuthTemplate().exchange("/api/questions/1/answers/1", HttpMethod.DELETE, request, String.class);
+
+        //then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(answerRepository.findById(1L)
+                                   .get()
+                                   .isDeleted()).isEqualTo(true);
     }
 
     private Answer createAnswer() {
