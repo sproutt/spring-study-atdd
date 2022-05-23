@@ -62,9 +62,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     @Test
     public void update_authorized(){
         //given
-        Answer updatedAnswer = createAnswer();
-
-        HttpEntity<Answer> request = new HttpEntity<>(updatedAnswer);
+        HttpEntity<String> request = new HttpEntity<>("수정된 내용");
 
         //when
         ResponseEntity<String> response = basicAuthTemplate().exchange("/api/questions/1/answers/1", HttpMethod.PUT, request, String.class);
@@ -73,7 +71,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(answerRepository.findById(1L)
                                    .get()
-                                   .getContents()).isEqualTo("contents1");
+                                   .getContents()).isEqualTo("수정된 내용");
     }
 
 
