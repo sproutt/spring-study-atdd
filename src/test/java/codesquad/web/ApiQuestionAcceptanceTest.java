@@ -24,4 +24,14 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(dbQuestion).isNotNull();
     }
+
+    @Test
+    public void show() {
+        ResponseEntity<Question> response = basicAuthTemplate().postForEntity("/api/questions", defaultQuestion(), Question.class);
+        String location = response.getHeaders().getLocation().getPath();
+
+        response = template().getForEntity(location, Question.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
 }
