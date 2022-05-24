@@ -1,6 +1,7 @@
 package codesquad.service;
 
 import codesquad.CannotDeleteException;
+import codesquad.UnAuthorizedException;
 import codesquad.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 @Service("qnaService")
 public class QnaService {
@@ -31,19 +32,33 @@ public class QnaService {
         return questionRepository.save(question);
     }
 
-    public Optional<Question> findById(long id) {
-        return questionRepository.findById(id);
+    public Question findById(long id) throws EntityNotFoundException {
+        return questionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     @Transactional
-    public Question update(User loginUser, long id, Question updatedQuestion) {
-        // TODO 수정 기능 구현
-        return null;
+    public Question update(User loginUser, long id, Question updatedQuestion) throws UnAuthorizedException {
+        Question savedQuestion = findById(id);
+
+        if (!savedQuestion.isOwner(loginUser)) {
+            throw new UnAuthorizedException();
+        }
+
+        updatedQuestion.writeBy(loginUser);
+        savedQuestion.update(updatedQuestion);
+        return savedQuestion;
     }
 
     @Transactional
     public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
         // TODO 삭제 기능 구현
+        Question savedQuestion = findById(questionId);
+
+        if (!savedQuestion.isOwner(loginUser)) {
+            throw new CannotDeleteException("삭제 권한이 없습니다.");
+        }
+
+        savedQuestion.delete();
     }
 
     public Iterable<Question> findAll() {
