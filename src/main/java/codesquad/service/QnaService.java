@@ -36,6 +36,10 @@ public class QnaService {
         return questionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
+    public Answer findAnswerById(long id) throws EntityNotFoundException {
+        return answerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    }
+
     @Transactional
     public Question update(User loginUser, long id, Question updatedQuestion) throws UnAuthorizedException {
         Question savedQuestion = findById(id);
@@ -50,7 +54,7 @@ public class QnaService {
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
+    public Question deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
         // TODO 삭제 기능 구현
         Question savedQuestion = findById(questionId);
 
@@ -59,6 +63,7 @@ public class QnaService {
         }
 
         savedQuestion.delete();
+        return questionRepository.save(savedQuestion);
     }
 
     public Iterable<Question> findAll() {
@@ -69,13 +74,25 @@ public class QnaService {
         return questionRepository.findAll(pageable).getContent();
     }
 
+    @Transactional
     public Answer addAnswer(User loginUser, long questionId, String contents) {
-        // TODO 답변 추가 기능 구현
-        return null;
+        Answer answer = new Answer(loginUser, contents);
+        answer.toQuestion(findById(questionId));
+        return answerRepository.save(answer);
+
     }
 
+    @Transactional
+    public Answer updateAnswer(User loginUser, long id, String updatedContents) {
+        Answer answer = findAnswerById(id);
+        answer.updateContents(loginUser, updatedContents);
+        return answerRepository.save(answer);
+    }
+
+    @Transactional
     public Answer deleteAnswer(User loginUser, long id) {
-        // TODO 답변 삭제 기능 구현 
-        return null;
+        Answer answer = findAnswerById(id);
+        answer.delete(loginUser);
+        return answerRepository.save(answer);
     }
 }
