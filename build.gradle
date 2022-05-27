@@ -23,6 +23,8 @@ repositories {
 }
 
 dependencies {
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.11.2'
+    compile group: 'org.mockito', name: 'mockito-core', version: '2.22.0'
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.hibernate:hibernate-java8')

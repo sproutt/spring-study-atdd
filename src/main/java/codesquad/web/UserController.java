@@ -1,15 +1,19 @@
 package codesquad.web;
 
+import codesquad.UnAuthenticationException;
 import codesquad.domain.User;
+import codesquad.security.HttpSessionUtils;
 import codesquad.security.LoginUser;
 import codesquad.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -39,6 +43,21 @@ public class UserController {
         return "/user/list";
     }
 
+    @Autowired
+    private HttpSession httpSession;
+
+    @PostMapping("/login")
+    public String login(String userId, String password) {
+        try {
+            User user = userService.login(userId, password);
+            httpSession.setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
+            log.debug("컨트롤러 세션 값 =" + httpSession.getAttribute(HttpSessionUtils.USER_SESSION_KEY));
+        } catch (UnAuthenticationException unAuthenticationException) {
+            return "user/login_failed";
+        }
+        return "redirect:/users";
+    }
+
     @GetMapping("/{id}/form")
     public String updateForm(@LoginUser User loginUser, @PathVariable long id, Model model) {
         model.addAttribute("user", userService.findById(loginUser, id));
@@ -50,5 +69,4 @@ public class UserController {
         userService.update(loginUser, id, target);
         return "redirect:/users";
     }
-
 }

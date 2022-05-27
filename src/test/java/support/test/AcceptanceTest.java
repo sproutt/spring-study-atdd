@@ -1,7 +1,6 @@
 package support.test;
 
-import codesquad.domain.User;
-import codesquad.domain.UserRepository;
+import codesquad.domain.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +19,9 @@ public abstract class AcceptanceTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private QuestionRepository questionRepository;
+
     public TestRestTemplate template() {
         return template;
     }
@@ -36,7 +38,21 @@ public abstract class AcceptanceTest {
         return findByUserId(DEFAULT_LOGIN_USER);
     }
 
+    protected User save(User user) {
+        return userRepository.save(user);
+    }
+
+    protected void deleteAll() {
+        userRepository.deleteAll();
+    }
+
     protected User findByUserId(String userId) {
         return userRepository.findByUserId(userId).get();
     }
+
+    protected Question findByQuestionId(long questionId) {
+        return questionRepository.findById(questionId).get();
+    }
+
+
 }
