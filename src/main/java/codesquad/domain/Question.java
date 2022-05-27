@@ -8,32 +8,35 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Question extends AbstractEntity implements UrlGeneratable {
-    @Size(min = 3, max = 100)
-    @Column(length = 100, nullable = false)
-    private String title;
-
-    @Size(min = 3)
-    @Lob
-    private String contents;
-
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_question_writer"))
-    private User writer;
-
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     @Where(clause = "deleted = false")
     @OrderBy("id ASC")
-    private List<Answer> answers = new ArrayList<>();
-
+    private final List<Answer> answers = new ArrayList<>();
+    @Size(min = 3, max = 100)
+    @Column(length = 100, nullable = false)
+    private String title;
+    @Size(min = 3)
+    @Lob
+    private String contents;
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_question_writer"))
+    private User writer;
     private boolean deleted = false;
 
     public Question() {
     }
 
     public Question(String title, String contents) {
+        this.title = title;
+        this.contents = contents;
+    }
+
+    public Question(Long id, String title, String contents) {
+        super(id);
         this.title = title;
         this.contents = contents;
     }
@@ -77,6 +80,16 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return deleted;
     }
 
+    public void update(Question updatedQuestion) {
+        this.title = updatedQuestion.getTitle();
+        this.contents = updatedQuestion.getContents();
+        this.writer = updatedQuestion.writer;
+    }
+
+    public void delete() {
+        this.deleted = true;
+    }
+
     @Override
     public String generateUrl() {
         return String.format("/questions/%d", getId());
@@ -85,5 +98,14 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     @Override
     public String toString() {
         return "Question [id=" + getId() + ", title=" + title + ", contents=" + contents + ", writer=" + writer + "]";
+    }
+
+    public boolean equalsTitleAndContents(Question target) {
+        if(Objects.isNull(target)) {
+            return false;
+        }
+
+        return this.title.equals(target.getTitle()) &&
+                this.contents.equals(target.getContents());
     }
 }
