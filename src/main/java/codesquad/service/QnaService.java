@@ -10,14 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Service("qnaService")
 public class QnaService {
     private static final Logger log = LoggerFactory.getLogger(QnaService.class);
 
-    @Resource(name = "questionRepository")
-    private QuestionRepository questionRepository;
+    private final QuestionRepository questionRepository;
 
     @Resource(name = "answerRepository")
     private AnswerRepository answerRepository;
@@ -25,25 +24,43 @@ public class QnaService {
     @Resource(name = "deleteHistoryService")
     private DeleteHistoryService deleteHistoryService;
 
+    public QnaService(QuestionRepository questionRepository) {
+        this.questionRepository = questionRepository;
+    }
+
     public Question create(User loginUser, Question question) {
         question.writeBy(loginUser);
-        log.debug("question : {}", question);
+        log.debug("QnaService question ={}", question.getWriter());
         return questionRepository.save(question);
     }
 
-    public Optional<Question> findById(long id) {
-        return questionRepository.findById(id);
+    public Question findById(long id) {
+        return questionRepository.findById(id)
+                                 .orElseThrow(NoSuchElementException::new);
     }
 
     @Transactional
-    public Question update(User loginUser, long id, Question updatedQuestion) {
+    public Question update(User loginUser, long id, Question newQuestion) {
         // TODO 수정 기능 구현
-        return null;
+        Question question = questionRepository.findById(id)
+                                              .filter(s -> s.getWriter()
+                                                            .equals(loginUser))
+                                              .orElseThrow(NoSuchElementException::new);
+
+        log.debug("QnaService update() question.getWriter() ={}", question.getWriter());
+        return question.update(newQuestion);
     }
 
     @Transactional
     public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
         // TODO 삭제 기능 구현
+        Question question = questionRepository.findById(questionId)
+                                              .filter(s -> s.getWriter()
+                                                            .equals(loginUser))
+                                              .orElseThrow(NoSuchElementException::new);
+        log.debug("QnaService deleteQuestion setDeleted() called");
+        question.setDeleted(true);
+        questionRepository.delete(question);
     }
 
     public Iterable<Question> findAll() {
@@ -53,6 +70,7 @@ public class QnaService {
     public List<Question> findAll(Pageable pageable) {
         return questionRepository.findAll(pageable).getContent();
     }
+
 
     public Answer addAnswer(User loginUser, long questionId, String contents) {
         // TODO 답변 추가 기능 구현

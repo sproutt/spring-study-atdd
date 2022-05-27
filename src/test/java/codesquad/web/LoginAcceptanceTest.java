@@ -1,71 +1,66 @@
 package codesquad.web;
 
 import codesquad.HtmlFormDataBuilder;
-import codesquad.domain.User;
-import codesquad.security.HttpSessionUtils;
+import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpSession;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import support.test.AcceptanceTest;
 
 import static org.assertj.core.api.Assertions.*;
 
+@Transactional
 public class LoginAcceptanceTest extends AcceptanceTest {
     public static final Logger log =  LoggerFactory.getLogger(LoginAcceptanceTest.class);
+
+    private static String userId;
+    private static String password;
+    private static String name;
+    private static String email;
+
+    @BeforeClass
+    public static void init() {
+        userId = "javajigi";
+        password = "test";
+        name = "자바지기";
+        email = "javajigi@slipp.net";
+    }
 
     @Test
     public void login_success() throws Exception {
         //given
-        String userId = "user1";
-        String password = "password1";
-        String name = "name1";
-        String email = "email1@gmail.com";
-        User user = new User(userId, password, name, email);
-        save(user);
-
         HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodeForm();
         htmlFormDataBuilder.addParameter("userId", userId);
         htmlFormDataBuilder.addParameter("password", password);
-        htmlFormDataBuilder.addParameter("name", name);
-        htmlFormDataBuilder.addParameter("email", email);
-        HttpEntity<MultiValueMap<String, Object>> request = htmlFormDataBuilder.build();
-        MockHttpSession session = new MockHttpSession();
+        HttpEntity<MultiValueMap<String, Object>> request = htmlFormDataBuilder.build();;
 
         // when
-        ResponseEntity<String> response = basicAuthTemplate(user).postForEntity("/users/login", request, String.class);
-        session.setAttribute(HttpSessionUtils.USER_SESSION_KEY, findByUserId(userId));
-
+        ResponseEntity<String> response = basicAuthTemplate().postForEntity("/users/login", request, String.class);
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-        assertThat(session.getAttribute(HttpSessionUtils.USER_SESSION_KEY)).isEqualTo(user);
+        assertThat(response.getHeaders()
+                           .get("Set-Cookie")
+                           .get(0)).isNotEmpty();
     }
 
     @Test
     public void login_failed() throws Exception {
         // given
-        String userId = "user1";
-        String password = "password1";
-        String name = "name1";
-        String email = "email1@gmail.com";
-        User user = new User(userId, password, name, email);
-        save(user);
-
         HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodeForm();
-        htmlFormDataBuilder.addParameter("userId", "user2");
+        htmlFormDataBuilder.addParameter("userId", "wrongId");
         htmlFormDataBuilder.addParameter("password", password);
-        htmlFormDataBuilder.addParameter("name", name);
-        htmlFormDataBuilder.addParameter("email", email);
         HttpEntity<MultiValueMap<String, Object>> request = htmlFormDataBuilder.build();
-        MockHttpSession session = new MockHttpSession();
 
         // when
-        ResponseEntity<String> response = basicAuthTemplate(user).postForEntity("/users/login", request, String.class);
-        session.setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
+        ResponseEntity<String> response = template().postForEntity("/users/login", request, String.class);
+        log.debug("response의 헤더 = {}", response.getHeaders());
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getHeaders()
+                           .get("Set-Cookie")).isNull();
     }
 }
