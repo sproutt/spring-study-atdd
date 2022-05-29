@@ -92,7 +92,6 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         ResponseEntity<String> response = basicAuthTemplate().postForEntity(String.format("/questions/%d", defaultQuestion().getId()), request, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-        assertThat(response.getHeaders().getLocation().getPath()).startsWith("/questions");
     }
 
     @Test
