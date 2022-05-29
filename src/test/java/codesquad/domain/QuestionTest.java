@@ -19,7 +19,7 @@ public class QuestionTest {
     }
 
     @Test
-    public void 질문한_사람과_로그인한_사람이_다른_경우_삭제가_안되는지_테스트() throws CannotDeleteException {
+    public void 질문한_사람과_로그인한_사람이_다른_경우_삭제가_안되는지_테스트() {
         //given
         User otherUser = UserTest.SANJIGI;
 
