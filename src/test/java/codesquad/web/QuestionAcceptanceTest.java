@@ -115,8 +115,9 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         ResponseEntity<String> response = basicAuthTemplate().exchange("/questions/1", HttpMethod.DELETE, request, String.class);
         //then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-        assertThat(questionRepository.findAll()
-                                     .size()).isEqualTo(size - 1);
+        assertThat(questionRepository.findById(1L)
+                                     .get()
+                                     .isDeleted()).isEqualTo(true);
     }
 
     @Test

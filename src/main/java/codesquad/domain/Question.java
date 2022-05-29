@@ -6,6 +6,7 @@ import support.domain.UrlGeneratable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,7 +74,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     }
 
     public void addAnswer(Answer answer) {
-        answer.toQuestion(this);
+        answer.addToQuestion(this);
         answers.add(answer);
     }
 
@@ -100,5 +101,30 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     @Override
     public String toString() {
         return "Question [id=" + getId() + ", title=" + title + ", contents=" + contents + ", writer=" + writer + "]";
+    }
+
+    public List<DeleteHistory> delete(User loginUser) {
+        List<DeleteHistory> deleteHistories = new ArrayList<>();
+        if (!this.getWriter()
+                     .equals(loginUser)) {
+            return deleteHistories;
+        }
+
+        if (answers.size() == 0) {
+            this.deleted = true;
+            deleteHistories.add(new DeleteHistory(ContentType.QUESTION, getId(), getWriter(), LocalDateTime.now()));
+            return deleteHistories;
+        }
+
+        for (Answer answer : answers) {
+            if (answer.isOwner(loginUser)) {
+                answer.delete();
+                this.deleted = true;
+                deleteHistories.add(new DeleteHistory(ContentType.QUESTION, getId(), getWriter(), LocalDateTime.now()));
+                deleteHistories.add(new DeleteHistory(ContentType.ANSWER, answer.getId(), answer.getWriter(), LocalDateTime.now()));
+                return deleteHistories;
+            }
+        }
+        return deleteHistories;
     }
 }

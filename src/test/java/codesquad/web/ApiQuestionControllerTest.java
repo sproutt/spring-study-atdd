@@ -3,7 +3,7 @@ package codesquad.web;
 import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.domain.UserTest;
-import codesquad.service.QnaService;
+import codesquad.service.QuestionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
@@ -33,7 +33,7 @@ public class ApiQuestionControllerTest {
     public static final Logger log = LoggerFactory.getLogger(ApiQuestionAcceptanceTest.class);
 
     @Mock
-    private QnaService qnaService;
+    private QuestionService questionService;
 
     @InjectMocks
     private ApiQuestionController apiQuestionController;
@@ -63,7 +63,7 @@ public class ApiQuestionControllerTest {
         log.debug("테스트 질문 ={}", question);
 
         //when
-        when(qnaService.create(any(), any())).thenReturn(question);
+        when(questionService.create(any(), any())).thenReturn(question);
 
         //then
         mockMvc.perform(post("/api/questions")
@@ -81,7 +81,7 @@ public class ApiQuestionControllerTest {
 
 
         //when
-        when(qnaService.findById(1L)).thenReturn(question);
+        when(questionService.findById(1L)).thenReturn(question);
 
         //then
         MvcResult result = mockMvc.perform(get("/api/questions/1")
@@ -107,7 +107,7 @@ public class ApiQuestionControllerTest {
         String data = objectMapper.writeValueAsString(updatedQuestion);
 
         //when
-        when(qnaService.update(any(), eq(1L), eq(updatedQuestion)))
+        when(questionService.update(any(), eq(1L), eq(updatedQuestion)))
                 .thenReturn(updatedQuestion);
 
         //then
@@ -125,7 +125,7 @@ public class ApiQuestionControllerTest {
         String data = objectMapper.writeValueAsString(question);
 
         //when
-        doNothing().when(qnaService).deleteQuestion(user, question.getId());
+        doNothing().when(questionService).deleteQuestion(user, question.getId());
 
         //then
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/questions/" + question.getId()))

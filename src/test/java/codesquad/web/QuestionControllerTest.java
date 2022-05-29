@@ -2,14 +2,13 @@ package codesquad.web;
 
 import codesquad.domain.User;
 import codesquad.domain.UserTest;
-import codesquad.service.QnaService;
+import codesquad.service.QuestionService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -23,7 +22,7 @@ public class QuestionControllerTest {
     QuestionController questionController;
 
     @Mock
-    QnaService qnaService;
+    QuestionService questionService;
 
     private User user;
     private MockMvc mockMvc;

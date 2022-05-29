@@ -3,7 +3,8 @@ package codesquad.web;
 import codesquad.domain.Answer;
 import codesquad.domain.User;
 import codesquad.domain.UserTest;
-import codesquad.service.QnaService;
+import codesquad.service.AnswerService;
+import codesquad.service.QuestionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ApiAnswerControllerTest {
 
     @Mock
-    private QnaService qnaService;
+    private AnswerService answerService;
 
     @InjectMocks
     private ApiAnswerController apiAnswerController;
@@ -53,7 +54,7 @@ public class ApiAnswerControllerTest {
         //given
         String answerData = objectMapper.writeValueAsString(answer);
         //when
-        when(qnaService.addAnswer(any(), anyLong(), any())).thenReturn(answer);
+        when(answerService.createAnswer(any(), anyLong(), any())).thenReturn(answer);
         //then
         mockMvc.perform(post("/api/questions/1/answers")
                                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -67,7 +68,7 @@ public class ApiAnswerControllerTest {
     public void read() throws Exception {
         //given
         //when
-        when(qnaService.findByAnswerId(1L)).thenReturn(answer);
+        when(answerService.findByAnswerId(1L)).thenReturn(answer);
 
         //then
         mockMvc.perform(get("/api/questions/1/answers/1")
@@ -82,7 +83,7 @@ public class ApiAnswerControllerTest {
         String answerData = objectMapper.writeValueAsString(answer);
 
         //when
-        when(qnaService.updateAnswer(any(), anyLong(), anyString())).thenReturn(answer);
+        when(answerService.updateAnswer(any(), anyLong(), anyString())).thenReturn(answer);
         //then
         mockMvc.perform(put("/api/questions/1/answers/1")
                                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -98,7 +99,7 @@ public class ApiAnswerControllerTest {
         answer.delete();
 
         //when
-        when(qnaService.deleteAnswer(any(), anyLong())).thenReturn(answer);
+        when(answerService.deleteAnswer(any(), anyLong())).thenReturn(answer);
 
         //then
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/questions/1/answers/1")

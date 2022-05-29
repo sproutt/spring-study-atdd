@@ -118,7 +118,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
     private Answer createAnswer() {
         Answer answer = new Answer(defaultUser(), "contents1");
-        answer.toQuestion(findByQuestionId(1L));
+        answer.addToQuestion(findByQuestionId(1L));
         return answer;
     }
 }
