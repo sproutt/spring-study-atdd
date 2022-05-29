@@ -1,33 +1,23 @@
 package codesquad.service;
 
 import codesquad.CannotDeleteException;
-import codesquad.UnAuthorizedException;
 import codesquad.domain.*;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-@Service("qnaService")
-public class QnaService {
-    private static final Logger log = LoggerFactory.getLogger(QnaService.class);
+@Service
+@RequiredArgsConstructor
+public class QuestionService {
+    private static final Logger log = LoggerFactory.getLogger(QuestionService.class);
 
     private final QuestionRepository questionRepository;
-    private final AnswerRepository answerRepository;
-
-    public QnaService(QuestionRepository questionRepository, AnswerRepository answerRepository) {
-        this.questionRepository = questionRepository;
-        this.answerRepository = answerRepository;
-    }
-
-    @Resource(name = "deleteHistoryService")
-    private DeleteHistoryService deleteHistoryService;
-
 
     public Question create(User loginUser, Question question) {
         question.writeBy(loginUser);
@@ -45,7 +35,7 @@ public class QnaService {
         // TODO 수정 기능 구현
         Question question = questionRepository.findById(id)
                                               .filter(s -> s.getWriter()
-                                                            .equals(loginUser))
+                                                      .isLoginUser(loginUser))
                                               .orElseThrow(NoSuchElementException::new);
 
         log.debug("QnaService update() question.getWriter() ={}", question.getWriter());
@@ -60,7 +50,8 @@ public class QnaService {
                                                             .equals(loginUser))
                                               .orElseThrow(NoSuchElementException::new);
         log.debug("QnaService deleteQuestion setDeleted() called");
-        question.setDeleted(true);
+
+        question.delete();
     }
 
     public Iterable<Question> findAll() {
@@ -69,38 +60,5 @@ public class QnaService {
 
     public List<Question> findAll(Pageable pageable) {
         return questionRepository.findAll(pageable).getContent();
-    }
-
-    public Answer addAnswer(User loginUser, long questionId, String contents) {
-        Question question = findById(questionId);
-        Answer answer = new Answer(loginUser, contents);
-        answer.toQuestion(question);
-
-        log.debug("answer ={}", answer);
-
-        return answerRepository.save(answer);
-    }
-
-    @Transactional
-    public Answer deleteAnswer(User user, long answerId) {
-        Answer savedAnswer = answerRepository.findById(answerId)
-                                             .filter(answer -> answer.isOwner(user))
-                                             .orElseThrow(UnAuthorizedException::new);
-        return savedAnswer.delete();
-    }
-
-    public Answer findByAnswerId(long answerId) {
-        return answerRepository.findById(answerId)
-                               .orElseThrow(NoSuchElementException::new);
-    }
-
-    @Transactional
-    public Answer updateAnswer(User user, long answerId, String updatedContents) {
-
-        Answer savedAnswer = answerRepository.findById(answerId)
-                                         .filter(answer -> answer.isOwner(user))
-                                         .orElseThrow(UnAuthorizedException::new);
-
-        return savedAnswer.updateContents(updatedContents);
     }
 }

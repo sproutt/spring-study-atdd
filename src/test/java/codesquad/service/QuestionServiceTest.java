@@ -20,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class QnaServiceTest {
-    public static final Logger log = LoggerFactory.getLogger(QnaServiceTest.class);
+public class QuestionServiceTest {
+    public static final Logger log = LoggerFactory.getLogger(QuestionServiceTest.class);
 
     @Mock
     private QuestionRepository questionRepository;
@@ -29,7 +29,7 @@ public class QnaServiceTest {
     private AnswerRepository answerRepository;
 
     @InjectMocks
-    private QnaService qnaService;
+    private QuestionService questionService;
 
     private User authorizedUser;
     private User unAuthorizedUser;
@@ -56,7 +56,7 @@ public class QnaServiceTest {
         when(questionRepository.save(beforeSavedQuestion)).thenReturn(beforeSavedQuestion);
 
         //when
-        Question savedQuestion = qnaService.create(authorizedUser, beforeSavedQuestion);
+        Question savedQuestion = questionService.create(authorizedUser, beforeSavedQuestion);
         log.debug("beforeSavedQuestion ={}", beforeSavedQuestion);
         log.debug("savedQuestion ={}", savedQuestion);
 
@@ -74,7 +74,7 @@ public class QnaServiceTest {
         when(questionRepository.findById(question.getId())).thenReturn(Optional.of(question));
 
         //when
-        Question afterFindByIdQuestion = qnaService.findById(question.getId());
+        Question afterFindByIdQuestion = questionService.findById(question.getId());
 
         //then
         assertThat(question).isEqualTo(afterFindByIdQuestion);
@@ -88,7 +88,7 @@ public class QnaServiceTest {
         when(questionRepository.findById(question.getId())).thenReturn(Optional.of(question));
 
         //when
-        qnaService.deleteQuestion(authorizedUser, question.getId());
+        questionService.deleteQuestion(authorizedUser, question.getId());
         log.debug("question isDeleted ={}", question.isDeleted());
 
         //then
@@ -103,7 +103,7 @@ public class QnaServiceTest {
         when(questionRepository.findById(question.getId())).thenReturn(Optional.of(question));
 
         //when
-        NoSuchElementException noSuchElementException = assertThrows(NoSuchElementException.class, () -> qnaService.deleteQuestion(unAuthorizedUser, question.getId()));
+        NoSuchElementException noSuchElementException = assertThrows(NoSuchElementException.class, () -> questionService.deleteQuestion(unAuthorizedUser, question.getId()));
 
         //then
         log.debug("question isDeleted ={}", question.isDeleted());
@@ -120,7 +120,7 @@ public class QnaServiceTest {
         when(questionRepository.findById(question.getId())).thenReturn(Optional.of(question));
 
         //when
-        Question afterUpdateQuestion = qnaService.update(authorizedUser, question.getId(), newQuestion);
+        Question afterUpdateQuestion = questionService.update(authorizedUser, question.getId(), newQuestion);
 
         log.debug("afterUpdateQuestion title ={}", afterUpdateQuestion.getTitle());
         log.debug("afterUpdateQuestion contents ={}", afterUpdateQuestion.getContents());
@@ -140,101 +140,11 @@ public class QnaServiceTest {
         when(questionRepository.findById(question.getId())).thenReturn(Optional.of(question));
 
         //when
-        NoSuchElementException noSuchElementException = assertThrows(NoSuchElementException.class, () -> qnaService.update(unAuthorizedUser, question.getId(), newQuestion));
+        NoSuchElementException noSuchElementException = assertThrows(NoSuchElementException.class, () -> questionService.update(unAuthorizedUser, question.getId(), newQuestion));
 
         //then
         assertThat(noSuchElementException).isInstanceOf(NoSuchElementException.class);
     }
 
-    @Test
-    public void 한사용자가_로그인되어_있을_떄_답변이_잘_작성되는지_테스트() {
-        //given
-        Question question = makeDefaultQuestion();
-        Answer answer = new Answer(authorizedUser, "contents1");
-        answer.toQuestion(question);
-        //when
-        when(questionRepository.findById(1L)).thenReturn(Optional.ofNullable(question));
-        when(answerRepository.save(answer)).thenReturn(answer);
 
-        Answer savedAnswer = qnaService.addAnswer(authorizedUser, question.getId(), answer.getContents());
-        //then
-        assertAll(
-                () -> assertThat(savedAnswer.getWriter()).isEqualTo(answer.getWriter()),
-                () -> assertThat(savedAnswer.getQuestion()).isEqualTo(answer.getQuestion()),
-                () -> assertThat(savedAnswer.getContents()).isEqualTo(answer.getContents()));
-    }
-
-    @Test
-    public void 답변이_단건으로_잘_조회되는지_테스트() {
-        //given
-        Answer answer = new Answer(authorizedUser, "contents1");
-
-        //when
-        when(answerRepository.findById(1L)).thenReturn(Optional.of(answer));
-
-        Answer savedAnswer = qnaService.findByAnswerId(1L);
-
-        //then
-        assertAll(
-                () -> assertThat(savedAnswer.getWriter()).isEqualTo(answer.getWriter()),
-                () -> assertThat(savedAnswer.getQuestion()).isEqualTo(answer.getQuestion()),
-                () -> assertThat(savedAnswer.getContents()).isEqualTo(answer.getContents()));
-    }
-
-    @Test
-    public void 답변_작성자와_로그인한_사용자가_일치할_때_답변이_잘_수정되는지_테스트() {
-        //given
-        Answer answer = new Answer(authorizedUser, "contents1");
-        String updateContents = "수정된 내용";
-
-        //when
-        when(answerRepository.findById(1L)).thenReturn(Optional.of(answer));
-
-        Answer updatedAnswer = qnaService.updateAnswer(authorizedUser, 1L, updateContents);
-
-        //then
-        assertThat(updatedAnswer.getContents()).isEqualTo(answer.getContents());
-        assertThat(updatedAnswer.getWriter()).isEqualTo(answer.getWriter());
-    }
-
-    @Test
-    public void 답변_작성자와_로그인한_사용자가_일치하지_않을_때_답변_수정할시_UnAuthorized를_던지는지_테스트() {
-        //given
-        Answer answer = new Answer(authorizedUser, "contents1");
-        String updateContents = "수정된 내용";
-
-        //when
-        when(answerRepository.findById(1L)).thenReturn(Optional.of(answer));
-
-        //then
-        assertThrows(
-                UnAuthorizedException.class, () -> qnaService.updateAnswer(unAuthorizedUser, 1L, updateContents));
-
-    }
-
-    @Test
-    public void 답변_작성자와_로그인한_사용자가_일치할_때_답변의_삭제상태가_제대로_비뀌는지_테스트() {
-        //given
-        Answer answer = new Answer(authorizedUser, "contents1");
-
-        //when
-        when(answerRepository.findById(1L)).thenReturn(Optional.of(answer));
-
-        Answer savedAnswer = qnaService.deleteAnswer(authorizedUser, 1L);
-
-        //then
-        assertTrue(savedAnswer.isDeleted());
-    }
-
-    @Test
-    public void 답변_작성자와_로그인한_사용자가_일치하지_않을_때_답변_삭제할시_UnAuthorized를_던지는지_테스트() {
-        //given
-        Answer answer = new Answer(authorizedUser, "contents1");
-
-        //when
-        when(answerRepository.findById(1L)).thenReturn(Optional.of(answer));
-
-        //then
-        assertThrows(UnAuthorizedException.class, () -> qnaService.deleteAnswer(unAuthorizedUser, 1L));
-    }
 }

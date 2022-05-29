@@ -1,6 +1,6 @@
 package codesquad.web;
 
-import codesquad.service.QnaService;
+import codesquad.service.QuestionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,15 +8,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    private final QnaService qnaService;
+    private final QuestionService questionService;
 
-    public HomeController(QnaService qnaService) {
-        this.qnaService = qnaService;
+    public HomeController(QuestionService questionService) {
+        this.questionService = questionService;
     }
 
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("questions", qnaService.findAll());
+        model.addAttribute("questions", questionService.findAll());
         return "home";
     }
 }
