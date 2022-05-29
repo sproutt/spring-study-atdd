@@ -1,5 +1,7 @@
 package codesquad.domain;
 
+import codesquad.CannotDeleteException;
+import codesquad.CannotDeleteException;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,12 +41,45 @@ public class QuestionTest {
     }
 
     @Test
-    public void delete() {
+    public void delete() throws CannotDeleteException {
         User loginUser = UserTest.JAVAJIGI;
         Question question = newQuestion(1L, loginUser);
 
-        question.delete();
+        question.delete(loginUser);
 
         assertThat(question.isDeleted()).isTrue();
+    }
+
+    @Test(expected = CannotDeleteException.class)
+    public void delete_fail_when_loginUser_mismatch_writer() throws CannotDeleteException {
+        User loginUser = UserTest.JAVAJIGI;
+        User otherUser = UserTest.SANJIGI;
+        Question question = newQuestion(1L, loginUser);
+
+        question.delete(otherUser);
+    }
+
+    @Test
+    public void delete_success_when_loginUser_is_writer_correspond_to_answers() throws CannotDeleteException {
+        User loginUser = UserTest.JAVAJIGI;
+        Question question = newQuestion(1L, loginUser);
+        question.addAnswer(new Answer(loginUser, "하이"));
+
+        assertThat(question.hasSameWriterWithAnswers()).isTrue();
+
+        question.delete(loginUser);
+        assertThat(question.isDeleted()).isTrue();
+    }
+
+    @Test(expected = CannotDeleteException.class)
+    public void delete_fail_when_loginUser_is_not_writer_correspond_to_answers() throws CannotDeleteException {
+        User loginUser = UserTest.JAVAJIGI;
+        User otherUser = UserTest.SANJIGI;
+        Question question = newQuestion(1L, loginUser);
+        question.addAnswer(new Answer(otherUser, "하이"));
+
+        assertThat(question.hasSameWriterWithAnswers()).isFalse();
+
+        question.delete(loginUser);
     }
 }

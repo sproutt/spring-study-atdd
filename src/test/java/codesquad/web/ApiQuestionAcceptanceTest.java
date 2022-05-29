@@ -19,11 +19,6 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     private Question newQuestion;
 
-    @Before
-    public void setUp() throws Exception {
-        newQuestion = defaultQuestion();
-    }
-
     @Test
     public void create() {
         Question newQuestion = defaultQuestion();
@@ -68,13 +63,23 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void delete() {
+    public void delete_success() {
         String location = createResource(DEFAULT_QUESTION_URL, newQuestion);
 
         basicAuthTemplate().delete(location);
 
         Question dbQuestion = getResource(location, Question.class);
         assertThat(dbQuestion.isDeleted()).isTrue();
+    }
+
+    @Test
+    public void delete_fail() {
+        String location = createResource(DEFAULT_QUESTION_URL, newQuestion);
+
+        template().delete(location);
+
+        Question dbQuestion = getResource(location, Question.class);
+        assertThat(dbQuestion.isDeleted()).isFalse();
     }
 
     @Test

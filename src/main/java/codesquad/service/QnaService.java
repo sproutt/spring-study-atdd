@@ -55,14 +55,9 @@ public class QnaService {
 
     @Transactional
     public Question deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
-        // TODO 삭제 기능 구현
         Question savedQuestion = findById(questionId);
 
-        if (!savedQuestion.isOwner(loginUser)) {
-            throw new CannotDeleteException("삭제 권한이 없습니다.");
-        }
-
-        savedQuestion.delete();
+        deleteHistoryService.saveAll(savedQuestion.delete(loginUser));
         return questionRepository.save(savedQuestion);
     }
 
@@ -92,7 +87,7 @@ public class QnaService {
     @Transactional
     public Answer deleteAnswer(User loginUser, long id) {
         Answer answer = findAnswerById(id);
-        answer.delete(loginUser);
+        deleteHistoryService.save(answer.delete(loginUser));
         return answerRepository.save(answer);
     }
 }
