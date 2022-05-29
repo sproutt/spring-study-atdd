@@ -18,7 +18,7 @@ public class QuestionService {
     private static final Logger log = LoggerFactory.getLogger(QuestionService.class);
 
     private final QuestionRepository questionRepository;
-    private final DeleteHistoryRepository deleteHistoryRepository;
+    private final DeleteHistoryService deleteHistoryService;
 
     public Question create(User loginUser, Question question) {
         question.writeBy(loginUser);
@@ -44,13 +44,13 @@ public class QuestionService {
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
+    public void deleteQuestion(User loginUser, long questionId) {
         // TODO 삭제 기능 구현
         Question question = questionRepository.findById(questionId)
                                               .orElseThrow(NoSuchElementException::new);
         log.debug("QnaService deleteQuestion setDeleted() called");
 
-        question.delete(loginUser);
+        deleteHistoryService.saveAll(question.delete(loginUser));
     }
 
     public Iterable<Question> findAll() {

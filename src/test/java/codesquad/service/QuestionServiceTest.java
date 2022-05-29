@@ -11,14 +11,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class QuestionServiceTest {
@@ -27,7 +26,7 @@ public class QuestionServiceTest {
     @Mock
     private QuestionRepository questionRepository;
     @Mock
-    private DeleteHistoryRepository deleteHistoryRepository;
+    private DeleteHistoryService deleteHistoryService;
 
     @InjectMocks
     private QuestionService questionService;
@@ -154,12 +153,10 @@ public class QuestionServiceTest {
         when(questionRepository.findById(question.getId())).thenReturn(Optional.of(question));
 
         //when
-        DeleteHistory deleteHistory = new DeleteHistory(ContentType.QUESTION, question.getId(), question.getWriter(), LocalDateTime.now());
-        when(deleteHistoryRepository.save(any())).thenReturn(deleteHistory);
+        List<DeleteHistory> deletedQuestions = question.delete(authorizedUser);
+        deleteHistoryService.saveAll(deletedQuestions);
 
         //then
-        DeleteHistory savedHistory = deleteHistoryRepository.save(deleteHistory);
-
-        assertThat(deleteHistory).isEqualTo(savedHistory);
+        verify(deleteHistoryService, times(1)).saveAll(deletedQuestions);
     }
 }
