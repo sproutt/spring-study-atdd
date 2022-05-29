@@ -1,5 +1,6 @@
 package codesquad.domain;
 
+import codesquad.CannotDeleteException;
 import org.hibernate.annotations.Where;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
@@ -9,6 +10,7 @@ import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 public class Question extends AbstractEntity implements UrlGeneratable {
@@ -86,8 +88,25 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         this.writer = updatedQuestion.writer;
     }
 
-    public void delete() {
+    public List<DeleteHistory> delete(User loginUser) throws CannotDeleteException {
+
+        if (!this.isOwner(loginUser)) {
+            throw new CannotDeleteException("삭제 권한이 없습니다.");
+        }
+
+        if(!hasSameWriterWithAnswers()) {
+            throw new CannotDeleteException("삭제 권한이 없습니다.");
+        }
+
+        List<DeleteHistory> deleteHistories = new ArrayList<>();
+
+        answers.stream()
+               .filter(answer -> answer.isOwner(writer))
+               .forEach(answer -> deleteHistories.add(answer.delete(loginUser)));
+
         this.deleted = true;
+
+        return deleteHistories;
     }
 
     @Override
@@ -107,5 +126,10 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 
         return this.title.equals(target.getTitle()) &&
                 this.contents.equals(target.getContents());
+    }
+
+    public boolean hasSameWriterWithAnswers() {
+        return answers.stream()
+                .allMatch(answer -> answer.isOwner(writer));
     }
 }
