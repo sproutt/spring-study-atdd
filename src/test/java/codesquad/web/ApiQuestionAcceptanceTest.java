@@ -79,7 +79,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
         template().delete(location);
 
         Question dbQuestion = getResource(location, Question.class);
-        assertT가hat(dbQuestion.isDeleted()).isFalse();
+        assertThat(dbQuestion.isDeleted()).isFalse();
     }
 
     @Test
