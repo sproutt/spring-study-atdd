@@ -1,10 +1,11 @@
 package codesquad.domain;
 
-import codesquad.CannotDeleteException;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class QuestionTest {
     private Question question;
@@ -24,20 +25,20 @@ public class QuestionTest {
         User otherUser = UserTest.SANJIGI;
 
         //when
-        Question result = question.delete(otherUser);
+        List<DeleteHistory> result = question.delete(otherUser);
 
         //then
-        assertFalse(result.isDeleted());
+        assertThat(result.size()).isEqualTo(0);
     }
 
     @Test
     public void 질문한_사람과_로그인한_사람이_같으면서_답변이_없는_경우_삭제가_잘_되는지_테스트() {
         //given
         //when
-        Question result = question.delete(user);
+        List<DeleteHistory> result = question.delete(user);
 
         //then
-        assertTrue(result.isDeleted());
+        assertThat(result.size()).isEqualTo(1);
     }
 
     @Test
@@ -47,10 +48,10 @@ public class QuestionTest {
         question.addAnswer(answer);
 
         //when
-        Question result = question.delete(user);
+        List<DeleteHistory> result = question.delete(user);
 
         //then
-        assertTrue(result.isDeleted());
+        assertThat(result.size()).isEqualTo(2);
     }
 
     @Test
@@ -62,10 +63,10 @@ public class QuestionTest {
         question.addAnswer(answer);
 
         //when
-        Question result = question.delete(user);
+        List<DeleteHistory> result = question.delete(user);
 
         //then
-        assertFalse(result.isDeleted());
+        assertThat(result.size()).isEqualTo(0);
     }
 
 }

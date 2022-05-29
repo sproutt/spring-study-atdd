@@ -107,7 +107,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         List<DeleteHistory> deleteHistories = new ArrayList<>();
         if (!this.getWriter()
                      .equals(loginUser)) {
-            return this;
+            return deleteHistories;
         }
 
         if (answers.size() == 0) {
@@ -125,6 +125,6 @@ public class Question extends AbstractEntity implements UrlGeneratable {
                 return deleteHistories;
             }
         }
-        return this;
+        return deleteHistories;
     }
 }
