@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
 public class AnswerService {
 
     private final AnswerRepository answerRepository;
-    private final DeleteHistoryService deleteHistoryService;
+
     private final QuestionService questionService;
 
     public Answer createAnswer(User loginUser, long questionId, String contents) {

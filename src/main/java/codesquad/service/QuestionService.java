@@ -18,6 +18,7 @@ public class QuestionService {
     private static final Logger log = LoggerFactory.getLogger(QuestionService.class);
 
     private final QuestionRepository questionRepository;
+    private final DeleteHistoryRepository deleteHistoryRepository;
 
     public Question create(User loginUser, Question question) {
         question.writeBy(loginUser);
