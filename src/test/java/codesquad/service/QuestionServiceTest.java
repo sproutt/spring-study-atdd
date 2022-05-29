@@ -1,7 +1,6 @@
 package codesquad.service;
 
 import codesquad.CannotDeleteException;
-import codesquad.UnAuthorizedException;
 import codesquad.domain.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +17,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -27,7 +27,7 @@ public class QuestionServiceTest {
     @Mock
     private QuestionRepository questionRepository;
     @Mock
-    private AnswerRepository answerRepository;
+    private DeleteHistoryRepository deleteHistoryRepository;
 
     @InjectMocks
     private QuestionService questionService;
@@ -147,5 +147,19 @@ public class QuestionServiceTest {
         assertThat(noSuchElementException).isInstanceOf(NoSuchElementException.class);
     }
 
+    @Test
+    public void 질문이_삭제되었을_때_질문_삭제_이력이_잘_저장되는지_테스트() {
+        //given
+        Question question = makeDefaultQuestion();
+        when(questionRepository.findById(question.getId())).thenReturn(Optional.of(question));
 
+        //when
+        DeleteHistory deleteHistory = new DeleteHistory(ContentType.QUESTION, question.getId(), question.getWriter(), LocalDateTime.now());
+        when(deleteHistoryRepository.save(any())).thenReturn(deleteHistory);
+
+        //then
+        DeleteHistory savedHistory = deleteHistoryRepository.save(deleteHistory);
+
+        assertThat(deleteHistory).isEqualTo(savedHistory);
+    }
 }
