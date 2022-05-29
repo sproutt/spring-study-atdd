@@ -33,6 +33,8 @@ public class AnswerService {
         Answer savedAnswer = answerRepository.findById(answerId)
                                              .filter(answer -> answer.isOwner(user))
                                              .orElseThrow(UnAuthorizedException::new);
+
+
         return savedAnswer.delete();
     }
 

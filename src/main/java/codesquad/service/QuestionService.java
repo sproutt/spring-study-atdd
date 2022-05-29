@@ -46,12 +46,10 @@ public class QuestionService {
     public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
         // TODO 삭제 기능 구현
         Question question = questionRepository.findById(questionId)
-                                              .filter(s -> s.getWriter()
-                                                            .equals(loginUser))
                                               .orElseThrow(NoSuchElementException::new);
         log.debug("QnaService deleteQuestion setDeleted() called");
 
-        question.delete();
+        question.delete(loginUser);
     }
 
     public Iterable<Question> findAll() {
