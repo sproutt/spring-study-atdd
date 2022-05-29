@@ -102,8 +102,23 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return "Question [id=" + getId() + ", title=" + title + ", contents=" + contents + ", writer=" + writer + "]";
     }
 
-    public Question delete() {
-        this.deleted = true;
+    public Question delete(User loginUser) {
+        if (!this.getWriter()
+                     .equals(loginUser)) {
+            return this;
+        }
+
+        if (answers.size() == 0) {
+            this.deleted = true;
+            return this;
+        }
+
+        for (Answer answer : answers) {
+            if (answer.isOwner(loginUser)) {
+                this.deleted = true;
+                return this;
+            }
+        }
         return this;
     }
 }

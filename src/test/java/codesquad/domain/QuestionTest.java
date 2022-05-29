@@ -30,6 +30,42 @@ public class QuestionTest {
         assertFalse(result.isDeleted());
     }
 
+    @Test
+    public void 질문한_사람과_로그인한_사람이_같으면서_답변이_없는_경우_삭제가_잘_되는지_테스트() {
+        //given
+        //when
+        Question result = question.delete(user);
 
+        //then
+        assertTrue(result.isDeleted());
+    }
+
+    @Test
+    public void 질문한_사람과_로그인한_사람이_같으면서_답변의_글쓴이도_같은_경우_삭제가_잘_되는지_테스트() {
+        //given
+        Answer answer = new Answer(user, "contents1");
+        question.addAnswer(answer);
+
+        //when
+        Question result = question.delete(user);
+
+        //then
+        assertTrue(result.isDeleted());
+    }
+
+    @Test
+    public void 질문한_사람과_로그인한_사람이_같으면서_답변의_글쓴이가_다른_경우_삭제가_안되는지_테스트() {
+        //given
+        User otherUser = UserTest.SANJIGI;
+        Answer answer = new Answer(otherUser, "contents1");
+
+        question.addAnswer(answer);
+
+        //when
+        Question result = question.delete(user);
+
+        //then
+        assertFalse(result.isDeleted());
+    }
 
 }
