@@ -73,7 +73,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     }
 
     public void addAnswer(Answer answer) {
-        answer.toQuestion(this);
+        answer.addToQuestion(this);
         answers.add(answer);
     }
 
@@ -100,5 +100,10 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     @Override
     public String toString() {
         return "Question [id=" + getId() + ", title=" + title + ", contents=" + contents + ", writer=" + writer + "]";
+    }
+
+    public Question delete() {
+        this.deleted = true;
+        return this;
     }
 }
